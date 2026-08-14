@@ -12,8 +12,11 @@
     "serve": "npx --yes serve dist -l 4321",
     "check": "astro check",
     "qa:routes": "node scripts/qa-routes.mjs",
-    "qa:shots": "playwright test tests/visual",
-    "test": "playwright test"
+    "qa:shots": "STYLEGUIDE=1 astro build && playwright test tests/visual",
+    "test": "playwright test",
+    "qa:contrast": "node scripts/qa-contrast.mjs",
+    "fonts": "node scripts/vendor-fonts.mjs",
+    "qa": "npm run check && npm run qa:contrast && npm run build && npm run qa:routes && npm run test"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

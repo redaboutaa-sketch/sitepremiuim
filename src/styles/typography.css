@@ -1,0 +1,139 @@
+/*
+ * TYPOGRAPHIE
+ *
+ * Tension voulue : sérif éditoriale à fort contraste pour le display,
+ * grotesque neutre pour tout le reste. Le display ne descend jamais au
+ * niveau du corps de texte — Instrument Serif n'est pas une police de lecture.
+ */
+
+.t-display-xl,
+.t-display-l,
+.t-h1,
+.t-h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+.t-display-xl {
+  font-size: var(--fs-display-xl);
+  line-height: var(--lh-display-xl);
+  letter-spacing: var(--ls-display-xl);
+}
+
+.t-display-l {
+  font-size: var(--fs-display-l);
+  line-height: var(--lh-display-l);
+  letter-spacing: var(--ls-display-l);
+}
+
+.t-h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--ls-h1);
+}
+
+.t-h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+/* H3 bascule sur la grotesque : à cette taille, la sérif perdrait sa tension
+   sans gagner en lisibilité. */
+.t-h3 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+}
+
+.t-body-l {
+  font-size: var(--fs-body-l);
+  line-height: var(--lh-body-l);
+  max-width: var(--measure);
+}
+
+.t-body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  max-width: var(--measure);
+}
+
+.t-small {
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+/*
+ * LABEL — signature typographique du site.
+ * Petites capitales très étirées, en gris plancher, systématiquement
+ * précédées d'un filet ou d'un numéro d'index. C'est le vocabulaire du
+ * catalogue de spécimens.
+ */
+.t-label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  font-stretch: calc(var(--wdth-label) * 1%);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* Variante avec filet d'amorce — le filet prend la couleur du signal actif. */
+.t-label--ruled {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.t-label--ruled::before {
+  content: '';
+  inline-size: var(--sp-6);
+  block-size: var(--hairline);
+  background: var(--signal);
+  flex: none;
+}
+
+/* INDEX — numérotation du catalogue. Chiffres tabulaires : les numéros
+   s'alignent verticalement d'une ligne à l'autre. */
+.t-index {
+  font-family: var(--font-sans);
+  font-size: var(--fs-index);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: var(--ls-index);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+}
+
+.t-cta {
+  font-family: var(--font-sans);
+  font-size: var(--fs-cta);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--ls-cta);
+  text-transform: uppercase;
+}
+
+.t-italic {
+  font-style: italic;
+}
+
+/* Couleurs de texte — jamais de valeur brute dans les composants. */
+.t-secondary {
+  color: var(--fg-secondary);
+}
+.t-muted {
+  color: var(--fg-muted);
+}
+.t-signal {
+  color: var(--signal-text);
+}
+
+.t-measure-short {
+  max-width: var(--measure-short);
+}

@@ -3,6 +3,30 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 /**
+ * La page de démonstration du design system vit hors de `src/pages/` et n'est
+ * injectée qu'en développement ou quand STYLEGUIDE=1 (staging).
+ *
+ * Conséquence : elle est structurellement ABSENTE du build de production —
+ * pas retirée après coup, jamais générée.
+ */
+function styleguideRoute() {
+  return {
+    name: 'ivan-arsenov:styleguide',
+    hooks: {
+      'astro:config:setup': ({ command, injectRoute, logger }) => {
+        const enabled = command === 'dev' || process.env.STYLEGUIDE === '1';
+        if (!enabled) return;
+        injectRoute({
+          pattern: '/styleguide',
+          entrypoint: './src/dev/styleguide.astro',
+        });
+        logger.info('design system exposé sur /styleguide/ (hors production)');
+      },
+    },
+  };
+}
+
+/**
  * Sortie 100 % statique : `dist/` est uploadable tel quel dans `public_html`
  * chez Hostinger, sans runtime Node.
  *
@@ -34,10 +58,11 @@ export default defineConfig({
   },
 
   integrations: [
+    styleguideRoute(),
     sitemap({
       // hreflang est porté par le <head> de chaque page (voir BaseHead.astro).
       // Les alternates XML seront ajoutés en TR-018.
-      filter: (page) => !page.includes('/_styleguide'),
+      filter: (page) => !page.includes('/styleguide'),
     }),
   ],
 

@@ -8,6 +8,7 @@
  */
 import BaseHead from '@/components/seo/BaseHead.astro';
 import { useI18n, type Locale, type PageKey } from '@/i18n';
+import '@/styles/index.css';
 
 interface Props {
   page: PageKey;
@@ -22,6 +23,29 @@ const i18n = useI18n(locale);
 <html lang={i18n.htmlLang}>
   <head>
     <BaseHead page={page} locale={locale} />
+
+    {/* Précharge du chemin critique uniquement — les sous-jeux latin-ext
+        se chargent à la demande via leur unicode-range. */}
+    <link
+      rel="preload"
+      href="/fonts/archivo-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/instrument-serif-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    {/* Marque la disponibilité de JS avant le premier rendu : sans lui, les
+        éléments à révéler restent visibles (voir motion.css). */}
+    <script is:inline>
+      document.documentElement.setAttribute('data-js', '');
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{i18n.t.nav.skipToContent}</a>

@@ -1,0 +1,753 @@
+---
+/**
+ * DESIGN SYSTEM SHOWCASE — page de développement.
+ *
+ * Injectée sur /styleguide/ uniquement en dev et en staging (STYLEGUIDE=1).
+ * ABSENTE du build de production : voir l'intégration dans astro.config.mjs.
+ *
+ * Elle sert de preuve visuelle du TR-002 et de référence de non-régression :
+ * toute dérive du design system se voit ici en premier.
+ */
+import '@/styles/index.css';
+
+const SIGNALS = [
+  { key: 'carbonated', label: '01 — Carbonated', graphic: '#C8102E', text: '#FF6B7D', ratio: '6.1:1' },
+  { key: 'energy-sport', label: '02 — Energy & Sport', graphic: '#00B8A9', text: '#2FE0CF', ratio: '9.8:1' },
+  { key: 'water', label: '03 — Water', graphic: '#4A9BD1', text: '#7FC4EE', ratio: '8.6:1' },
+  { key: 'juice-fruit', label: '04 — Juice & Fruit', graphic: '#E8890C', text: '#FFAE47', ratio: '9.4:1' },
+  { key: 'international', label: '05 — International', graphic: '#E0447C', text: '#FF8FB4', ratio: '8.3:1' },
+];
+
+const NEUTRALS = [
+  { name: 'Ink 900', value: '#0A0A0B', role: 'Fond principal' },
+  { name: 'Ink 800', value: '#101012', role: 'Surface' },
+  { name: 'Ink 700', value: '#17171A', role: 'Surface élevée' },
+  { name: 'Ink 600', value: '#232327', role: 'Graphite' },
+  { name: 'Paper', value: '#F2F0EC', role: 'Off-white chaud' },
+  { name: 'Paper Alt', value: '#E8E5DF', role: 'Off-white secondaire' },
+];
+
+const TEXT_TOKENS = [
+  { name: 'text-primary', value: '#F2F0EC', ratio: '18.4:1', level: 'AAA' },
+  { name: 'text-secondary', value: '#A0A0A8', ratio: '7.6:1', level: 'AAA' },
+  { name: 'text-muted', value: '#77777E', ratio: '4.6:1', level: 'AA — plancher' },
+];
+
+const SPACING = [
+  ['sp-1', '4px'], ['sp-2', '8px'], ['sp-3', '12px'], ['sp-4', '16px'],
+  ['sp-5', '24px'], ['sp-6', '32px'], ['sp-7', '48px'], ['sp-8', '64px'],
+  ['sp-9', '96px'], ['sp-10', '128px'], ['sp-11', '176px'], ['sp-12', '240px'],
+];
+
+const SCALE = [
+  { cls: 't-display-xl', name: 'Display XL', spec: 'Instrument Serif · clamp(3.5rem, 9vw, 8.5rem) · lh 0.92 · ls −0.03em', sample: 'Soft drinks' },
+  { cls: 't-display-l', name: 'Display L', spec: 'Instrument Serif · clamp(2.75rem, 6vw, 5rem) · lh 0.98', sample: 'without borders' },
+  { cls: 't-h1', name: 'H1', spec: 'Instrument Serif · clamp(2.5rem, 5.5vw, 4.5rem) · lh 1.02', sample: 'Explore Our Drinks' },
+  { cls: 't-h2', name: 'H2', spec: 'Instrument Serif · clamp(2rem, 3.6vw, 3.25rem) · lh 1.08', sample: 'One category. Deeper focus.' },
+  { cls: 't-h3', name: 'H3', spec: 'Archivo 500 · clamp(1.25rem, 1.8vw, 1.625rem) · lh 1.25', sample: 'Energy & Sport' },
+  { cls: 't-body-l', name: 'Body L', spec: 'Archivo 400 · clamp(1.0625rem, 1.2vw, 1.25rem) · lh 1.6', sample: 'From global icons to distinctive international flavours.' },
+  { cls: 't-body', name: 'Body', spec: 'Archivo 400 · 1rem · lh 1.65', sample: 'Ivan Arsenov is a B2B trading business focused on non-alcoholic beverages for professional buyers.' },
+  { cls: 't-small', name: 'Small', spec: 'Archivo 400 · 0.875rem · lh 1.55', sample: 'All trademarks are the property of their respective owners.' },
+];
+---
+
+<!doctype html>
+<html lang="fr" data-js>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Design System — Ivan Arsenov</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+
+  <body>
+    <main id="main" class="sg">
+      <!-- ============================================ EN-TÊTE -->
+      <section class="section section--tight" data-surface="ink">
+        <div class="container">
+          <p class="t-label t-label--ruled" style="--signal: var(--signal-carbonated)">
+            Design System · TR-002
+          </p>
+          <h1 class="t-display-l" style="margin-block: var(--sp-5) var(--sp-4)">
+            The Specimen Catalogue
+          </h1>
+          <p class="t-body-l t-secondary">
+            Le luxe éditorial appliqué au négoce industriel. L'interface est achromatique&nbsp;:
+            la couleur vient des produits.
+          </p>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ PALETTE -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Palette</h2>
+
+          <p class="t-label" style="margin-block-end: var(--sp-4)">Neutres</p>
+          <div class="sg__swatches">
+            {NEUTRALS.map((c) => (
+              <div class="sg__swatch">
+                <div class="sg__chip" style={`background:${c.value}`}></div>
+                <p class="t-index">{c.value}</p>
+                <p class="t-small">{c.name}</p>
+                <p class="t-small t-muted">{c.role}</p>
+              </div>
+            ))}
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-8) var(--sp-4)">
+            Texte sur Ink 900 — contrastes vérifiés
+          </p>
+          <div class="sg__stack-rows">
+            {TEXT_TOKENS.map((t) => (
+              <div class="sg__row">
+                <span style={`color:${t.value}`} class="t-body">
+                  Aa — {t.name}
+                </span>
+                <span class="t-index">{t.value}</span>
+                <span class="t-index">{t.ratio}</span>
+                <span class="t-index">{t.level}</span>
+              </div>
+            ))}
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-8) var(--sp-4)">
+            Signaux de catégorie — aucun accent fixe
+          </p>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Le graphique sert aux filets, points et soulignements. La variante texte est la
+            seule autorisée pour du texte coloré. Aucun aplat de signal ne dépasse ~15&nbsp;%
+            d'un écran&nbsp;; le CTA reste achromatique.
+          </p>
+          <div class="sg__signals">
+            {SIGNALS.map((s) => (
+              <div class="sg__signal" data-family={s.key}>
+                <div class="sg__signal-bar" style={`background:${s.graphic}`}></div>
+                <p class="t-label t-label--ruled">{s.label}</p>
+                <p class="t-h3 t-signal">Aa</p>
+                <p class="t-index">{s.graphic} · graphique</p>
+                <p class="t-index">{s.text} · texte {s.ratio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ TYPOGRAPHIE -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Typographie</h2>
+          <div class="sg__pair">
+            <div>
+              <p class="t-label">Display</p>
+              <p class="t-display-l" style="margin-block: var(--sp-3)">Instrument Serif</p>
+              <p class="t-small t-secondary">
+                Sérif haute tension. Écho à la construction sérif du monogramme IA.
+                Régulier + italique. Jamais employée en dessous de H2.
+              </p>
+              <p class="t-h2 t-italic" style="margin-block-start: var(--sp-4)">Italique</p>
+            </div>
+            <div>
+              <p class="t-label">Interface</p>
+              <p class="t-h1" style="font-family: var(--font-sans); font-weight:500; margin-block: var(--sp-3)">
+                Archivo
+              </p>
+              <p class="t-small t-secondary">
+                Grotesque variable, axes largeur et graisse. Sa largeur étirée sert les
+                labels en petites capitales — signature typographique du site.
+              </p>
+              <p style="margin-block-start: var(--sp-4)">
+                <span style="font-weight:400">400 Regular</span> ·
+                <span style="font-weight:500">500 Medium</span> ·
+                <span style="font-weight:700">700 Bold</span>
+              </p>
+            </div>
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-8) var(--sp-5)">Échelle</p>
+          <div class="sg__scale">
+            {SCALE.map((s) => (
+              <div class="sg__scale-row">
+                <div class="sg__scale-meta">
+                  <p class="t-index">{s.name}</p>
+                  <p class="t-small t-muted">{s.spec}</p>
+                </div>
+                <p class={s.cls}>{s.sample}</p>
+              </div>
+            ))}
+            <div class="sg__scale-row">
+              <div class="sg__scale-meta">
+                <p class="t-index">Label</p>
+                <p class="t-small t-muted">Archivo 500 étirée · 0.6875rem · ls 0.16em · capitales</p>
+              </div>
+              <p class="t-label t-label--ruled" style="--signal: var(--signal-water)">
+                Global icons · International favourites
+              </p>
+            </div>
+            <div class="sg__scale-row">
+              <div class="sg__scale-meta">
+                <p class="t-index">Index</p>
+                <p class="t-small t-muted">Archivo 400 · chiffres tabulaires · ls 0.08em</p>
+              </div>
+              <p class="t-index">01 · 02 · 03 · 04 · 05 · 06 · 07 · 08 · 09 · 10</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ GRILLE -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Grille</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Mobile 4 colonnes · Tablet 8 · Desktop 12. Le nombre de colonnes change, pas
+            seulement leur largeur. Compositions asymétriques par défaut.
+          </p>
+
+          <div class="grid sg__grid-demo">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div class="sg__grid-col"><span class="t-index">{String(i + 1).padStart(2, '0')}</span></div>
+            ))}
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-7) var(--sp-4)">
+            Composition asymétrique 5 / 7
+          </p>
+          <div class="grid">
+            <div class="col-5 sg__block"><span class="t-index">col-5</span></div>
+            <div class="col-7 sg__block"><span class="t-index">col-7</span></div>
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-6) var(--sp-4)">4 / 8 décalée</p>
+          <div class="grid">
+            <div class="col-4 sg__block"><span class="t-index">col-4</span></div>
+            <div class="col-7 start-6 sg__block"><span class="t-index">col-7 · start-6</span></div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ ESPACEMENT -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Espacement</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6)">
+            Base 4, progression non linéaire — rythme éditorial, pas grille mécanique.
+          </p>
+          <div class="sg__stack-rows">
+            {SPACING.map(([name, px]) => (
+              <div class="sg__row sg__row--space">
+                <span class="t-index">{name}</span>
+                <span class="t-index t-muted">{px}</span>
+                <span class="sg__space-bar" style={`inline-size:${px}`}></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ BOUTONS ET LIENS -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Boutons</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Rectangles nets, rayon 0, aucune ombre, aucun gradient. Un seul style primaire sur
+            tout le site. Le secondaire est subordonné par la valeur, pas par la taille.
+          </p>
+
+          <div class="sg__states">
+            <div>
+              <p class="t-label">Repos</p>
+              <div class="cluster" style="margin-block-start: var(--sp-4)">
+                <button class="btn btn--primary">Request a Quote</button>
+                <button class="btn btn--secondary">Add to Enquiry</button>
+                <button class="btn btn--text">Explore Our Drinks</button>
+              </div>
+            </div>
+            <div>
+              <p class="t-label">Survol — inversion de valeur</p>
+              <div class="cluster" style="margin-block-start: var(--sp-4)">
+                <button class="btn btn--primary sg--hover">Request a Quote</button>
+                <button class="btn btn--secondary sg--hover">Add to Enquiry</button>
+                <button class="btn btn--text sg--hover">Explore Our Drinks</button>
+              </div>
+            </div>
+            <div>
+              <p class="t-label">Focus visible — anneau 2px, décalage 3px</p>
+              <div class="cluster" style="margin-block-start: var(--sp-4)">
+                <button class="btn btn--primary sg--focus">Request a Quote</button>
+                <button class="btn btn--secondary sg--focus">Add to Enquiry</button>
+                <button class="btn btn--text sg--focus">Explore Our Drinks</button>
+              </div>
+            </div>
+            <div>
+              <p class="t-label">Désactivé — perte de présence, pas de changement de forme</p>
+              <div class="cluster" style="margin-block-start: var(--sp-4)">
+                <button class="btn btn--primary" disabled>Request a Quote</button>
+                <button class="btn btn--secondary" disabled>Add to Enquiry</button>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="t-h2 sg__title" style="margin-block-start: var(--sp-9)">Liens</h2>
+          <div class="sg__states">
+            <div>
+              <p class="t-label">Navigation</p>
+              <nav class="cluster" style="margin-block-start: var(--sp-4); gap: var(--sp-6)">
+                <a href="#main" class="link-nav">Drinks</a>
+                <a href="#main" class="link-nav sg--hover">Brands — survol</a>
+                <a href="#main" class="link-nav" aria-current="page">About — page courante</a>
+                <a href="#main" class="link-nav sg--focus">Contact — focus</a>
+              </nav>
+            </div>
+            <div>
+              <p class="t-label">Inline</p>
+              <p class="t-body" style="margin-block-start: var(--sp-4)">
+                Consultez notre <a href="#main" class="link-inline">sélection de marques</a> ou
+                lisez les <a href="#main" class="link-inline">mentions légales</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ SURFACES -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Surfaces et séparateurs</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Une surface est un décrochement de fond délimité par des filets — jamais une carte
+            arrondie avec ombre portée. C'est la différence structurelle avec un template générique.
+          </p>
+
+          <div class="sg__stack-rows">
+            <div><p class="t-index" style="margin-block-end: var(--sp-2)">rule</p><hr class="rule" /></div>
+            <div><p class="t-index" style="margin-block-end: var(--sp-2)">rule--strong</p><hr class="rule rule--strong" /></div>
+            <div data-family="carbonated"><p class="t-index" style="margin-block-end: var(--sp-2)">rule--signal</p><hr class="rule rule--signal" /></div>
+          </div>
+
+          <div class="surface" style="padding: var(--sp-6); margin-block-start: var(--sp-6)">
+            <p class="t-index">.surface — Ink 800, filets haut et bas</p>
+          </div>
+          <div class="surface surface--raised" style="padding: var(--sp-6); margin-block-start: var(--sp-4)">
+            <p class="t-index">.surface--raised — Ink 700</p>
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-7) var(--sp-4)">
+            Cellules — filets mutualisés, aucune carte
+          </p>
+          <div class="cells sg__cells">
+            {['Coca-Cola', 'Pepsi', 'Red Bull', 'Fanta', 'Sprite', 'Schweppes', 'Evian', 'Orangina'].map((b) => (
+              <div class="sg__cell"><span class="t-h3">{b}</span></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ PRODUITS -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Traitement des packshots</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Chaque produit est <strong>posé et ancré par un filet de sol</strong>, avec une ombre
+            portée serrée et directionnelle. Il ne flotte pas&nbsp;: il est exposé. C'est ce détail
+            qui sépare le studio packshot de l'esthétique nightclub.
+            Ratio fixe 3/4&nbsp;: aucun décalage de mise en page, que l'asset soit présent ou non.
+          </p>
+
+          <div class="sg__products">
+            <div data-family="carbonated">
+              <div class="product-object">
+                <svg class="product-object__img" viewBox="0 0 60 130" width="60" height="130" aria-hidden="true">
+                  <rect x="8" y="6" width="44" height="118" rx="5" fill="#3a3a40" />
+                  <rect x="8" y="6" width="12" height="118" rx="5" fill="#4a4a52" />
+                </svg>
+              </div>
+              <p class="t-index" style="margin-block-start: var(--sp-3)">Asset validé — forme témoin</p>
+            </div>
+
+            <div data-family="energy-sport">
+              <div class="product-object">
+                <div class="product-object__fallback">
+                  <p class="t-index">02</p>
+                  <div>
+                    <p class="product-object__fallback-name">Monster Energy</p>
+                    <p class="t-label" style="margin-block-start: var(--sp-2)">Energy &amp; Sport</p>
+                  </div>
+                </div>
+              </div>
+              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
+            </div>
+
+            <div data-family="water">
+              <div class="product-object">
+                <div class="product-object__fallback">
+                  <p class="t-index">03</p>
+                  <div>
+                    <p class="product-object__fallback-name">Chaudfontaine</p>
+                    <p class="t-label" style="margin-block-start: var(--sp-2)">Water</p>
+                  </div>
+                </div>
+              </div>
+              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
+            </div>
+
+            <div data-family="international">
+              <div class="product-object">
+                <div class="product-object__fallback">
+                  <p class="t-index">05</p>
+                  <div>
+                    <p class="product-object__fallback-name">Chupa Chups</p>
+                    <p class="t-label" style="margin-block-start: var(--sp-2)">International</p>
+                  </div>
+                </div>
+              </div>
+              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
+            </div>
+          </div>
+          <p class="t-small t-muted" style="margin-block-start: var(--sp-5)">
+            La forme témoin est une géométrie neutre, pas un produit&nbsp;: elle démontre le
+            traitement (ancrage, ombre, ratio) sans simuler un packshot dont nous ne disposons pas.
+          </p>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ FORMULAIRE -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Champs</h2>
+          <div class="sg__fields">
+            <div class="field">
+              <label class="field__label" for="sg-a">Company Name</label>
+              <input class="field__input" id="sg-a" type="text" value="Handels GmbH" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="sg-b">
+                VAT Number <span class="field__optional">— optional</span>
+              </label>
+              <input class="field__input" id="sg-b" type="text" placeholder="DE123456789" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="sg-c">Email — focus</label>
+              <input class="field__input sg--focus" id="sg-c" type="email" value="buyer@" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="sg-d">Email — erreur</label>
+              <input class="field__input" id="sg-d" type="email" value="buyer@" aria-invalid="true" aria-describedby="sg-d-err" />
+              <p class="field__error" id="sg-d-err">Enter a complete email address, e.g. name@company.com</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="sg-e">Désactivé</label>
+              <input class="field__input" id="sg-e" type="text" value="—" disabled />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ SURFACE CLAIRE -->
+      <section class="section" data-surface="paper">
+        <div class="container">
+          <p class="t-label t-label--ruled" style="--signal: var(--signal-juice)">Surface claire</p>
+          <h2 class="t-h2 sg__title" style="margin-block-start: var(--sp-4)">
+            Le catalogue se lit, il ne se contemple pas.
+          </h2>
+          <p class="t-body-l t-secondary">
+            Le passage du noir au papier est un geste éditorial&nbsp;: il donne au scroll une
+            respiration de magazine et rend le catalogue plus lisible. Les mêmes composants
+            héritent automatiquement des tokens inversés — aucun composant ne connaît sa surface.
+          </p>
+          <div class="cluster" style="margin-block-start: var(--sp-6)">
+            <button class="btn btn--primary">Request a Quote</button>
+            <button class="btn btn--secondary">Add to Enquiry</button>
+            <button class="btn btn--primary sg--focus">Focus sur papier</button>
+          </div>
+          <hr class="rule" style="margin-block: var(--sp-6)" />
+          <div class="field" style="max-width: 24rem">
+            <label class="field__label" for="sg-f">Champ sur papier</label>
+            <input class="field__input" id="sg-f" type="text" value="Wildeshausen" />
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- ============================================ MOUVEMENT -->
+      <section class="section" data-surface="ink">
+        <div class="container">
+          <h2 class="t-h2 sg__title">Mouvement</h2>
+          <p class="t-small t-secondary" style="margin-block-end: var(--sp-6); max-width: var(--measure)">
+            Six grammaires, pas une de plus. Sous <code>prefers-reduced-motion</code>, tout
+            mouvement est neutralisé et les éléments sont posés dans leur <strong>état final</strong> —
+            jamais masqués. La version sans mouvement doit être belle, pas dégradée.
+          </p>
+
+          <div class="sg__stack-rows">
+            <div class="sg__row"><span class="t-index">micro</span><span class="t-small t-muted">140ms — bascules, pastilles</span></div>
+            <div class="sg__row"><span class="t-index">fast</span><span class="t-small t-muted">200ms — survols, focus</span></div>
+            <div class="sg__row"><span class="t-index">base</span><span class="t-small t-muted">280ms — filets, transitions d'état</span></div>
+            <div class="sg__row"><span class="t-index">slow</span><span class="t-small t-muted">480ms — révélations de bloc</span></div>
+            <div class="sg__row"><span class="t-index">scene</span><span class="t-small t-muted">800ms — hero, mask reveal</span></div>
+            <div class="sg__row"><span class="t-index">signal</span><span class="t-small t-muted">800ms — dérive chromatique</span></div>
+            <div class="sg__row"><span class="t-index">ease-out</span><span class="t-small t-muted">cubic-bezier(0.16, 1, 0.3, 1) — aucun rebond</span></div>
+            <div class="sg__row"><span class="t-index">parallaxe</span><span class="t-small t-muted">14px maximum, amortie</span></div>
+          </div>
+
+          <p class="t-label" style="margin-block: var(--sp-7) var(--sp-4)">
+            Mask reveal — état final
+          </p>
+          <span class="reveal-mask" data-revealed="true">
+            <span class="t-display-l">Soft drinks without borders.</span>
+          </span>
+
+          <div class="surface" style="padding: var(--sp-6); margin-block-start: var(--sp-7)">
+            <p class="t-index" style="margin-block-end: var(--sp-3)">Contrôle reduced-motion</p>
+            <p class="t-small t-secondary sg__rm-off">
+              Mouvement <strong>autorisé</strong> — les transitions s'appliquent.
+            </p>
+            <p class="t-small t-secondary sg__rm-on">
+              Mouvement <strong>réduit détecté</strong> — transitions neutralisées, éléments
+              posés dans leur état final, parallaxe et épinglage désactivés.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule" />
+
+      <section class="section section--tight" data-surface="ink">
+        <div class="container">
+          <p class="t-label">Fin du design system · TR-002</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  /* Styles propres à la page de démonstration — non expédiés en production. */
+  .sg__title {
+    margin-block-end: var(--sp-5);
+  }
+
+  .sg__swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--sp-5);
+  }
+
+  .sg__chip {
+    block-size: 5rem;
+    border: var(--hairline) solid var(--rule);
+    margin-block-end: var(--sp-3);
+  }
+
+  .sg__stack-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .sg__row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    padding-block-end: var(--sp-3);
+    border-block-end: var(--hairline) solid var(--rule-faint);
+  }
+
+  .sg__row--space {
+    align-items: center;
+  }
+
+  .sg__space-bar {
+    block-size: 10px;
+    background: var(--text-muted);
+  }
+
+  .sg__signals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--sp-5);
+  }
+
+  .sg__signal-bar {
+    block-size: 3px;
+    margin-block-end: var(--sp-4);
+  }
+
+  .sg__pair {
+    display: grid;
+    gap: var(--sp-8);
+  }
+
+  @media (min-width: 768px) {
+    .sg__pair {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .sg__scale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-7);
+  }
+
+  .sg__scale-row {
+    display: grid;
+    gap: var(--sp-3);
+    padding-block-end: var(--sp-6);
+    border-block-end: var(--hairline) solid var(--rule-faint);
+  }
+
+  @media (min-width: 1024px) {
+    .sg__scale-row {
+      grid-template-columns: 16rem 1fr;
+      gap: var(--sp-6);
+      align-items: baseline;
+    }
+  }
+
+  .sg__grid-demo {
+    margin-block-end: var(--sp-4);
+  }
+
+  .sg__grid-col {
+    background: var(--ink-700);
+    border-block-start: var(--hairline) solid var(--signal-carbonated);
+    padding: var(--sp-3) var(--sp-2);
+    text-align: center;
+  }
+
+  .sg__block {
+    background: var(--ink-800);
+    border-block-start: var(--hairline) solid var(--rule-strong);
+    padding: var(--sp-5);
+  }
+
+  .sg__states {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+
+  .sg__cells {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 768px) {
+    .sg__cells {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .sg__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 7rem;
+    padding: var(--sp-4);
+    text-align: center;
+    transition: background-color var(--dur-base) var(--ease-out);
+  }
+
+  .sg__cell:hover {
+    background: var(--ink-800);
+  }
+
+  /* minmax(0, 1fr) : `1fr` seul ne descend pas sous la largeur min-content
+     et laisse le contenu élargir la piste. */
+  .sg__products {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-4);
+  }
+
+  @media (min-width: 768px) {
+    .sg__products {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--sp-5);
+    }
+  }
+
+  .sg__fields {
+    display: grid;
+    gap: var(--sp-5);
+    max-inline-size: 34rem;
+  }
+
+  /*
+   * Simulation d'états pour la capture.
+   * Ces classes appliquent EXACTEMENT les mêmes déclarations que les
+   * pseudo-classes réelles — elles ne réinventent aucune valeur.
+   */
+  .sg--focus {
+    outline: var(--focus-width) solid var(--focus-color);
+    outline-offset: var(--focus-offset);
+  }
+
+  .btn--primary.sg--hover {
+    --btn-bg: transparent;
+    --btn-fg: var(--fg);
+  }
+
+  .btn--secondary.sg--hover {
+    --btn-border: var(--fg);
+  }
+
+  .btn--text.sg--hover::after {
+    background: var(--signal-carbonated);
+  }
+
+  .link-nav.sg--hover {
+    color: var(--fg);
+  }
+
+  .link-nav.sg--hover::after {
+    transform: scaleX(1);
+  }
+
+  .field__input.sg--focus {
+    border-block-end-color: var(--signal-water);
+  }
+
+  /* Bascule d'affichage selon la préférence système réelle. */
+  .sg__rm-on {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sg__rm-off {
+      display: none;
+    }
+    .sg__rm-on {
+      display: block;
+    }
+  }
+
+  code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.9em;
+    color: var(--text-primary);
+  }
+</style>

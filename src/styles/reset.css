@@ -1,0 +1,180 @@
+/*
+ * RESET
+ * Minimal et intentionnel. On ne neutralise que ce qui gêne réellement, et on
+ * ne casse jamais l'accessibilité native (focus, cibles, sémantique).
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Pas de scroll-behavior: smooth global — le scroll natif reste maître.
+     Les ancres l'activent ponctuellement, sous condition de reduced-motion. */
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd,
+fieldset,
+legend {
+  margin: 0;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100svh;
+  background-color: var(--ink-900);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Les titres héritent — les styles sont posés par typography.css, pas ici. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Le ratio est déclaré au composant : aucune image ne provoque de CLS. */
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+textarea {
+  resize: vertical;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Le soulignement natif des liens de texte est conservé et affiné —
+   supprimer le soulignement d'un lien en pleine ligne nuit à la lisibilité. */
+p a,
+li a {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule-strong);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+:target {
+  scroll-margin-top: var(--sp-9);
+}
+
+/*
+ * FOCUS — anneau unique, global, jamais supprimé.
+ * `:focus-visible` seul : la souris ne déclenche pas l'anneau, le clavier oui.
+ */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
+/* Lien d'évitement — hors écran, révélé au focus clavier. */
+.skip-link {
+  position: absolute;
+  z-index: var(--z-skip);
+  top: var(--sp-3);
+  left: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-size: var(--fs-cta);
+  letter-spacing: var(--ls-cta);
+  text-transform: uppercase;
+  transform: translateY(calc(-100% - var(--sp-5)));
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Utilitaire — visible pour les lecteurs d'écran uniquement. */
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+::selection {
+  background: var(--text-primary);
+  color: var(--ink-900);
+}
+
+[data-surface='paper'] ::selection {
+  background: var(--ink-900);
+  color: var(--paper);
+}

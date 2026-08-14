@@ -1,0 +1,271 @@
+/*
+ * DESIGN TOKENS — IVAN ARSENOV
+ * Direction : « The Specimen Catalogue ».
+ *
+ * Règle fondatrice : l'interface est achromatique. La couleur vient des
+ * produits. Chaque teinte dépensée par le cadre est une teinte volée aux
+ * canettes — donc le cadre reste silencieux.
+ *
+ * Référence : doc/design-direction.md
+ */
+
+:root {
+  /* ---------------------------------------------------------------------
+   * COULEUR — neutres
+   * Le noir tire légèrement vers le froid. #000 pur est proscrit : il écrase
+   * les ombres des packshots et durcit le rendu à l'écran.
+   * ------------------------------------------------------------------- */
+  --ink-900: #0a0a0b; /* fond principal */
+  --ink-800: #101012; /* surface — sections alternées */
+  --ink-700: #17171a; /* surface élevée — champs, stage produit */
+  --ink-600: #232327; /* graphite — séparateurs appuyés */
+
+  --paper: #f2f0ec; /* off-white chaud — sections inversées */
+  --paper-alt: #e8e5df; /* off-white secondaire */
+
+  /* ---------------------------------------------------------------------
+   * COULEUR — texte
+   * Les trois niveaux sur fond sombre sont vérifiés par scripts/qa-contrast.mjs.
+   * --text-muted est le PLANCHER : aucun gris plus clair n'est autorisé pour
+   * du texte, quelle que soit la taille.
+   * ------------------------------------------------------------------- */
+  --text-primary: #f2f0ec; /* 17.39:1 sur ink-900 — AAA */
+  --text-secondary: #a0a0a8; /* 7.62:1 — AAA */
+  --text-muted: #797980; /* 4.58:1 — AA, plancher vérifié */
+
+  --text-on-paper: #0a0a0b; /* 17.39:1 sur paper — AAA */
+  --text-on-paper-sec: #54545c; /* 6.59:1 — AA */
+  --text-on-paper-muted: #6c6c75; /* 4.57:1 — AA, plancher vérifié */
+
+  /* ---------------------------------------------------------------------
+   * FILETS — l'élément structurel signature.
+   * Le site sépare par des filets, pas par des cartes. Aucune ombre portée
+   * diffuse, aucun contour de boîte.
+   * ------------------------------------------------------------------- */
+  --rule: rgb(242 240 236 / 0.14);
+  --rule-strong: rgb(242 240 236 / 0.28);
+  --rule-faint: rgb(242 240 236 / 0.07);
+  --rule-on-paper: rgb(10 10 11 / 0.16);
+  --rule-on-paper-strong: rgb(10 10 11 / 0.32);
+
+  --hairline: 1px;
+
+  /* ---------------------------------------------------------------------
+   * SIGNAUX DE CATÉGORIE
+   * Pas d'accent fixe : l'accent est contextuel et prend la teinte de la
+   * famille de boissons affichée.
+   *
+   * --signal-*      : usage GRAPHIQUE uniquement (filet, point, soulignement).
+   * --signal-*-text : seule variante autorisée pour du TEXTE (toutes AA+).
+   *
+   * Aucun aplat de signal ne doit couvrir plus de ~15 % d'un écran.
+   * Le CTA reste achromatique.
+   * ------------------------------------------------------------------- */
+  --signal-carbonated: #c8102e;
+  --signal-carbonated-text: #ff6b7d;
+
+  --signal-energy: #00b8a9;
+  --signal-energy-text: #2fe0cf;
+
+  --signal-water: #4a9bd1;
+  --signal-water-text: #7fc4ee;
+
+  --signal-juice: #e8890c;
+  --signal-juice-text: #ffae47;
+
+  --signal-international: #e0447c;
+  --signal-international-text: #ff8fb4;
+
+  /* Signal actif — réaffecté par famille au niveau section (voir motion.css). */
+  --signal: var(--text-primary);
+  --signal-text: var(--text-primary);
+
+  /* Alias sémantiques */
+  --bg: var(--ink-900);
+  --fg: var(--text-primary);
+  --fg-secondary: var(--text-secondary);
+  --fg-muted: var(--text-muted);
+  --border: var(--rule);
+
+  /* ---------------------------------------------------------------------
+   * TYPOGRAPHIE
+   * Instrument Serif (display) : sérif haute tension, écho au monogramme IA.
+   * Archivo (interface) : grotesque variable — ses largeurs servent les
+   * labels en petites capitales étirées.
+   * ------------------------------------------------------------------- */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --fs-display-xl: clamp(3.5rem, 9vw, 8.5rem);
+  --fs-display-l: clamp(2.75rem, 6vw, 5rem);
+  --fs-h1: clamp(2.5rem, 5.5vw, 4.5rem);
+  --fs-h2: clamp(2rem, 3.6vw, 3.25rem);
+  --fs-h3: clamp(1.25rem, 1.8vw, 1.625rem);
+  --fs-body-l: clamp(1.0625rem, 1.2vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.6875rem;
+  --fs-index: 0.6875rem;
+  --fs-cta: 0.9375rem;
+
+  --lh-display-xl: 0.92;
+  --lh-display-l: 0.98;
+  --lh-h1: 1.02;
+  --lh-h2: 1.08;
+  --lh-h3: 1.25;
+  --lh-body: 1.65;
+  --lh-body-l: 1.6;
+  --lh-tight: 1.2;
+
+  --ls-display-xl: -0.03em;
+  --ls-display-l: -0.025em;
+  --ls-h1: -0.02em;
+  --ls-h2: -0.015em;
+  --ls-h3: -0.01em;
+  --ls-label: 0.16em;
+  --ls-index: 0.08em;
+  --ls-cta: 0.06em;
+
+  --wdth-label: 112; /* axe de largeur Archivo, labels étirés */
+  --wdth-normal: 100;
+
+  --measure: 68ch; /* longueur de ligne maximale */
+  --measure-short: 46ch;
+
+  /* ---------------------------------------------------------------------
+   * ESPACEMENT — base 4, progression non linéaire (rythme éditorial).
+   * ------------------------------------------------------------------- */
+  --sp-1: 0.25rem; /* 4 */
+  --sp-2: 0.5rem; /* 8 */
+  --sp-3: 0.75rem; /* 12 */
+  --sp-4: 1rem; /* 16 */
+  --sp-5: 1.5rem; /* 24 */
+  --sp-6: 2rem; /* 32 */
+  --sp-7: 3rem; /* 48 */
+  --sp-8: 4rem; /* 64 */
+  --sp-9: 6rem; /* 96 */
+  --sp-10: 8rem; /* 128 */
+  --sp-11: 11rem; /* 176 */
+  --sp-12: 15rem; /* 240 */
+
+  /* Respiration verticale des sections — jamais moins de 72px sur mobile. */
+  --section-y: clamp(4.5rem, 12vw, 15rem);
+  --section-y-tight: clamp(3rem, 7vw, 8rem);
+
+  /* ---------------------------------------------------------------------
+   * RAYONS
+   * 0 partout. L'angle droit est un choix de positionnement, pas un oubli.
+   * Seule exception : la pastille de comptage de l'enquiry list et les points
+   * d'index, où le cercle est la forme, pas une décoration.
+   * ------------------------------------------------------------------- */
+  --radius: 0;
+  --radius-full: 999px;
+
+  /* ---------------------------------------------------------------------
+   * GRILLE
+   * ------------------------------------------------------------------- */
+  --container-max: 1440px;
+  --columns: 12;
+  --gutter: 1.5rem; /* 24 */
+  --margin: 1.25rem; /* 20 — mobile par défaut */
+
+  /* ---------------------------------------------------------------------
+   * MOUVEMENT
+   * Aucun ease-in-out par défaut, aucun rebond, aucune élasticité.
+   * ------------------------------------------------------------------- */
+  --dur-micro: 140ms;
+  --dur-fast: 200ms;
+  --dur-base: 280ms;
+  --dur-slow: 480ms;
+  --dur-scene: 800ms;
+  --dur-signal: 800ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-linear: linear;
+
+  --stagger: 60ms;
+
+  /* Amplitudes plafonnées — au-delà, l'effet devient visible en tant qu'effet. */
+  --parallax-max: 14px;
+  --hover-lift: 1.5%;
+  --hover-tilt: 3deg;
+
+  /* ---------------------------------------------------------------------
+   * FOCUS — jamais supprimé, toujours plus contrasté que le survol.
+   * ------------------------------------------------------------------- */
+  --focus-width: 2px;
+  --focus-offset: 3px;
+  --focus-color: var(--paper);
+  --focus-color-on-paper: var(--ink-900);
+
+  --z-header: 100;
+  --z-panel: 200;
+  --z-skip: 300;
+}
+
+/* Marges de grille progressives — le contenu respire davantage en large. */
+@media (min-width: 768px) {
+  :root {
+    --margin: 2rem;
+    --gutter: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --margin: 3rem;
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --margin: 4rem;
+  }
+}
+
+/*
+ * Surfaces claires. Appliquer `data-surface="paper"` sur une <section>
+ * réaffecte les tokens sémantiques : aucun composant enfant n'a besoin de
+ * connaître la surface sur laquelle il est posé.
+ */
+[data-surface='paper'] {
+  --bg: var(--paper);
+  --fg: var(--text-on-paper);
+  --fg-secondary: var(--text-on-paper-sec);
+  --fg-muted: var(--text-on-paper-muted);
+  --border: var(--rule-on-paper);
+  --rule: var(--rule-on-paper);
+  --rule-strong: var(--rule-on-paper-strong);
+  --focus-color: var(--focus-color-on-paper);
+}
+
+[data-surface='ink'] {
+  --bg: var(--ink-900);
+  --fg: var(--text-primary);
+  --fg-secondary: var(--text-secondary);
+  --fg-muted: var(--text-muted);
+}
+
+/* Familles de boissons — réaffectation du signal contextuel. */
+[data-family='carbonated'] {
+  --signal: var(--signal-carbonated);
+  --signal-text: var(--signal-carbonated-text);
+}
+[data-family='energy-sport'] {
+  --signal: var(--signal-energy);
+  --signal-text: var(--signal-energy-text);
+}
+[data-family='water'] {
+  --signal: var(--signal-water);
+  --signal-text: var(--signal-water-text);
+}
+[data-family='juice-fruit'] {
+  --signal: var(--signal-juice);
+  --signal-text: var(--signal-juice-text);
+}
+[data-family='international'] {
+  --signal: var(--signal-international);
+  --signal-text: var(--signal-international-text);
+}

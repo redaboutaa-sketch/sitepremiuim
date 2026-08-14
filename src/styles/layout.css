@@ -1,0 +1,171 @@
+/*
+ * MISE EN PAGE
+ *
+ * Compositions ASYMÉTRIQUES par défaut (5/7, 4/8, 3/9). Le bloc centré
+ * symétrique est l'exception, réservée aux moments de rupture.
+ */
+
+.container {
+  inline-size: 100%;
+  max-inline-size: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--margin);
+}
+
+/* Échappement pleine largeur depuis l'intérieur d'un container —
+   sert aux stages produits et aux pistes horizontales. */
+.bleed {
+  inline-size: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: var(--gutter);
+}
+
+/* Mobile : 4 colonnes. Tablet : 8. Desktop : 12.
+   Le nombre de colonnes change, pas seulement leur largeur. */
+:root {
+  --columns: 4;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --columns: 8;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --columns: 12;
+  }
+}
+
+/* Étendues — repliées sur toute la largeur en dessous du seuil. */
+.col-full {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .col-3 {
+    grid-column: span 3;
+  }
+  .col-4 {
+    grid-column: span 4;
+  }
+  .col-5 {
+    grid-column: span 5;
+  }
+  .col-6 {
+    grid-column: span 6;
+  }
+  .col-7 {
+    grid-column: span 7;
+  }
+  .col-8 {
+    grid-column: span 8;
+  }
+  .col-9 {
+    grid-column: span 9;
+  }
+  .start-2 {
+    grid-column-start: 2;
+  }
+  .start-6 {
+    grid-column-start: 6;
+  }
+  .start-7 {
+    grid-column-start: 7;
+  }
+}
+
+@media (max-width: 1023px) {
+  .col-3,
+  .col-4,
+  .col-5,
+  .col-6,
+  .col-7,
+  .col-8,
+  .col-9 {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+ * SECTIONS
+ * La surface est portée par un attribut data, pas par une classe de couleur :
+ * les composants enfants héritent des tokens sans rien connaître du contexte.
+ */
+.section {
+  background: var(--bg);
+  color: var(--fg);
+  padding-block: var(--section-y);
+}
+
+.section--tight {
+  padding-block: var(--section-y-tight);
+}
+
+/*
+ * FILETS — le séparateur du site. Pas de bordure de boîte, pas d'ombre.
+ */
+.rule {
+  border: none;
+  block-size: var(--hairline);
+  background: var(--rule);
+  margin: 0;
+}
+
+.rule--strong {
+  background: var(--rule-strong);
+}
+
+.rule--signal {
+  background: var(--signal);
+}
+
+/*
+ * SURFACE
+ * Une « surface » est un décrochement de fond délimité par des filets —
+ * jamais une carte arrondie avec ombre portée. C'est la différence entre
+ * ce design system et un template générique.
+ */
+.surface {
+  background: var(--ink-800);
+  border-block-start: var(--hairline) solid var(--rule);
+  border-block-end: var(--hairline) solid var(--rule);
+}
+
+.surface--raised {
+  background: var(--ink-700);
+}
+
+/*
+ * CELLULE DE GRILLE — utilisée par le mur de marques et le catalogue.
+ * Les filets sont mutualisés entre cellules voisines (pas de double trait) :
+ * la grille se lit comme un tableau imprimé, pas comme une pile de cartes.
+ */
+.cells {
+  display: grid;
+  gap: 0;
+  border-block-start: var(--hairline) solid var(--rule);
+  border-inline-start: var(--hairline) solid var(--rule);
+}
+
+.cells > * {
+  border-block-end: var(--hairline) solid var(--rule);
+  border-inline-end: var(--hairline) solid var(--rule);
+}
+
+.stack > * + * {
+  margin-block-start: var(--flow, var(--sp-5));
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+}

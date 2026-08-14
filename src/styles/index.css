@@ -1,0 +1,15 @@
+/*
+ * Point d'entrée unique des styles.
+ *
+ * Ordre volontaire : les polices d'abord (aucune requête réseau, fichiers
+ * locaux), puis les tokens, puis le reset qui les consomme, puis les couches
+ * de plus en plus spécifiques.
+ */
+
+@import './fonts.css';
+@import './tokens.css';
+@import './reset.css';
+@import './typography.css';
+@import './layout.css';
+@import './components.css';
+@import './motion.css';

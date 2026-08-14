@@ -1,0 +1,349 @@
+/*
+ * COMPOSANTS DE BASE
+ *
+ * Aucun élément interactif ne conserve son apparence par défaut.
+ * Le focus n'est JAMAIS identique au survol : il est toujours plus contrasté.
+ */
+
+/* ======================================================================
+ * BOUTONS
+ * Rectangles nets à large empattement intérieur. Aucun rayon, aucune ombre,
+ * aucun gradient. Un seul style primaire sur tout le site.
+ * =================================================================== */
+
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--fg);
+  --btn-border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  /* 44px minimum de hauteur tactile, garanti par le padding + line-height. */
+  min-block-size: 44px;
+  padding: var(--sp-4) var(--sp-6);
+  border: var(--hairline) solid var(--btn-border);
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-cta);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--ls-cta);
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+/* PRIMAIRE — aplat clair sur fond sombre. Le seul élément de l'interface
+   qui inverse la valeur : c'est ce qui le rend impossible à manquer. */
+.btn--primary {
+  --btn-bg: var(--fg);
+  --btn-fg: var(--bg);
+  --btn-border: var(--fg);
+}
+
+.btn--primary:hover {
+  --btn-bg: transparent;
+  --btn-fg: var(--fg);
+}
+
+.btn--primary:active {
+  transform: scale(0.985);
+}
+
+/* SECONDAIRE — contour seul. Subordonné par la valeur, pas par la taille :
+   il ne peut structurellement pas rivaliser avec le primaire. */
+.btn--secondary {
+  --btn-bg: transparent;
+  --btn-fg: var(--fg);
+  --btn-border: var(--rule-strong);
+}
+
+.btn--secondary:hover {
+  --btn-border: var(--fg);
+}
+
+.btn--secondary:active {
+  transform: scale(0.985);
+}
+
+/* TEXTE — un lien avec son filet. Utilisé pour le CTA secondaire du hero :
+   « Explore Our Drinks » n'est jamais un bouton. */
+.btn--text {
+  min-block-size: 44px;
+  padding: var(--sp-3) 0;
+  border: none;
+  color: var(--fg);
+}
+
+.btn--text::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: var(--sp-2);
+  block-size: var(--hairline);
+  background: var(--rule-strong);
+  transform-origin: left;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.btn--text {
+  position: relative;
+}
+
+.btn--text:hover::after {
+  background: var(--signal);
+}
+
+/*
+ * DÉSACTIVÉ — le bouton perd sa présence sans perdre sa lisibilité de bouton.
+ * Une opacité uniforme effaçait la bordure du secondaire au point de le faire
+ * passer pour du texte : un contrôle désactivé doit rester identifiable comme
+ * un contrôle.
+ */
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn--primary[disabled] {
+  --btn-bg: var(--ink-600);
+  --btn-fg: var(--fg-muted);
+  --btn-border: var(--ink-600);
+}
+
+.btn--secondary[disabled] {
+  --btn-fg: var(--fg-muted);
+  --btn-border: var(--rule);
+}
+
+.btn--text[disabled] {
+  --btn-fg: var(--fg-muted);
+}
+
+.btn--full {
+  inline-size: 100%;
+}
+
+/* ======================================================================
+ * LIENS
+ * =================================================================== */
+
+/* Lien de navigation — filet qui se trace de gauche à droite au survol. */
+.link-nav {
+  position: relative;
+  display: inline-block;
+  padding-block: var(--sp-2);
+  color: var(--fg-secondary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.link-nav::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: var(--hairline);
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.link-nav:hover {
+  color: var(--fg);
+}
+
+.link-nav:hover::after,
+.link-nav[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+.link-nav[aria-current='page'] {
+  color: var(--fg);
+}
+
+/* Lien inline dans un paragraphe — soulignement natif affiné. */
+.link-inline:hover {
+  text-decoration-color: var(--fg);
+}
+
+/* ======================================================================
+ * CHAMPS DE FORMULAIRE
+ * Label visible et persistant. Jamais de placeholder en guise de label.
+ * =================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.field__label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  font-stretch: calc(var(--wdth-label) * 1%);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--fg-secondary);
+}
+
+.field__optional {
+  color: var(--fg-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  font-stretch: normal;
+}
+
+.field__input {
+  min-block-size: 44px;
+  padding: var(--sp-3) var(--sp-4);
+  border: none;
+  border-block-end: var(--hairline) solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--ink-700);
+  color: var(--fg);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+[data-surface='paper'] .field__input {
+  background: var(--paper-alt);
+}
+
+.field__input::placeholder {
+  color: var(--fg-muted);
+}
+
+.field__input:hover {
+  border-block-end-color: var(--fg-muted);
+}
+
+.field__input:focus-visible {
+  border-block-end-color: var(--signal);
+}
+
+.field__input[aria-invalid='true'] {
+  border-block-end-color: var(--signal-carbonated-text);
+  border-block-end-width: 2px;
+}
+
+.field__error {
+  font-size: var(--fs-small);
+  color: var(--signal-carbonated-text);
+}
+
+.field__input[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ======================================================================
+ * OBJET PRODUIT
+ * Le produit est POSÉ et ANCRÉ par un filet de sol — il ne flotte pas.
+ * C'est ce détail qui sépare le studio packshot de l'esthétique nightclub.
+ * =================================================================== */
+
+.product-object {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  /* Ratio fixe : aucun décalage de mise en page, que l'asset soit présent
+     ou remplacé par le repli typographique. */
+  aspect-ratio: 3 / 4;
+  /* Le padding suit la largeur disponible : à 2 colonnes sur mobile, un
+     padding fixe de 24px étranglait le texte et provoquait un débordement. */
+  padding: clamp(var(--sp-2), 2.5vw, var(--sp-5));
+  /* Empêche la piste de grille d'être poussée par le min-content du contenu. */
+  min-inline-size: 0;
+}
+
+.product-object::after {
+  content: '';
+  position: absolute;
+  inset-inline: 12%;
+  inset-block-end: var(--sp-5);
+  block-size: var(--hairline);
+  background: var(--signal);
+  opacity: 0.55;
+}
+
+/* Le filet de sol ancre un OBJET. Quand le repli typographique est affiché,
+   il n'y a pas d'objet à ancrer : le filet ne ferait que doubler le
+   soulignement du label. On le supprime — le repli porte déjà son propre
+   filet de signal à gauche. */
+.product-object:has(.product-object__fallback)::after {
+  content: none;
+}
+
+.product-object__img {
+  inline-size: auto;
+  max-block-size: 100%;
+  object-fit: contain;
+  /* Ombre portée serrée et directionnelle — un ancrage, pas un halo. */
+  filter: drop-shadow(0 12px 18px rgb(0 0 0 / 0.55));
+}
+
+/*
+ * REPLI TYPOGRAPHIQUE — affiché quand aucun visuel validé n'est disponible.
+ * Composé pour être présentable : ce n'est jamais un rectangle gris.
+ */
+.product-object__fallback {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 0;
+  padding: clamp(var(--sp-2), 2vw, var(--sp-4));
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--signal) 7%, transparent),
+    transparent 60%
+  );
+  border-inline-start: var(--hairline) solid var(--signal);
+}
+
+.product-object__fallback-name {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 3.2vw, var(--fs-h3));
+  line-height: 1.05;
+  color: var(--fg);
+  /* Filet de sécurité : un nom de marque exceptionnellement long se coupe
+     plutôt que de déborder de sa colonne. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* ======================================================================
+ * PASTILLE DE COMPTAGE — seule forme circulaire du système.
+ * =================================================================== */
+
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.5rem;
+  block-size: 1.5rem;
+  padding-inline: var(--sp-2);
+  border-radius: var(--radius-full);
+  background: var(--fg);
+  color: var(--bg);
+  font-size: var(--fs-index);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}

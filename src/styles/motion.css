@@ -1,0 +1,157 @@
+/*
+ * MOUVEMENT
+ *
+ * Grammaire unique du site. Toute animation qui ne relève pas d'une des six
+ * lignes de doc/design-direction.md §6 n'existe pas.
+ *
+ * `prefers-reduced-motion` est traité comme une exigence de conception :
+ * la version sans mouvement doit être BELLE, pas dégradée.
+ */
+
+/* ----------------------------------------------------------------------
+ * MASK REVEAL — entrée verticale sous masque de débordement.
+ * Jamais un simple fondu : le texte monte depuis derrière une arête nette.
+ * -------------------------------------------------------------------- */
+
+.reveal-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.reveal-mask > * {
+  display: block;
+  transform: translateY(100%);
+  transition: transform var(--dur-scene) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-mask[data-revealed='true'] > * {
+  transform: translateY(0);
+}
+
+/* ----------------------------------------------------------------------
+ * REVEAL — montée courte + apparition. Pour les blocs de contenu.
+ * -------------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal[data-revealed='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Décalage — 6 éléments maximum : au-delà, l'attente devient perceptible. */
+.stagger > *:nth-child(1) {
+  --reveal-delay: 0ms;
+}
+.stagger > *:nth-child(2) {
+  --reveal-delay: var(--stagger);
+}
+.stagger > *:nth-child(3) {
+  --reveal-delay: calc(var(--stagger) * 2);
+}
+.stagger > *:nth-child(4) {
+  --reveal-delay: calc(var(--stagger) * 3);
+}
+.stagger > *:nth-child(5) {
+  --reveal-delay: calc(var(--stagger) * 4);
+}
+.stagger > *:nth-child(n + 6) {
+  --reveal-delay: calc(var(--stagger) * 5);
+}
+
+/* ----------------------------------------------------------------------
+ * DÉRIVE DU SIGNAL — changement d'environnement chromatique selon la famille.
+ * Se remarque après coup, jamais pendant.
+ * -------------------------------------------------------------------- */
+
+@property --signal {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f2f0ec;
+}
+
+[data-signal-drift] {
+  transition: --signal var(--dur-signal) var(--ease-out);
+}
+
+/* ----------------------------------------------------------------------
+ * SURVOL — micro-échelle et inclinaison, pointeur fin uniquement.
+ * Sur tactile, ces états n'existent pas et ne doivent pas rester « collés ».
+ * -------------------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .hover-lift:hover {
+    transform: scale(calc(1 + var(--hover-lift) / 100));
+  }
+
+  .hover-tilt {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .hover-tilt:hover {
+    transform: rotate(var(--hover-tilt));
+  }
+}
+
+/* ----------------------------------------------------------------------
+ * REDUCED MOTION
+ *
+ * Neutralisation globale. Les éléments à révéler sont posés dans leur ÉTAT
+ * FINAL, pas masqués : sans cette règle, un visiteur en reduced-motion
+ * verrait des blocs invisibles.
+ * -------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* État final imposé — le contenu est visible, quoi qu'il arrive. */
+  .reveal,
+  .reveal-mask > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Ni parallaxe, ni épinglage, ni défilement cinématique. */
+  [data-parallax],
+  [data-pin] {
+    transform: none !important;
+    position: static !important;
+  }
+
+  .hover-lift:hover,
+  .hover-tilt:hover {
+    transform: none !important;
+  }
+}
+
+/*
+ * Sans JavaScript, les éléments à révéler doivent être visibles.
+ * `data-js` est posé sur <html> par un script inline en tête de document :
+ * s'il est absent, la révélation ne s'applique pas du tout.
+ */
+html:not([data-js]) .reveal,
+html:not([data-js]) .reveal-mask > * {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
