@@ -77,15 +77,22 @@ contextuelle qui prend la teinte de la famille de produits affichée. C'est la t
 systématique de la demande client : *« changement subtil de l'environnement visuel selon
 les familles de boissons »*.
 
-| Famille | `--signal` (graphique) | `--signal-text` (AA sur `--ink-900`) |
-|---|---|---|
-| Carbonated / Cola | `#C8102E` | `#FF6B7D` — 6,1:1 ✅ |
-| Energy | `#00B8A9` | `#2FE0CF` — 9,8:1 ✅ |
-| Water | `#4A9BD1` | `#7FC4EE` — 8,6:1 ✅ |
-| Juices & Fruit | `#E8890C` | `#FFAE47` — 9,4:1 ✅ |
-| Iced Tea & RTD | `#A8894A` | `#D9B87A` — 8,9:1 ✅ |
-| Functional | `#7B68C4` | `#AB9DE8` — 7,7:1 ✅ |
-| International | `#F2F0EC` | `#F2F0EC` — 18,2:1 ✅ |
+| # | Famille | `--signal` (graphique) | `--signal-text` (AA sur `--ink-900`) |
+|---|---|---|---|
+| 01 | Carbonated | `#C8102E` | `#FF6B7D` — 6,1:1 ✅ |
+| 02 | Energy & Sport | `#00B8A9` | `#2FE0CF` — 9,8:1 ✅ |
+| 03 | Water | `#4A9BD1` | `#7FC4EE` — 8,6:1 ✅ |
+| 04 | Juice & Fruit | `#E8890C` | `#FFAE47` — 9,4:1 ✅ |
+| 05 | International Finds | `#E0447C` | `#FF8FB4` — 8,3:1 ✅ |
+| 06 | Concentrates & Syrups ⏸ | `#4A4A52` | `#A0A0A8` — 7,4:1 ✅ |
+
+**Famille 06 volontairement achromatique.** Le brief impose qu'elle ne devienne jamais
+visuellement dominante : lui refuser une couleur est le moyen le plus fiable d'y parvenir.
+
+**International Finds** reçoit un magenta : c'est la famille *novelty / licensed*
+(Chupa Chups, Mentos, Toxic Waste, Squid Game), et le magenta est la seule teinte de la
+palette qu'aucune famille classique ne revendique — l'écart chromatique fait le signal
+de « quelque chose de différent ». Aucun violet, aucun gradient.
 
 **Règle d'usage stricte**
 `--signal` est réservé aux éléments **non textuels** : filet actif, point d'index, soulignement,
@@ -168,6 +175,11 @@ Fond `--ink-900` pleine hauteur (`100svh`, jamais `100vh` — évite le saut de 
 Le monogramme **IA** occupe environ 45 % de la hauteur, centré, en `rgba(242,240,236,0.04)` :
 présent comme un filigrane de papier, pas comme un logo posé.
 
+**Produits mis en scène** (source client) : **Coca-Cola · Fanta · Red Bull · Monster · Pepsi · Sprite**.
+Six icônes mondiales, six univers chromatiques distincts — rouge, orange, bleu argent,
+vert acide, bleu profond, vert citron. C'est précisément l'écart entre ces couleurs et le
+noir du cadre qui produit l'effet.
+
 Trois plans de profondeur superposés, contenant des produits détourés :
 - **Plan arrière** — 4 à 6 objets, `blur(6px)`, opacité 0,35, échelle 0,7
 - **Plan médian** — 3 à 4 objets, nets, échelle 1
@@ -231,7 +243,48 @@ sur desktop, en tiroir plein écran sur mobile.
 
 ---
 
-## 5. Mouvement — principes
+### Ce que le hero ne doit surtout pas évoquer
+
+Le client est explicite : **ni gaming, ni nightclub.** L'acheteur visé est un professionnel
+du négoce, pas un consommateur d'energy drinks.
+
+Traduction concrète en règles : aucun néon, aucun glow, aucune lueur derrière les produits,
+aucune couleur saturée en aplat de fond, aucune vitesse d'animation nerveuse, aucune
+rotation rapide, aucune typographie condensée agressive, aucun effet de « lévitation
+magique ». Les produits sont **posés, éclairés et ancrés** — un studio packshot, pas une
+scène de concert.
+
+---
+
+## 5. Répartition de l'impact visuel
+
+Règle de composition issue du brief client :
+
+> **≈ 70 % de l'impact émotionnel vient des produits.**
+> Le design Ivan Arsenov construit le **cadre** ; les boissons apportent l'**énergie**.
+
+C'est la justification structurelle du monochrome : chaque couleur dépensée par l'interface
+est une couleur volée aux produits. Le cadre doit rester silencieux pour que le catalogue
+puisse parler.
+
+**Corollaire — chaque section a son propre rythme.** Le même composant ne doit jamais être
+réutilisé tel quel de section en section. Alternance imposée sur la homepage :
+
+```
+S1  noir profond      → typographie surdimensionnée + produits en profondeur
+S2  noir              → piste horizontale cinématique, produits hors-cadre
+S3  off-white         → éditorial calme, index numéroté, aucune image produit
+S4  noir + dérive     → galerie internationale, la couleur change avec la famille
+S5  off-white         → process en 3 temps, purement typographique
+S6  noir              → CTA pleine page, un seul produit, très grand
+```
+
+Le passage noir → papier → noir donne au scroll une respiration de magazine, et évite
+l'effet « longue page sombre » qui fatigue et banalise.
+
+---
+
+## 6. Mouvement — principes
 
 1. **Toute animation doit répondre à une question** : où suis-je, qu'est-ce qui a changé, qu'est-ce qui est lié.
 2. **Durées** — micro 120–180 ms · transitions 240–320 ms · scène 600–900 ms. Rien au-delà de 1 s sauf le hero.
@@ -241,9 +294,32 @@ sur desktop, en tiroir plein écran sur mobile.
 6. **Aucune animation ne bloque** la lecture, la navigation, le focus ou la conversion.
 7. **`prefers-reduced-motion` est une exigence de conception**, pas un correctif de fin de projet.
 
+### Grammaire d'animation — une seule, pour tout le site
+
+| Objet animé | Grammaire | Implémentation |
+|---|---|---|
+| **Produits** | Profondeur et flottement lent, amorti. Jamais de rotation rapide | GSAP, `transform` uniquement |
+| **Typographie** | *Mask reveal* — entrée verticale sous masque de débordement, jamais un simple fondu | CSS + GSAP sur le hero |
+| **Transitions de page** | Fondu court + déplacement directionnel de 12 px | View Transitions natives |
+| **Survol** | Micro-échelle ≤ 1,5 %, léger effet magnétique sur les CTA, inclinaison ≤ 3° sur les produits | CSS + `pointer: fine` uniquement |
+| **Scroll** | Cinématique mais **contrôlé** — le scroll natif reste maître | ScrollTrigger, aucun smooth-scroll |
+| **Changement de famille** | Dérive chromatique de `--signal` sur 800 ms | Transition de propriété personnalisée |
+
+Toute animation qui ne relève pas de l'une de ces six lignes n'existe pas.
+
+### Budget de performance du mouvement
+
+Priorité assumée : **1.** le hero spectaculaire · **2.** deux ou trois animations signature ·
+**3.** tout le reste rapide et élégant.
+
+- **Jamais 60 logos animés simultanément en JavaScript.** Les murs de marques utilisent CSS/`transform`/compositing GPU.
+- GSAP n'est chargé que sur les pages qui en ont besoin, en différé, et uniquement si le mouvement est autorisé et le pointeur fin.
+- Les assets produits hors premier écran sont chargés paresseusement.
+- Aucune animation continue en dehors du viewport (`ScrollTrigger` suspend, `IntersectionObserver` coupe).
+
 ---
 
-## 6. États interactifs
+## 7. États interactifs
 
 Aucun état par défaut du navigateur n'est conservé.
 
@@ -260,10 +336,25 @@ Le focus n'est **jamais** identique au survol : il est toujours plus contrasté.
 
 ---
 
-## 7. Interdits explicites
+## 8. Interdits explicites
 
-Gradient violet · glow · glassmorphism · cartes arrondies uniformes · icônes génériques ·
+Gradient violet · glow · néon · glassmorphism · cartes arrondies uniformes · icônes génériques ·
 hero SaaS avec image à droite · badges décoratifs · carrousel automatique · photo d'entrepôt
 en banque d'images · visuels générés par IA · animation démonstrative · titre creux
 (« Réinventez votre avenir ») · émojis · ombres portées diffuses · `#000` pur · `#FFF` pur ·
-défilement détourné (*smooth scroll* JS) · texte sur image sans garantie de contraste.
+défilement détourné (*smooth scroll* JS) · texte sur image sans garantie de contraste ·
+esthétique gaming ou nightclub · grille WordPress de 50 logos identiques ·
+répétition du même composant de section en section.
+
+### Le schéma à ne surtout pas produire
+
+Le client l'a formulé explicitement. Voici la structure du grossiste générique, proscrite :
+
+```
+hero + photo d'entrepôt  →  6 cartes à icônes  →  mur de logos  →  formulaire
+```
+
+Ce que le visiteur doit ressentir, simultanément et dès les premières secondes :
+
+> *This company deals in drinks.*
+> *This company looks serious, international and modern.*

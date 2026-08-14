@@ -25,22 +25,30 @@
 | **Objectif du site** | Générer des **demandes d'offre commerciale B2B qualifiées** |
 | **Conversion principale** | `REQUEST A QUOTE` / *Business Enquiry* |
 | **Conversion secondaire** | `Explore Our Drinks` (exploration catalogue) — ne doit jamais concurrencer le CTA principal |
-| **Langues** | EN (défaut, international) + DE (marché domestique) |
+| **Langues** | **EN** (canonique, racine) + **DE** (`/de/`, slugs traduits) — confirmé par le client le 2026-08-14 |
+| **Benchmark métier** | Handelsplaza Venlo — assortiment, modèle B2B, logique d'enquiry. **Jamais une référence de design** |
 | **Hébergement** | Hostinger — déploiement manuel, build statique |
 
 ### 1.1 Périmètre
 
 **IN SCOPE — boissons non alcoolisées uniquement**
-Carbonated soft drinks · Colas · Energy drinks · Eaux plates et gazeuses · Eaux aromatisées ·
-Boissons fruitées · Jus · Iced tea & RTD non alcoolisés · Boissons fonctionnelles ·
-Références internationales et éditions spéciales.
+Carbonated soft drinks · Colas · Lemonades · Energy drinks · Sport drinks · Eaux ·
+Eaux aromatisées · Boissons fruitées · Jus · Boissons tropicales · Boissons fonctionnelles ·
+Sodas internationaux · Variantes régionales · Saveurs spéciales ·
+Boissons *novelty* / sous licence · Concentrates & syrups *(conditionnel — décision D3)*.
 
 **OUT OF SCOPE — à ne créer sous aucune forme**
-Chips & snacks · Confiserie · Café · Thé (catégorie dédiée) · Alcools et bières ·
-Transport / logistique en tant que service · Page News · Blog / actualités.
+Alcohol · Beer · Wine · Spirits · Chips · Snacks · Candy en tant que produit alimentaire ·
+Coffee · Tea · Transport · Logistics service · News · Blog.
 
-Aucune page, aucun composant, aucune donnée, aucun lien de navigation ne doit exister
-pour ces catégories.
+Aucune page, aucun composant, aucune donnée, aucun lien de navigation, aucun mot-clé
+ne doit exister pour ces catégories.
+
+**Règle de périmètre par marque** — la présence d'une marque sur le benchmark ne vaut
+**pas** autorisation. Certaines marques ne sont admises que pour une partie de leur gamme
+(A&W, Bundaberg, Krombacher Spezi, Hero, XXL Nutrition, Chupa Chups, Mentos, Squid Game,
+Toxic Waste). En cas d'ambiguïté sur une marque ou un SKU → **ne pas intégrer**, et lever
+une décision client. Inventaire complet et exclusions : `doc/catalog.md`.
 
 ### 1.2 Positionnement
 
@@ -58,10 +66,25 @@ Quatre piliers, validés par le client :
 Le site **ne doit contenir aucune affirmation commerciale non vérifiée**.
 
 Interdits tant qu'ils ne sont pas explicitement confirmés par écrit par le client :
-années d'expérience · nombre de références en stock · nombre de clients ·
-volumes · délais de livraison · couverture géographique chiffrée · superlatifs
-concurrentiels (« leader », « meilleur prix d'Europe ») · certifications ·
-flotte propre · entrepôt · témoignages · logos clients.
+années d'expérience · quantité de stock · nombre de références · nombre de clients ·
+nombre de pays livrés · volumes · nombre de palettes · volume annuel ·
+délais de livraison · délai de réponse · prix les plus bas · superlatifs concurrentiels
+(« leader », « meilleur prix d'Europe ») · exclusivités · partenariats officiels ·
+statut de distributeur agréé · certifications · flotte propre · entrepôt ·
+témoignages · logos clients · importation directe.
+
+### `REFERENCE_CATALOG` ≠ `CONFIRMED_CURRENT_STOCK`
+
+Le catalogue de `doc/catalog.md` décrit l'assortiment **cible**, pas le stock réel.
+
+**Interdits à l'affichage** : « In Stock » · « Available Now » · toute quantité disponible ·
+toute mention de disponibilité, tant qu'Ivan n'a pas fourni la donnée.
+Le champ `availabilityStatus` vaut `TBC` par défaut et **n'est pas rendu** dans ce cas.
+
+Formulations autorisées pour la hiérarchisation des marques : **« Featured Brands »**,
+**« Discover the Selection »**. Interdites : « Our best-selling brands », « Top sellers »,
+« Most popular » — la sélection des 16 marques prioritaires est une **décision de design**,
+pas une donnée commerciale.
 
 Toute zone de contenu manquante est marquée `[À FOURNIR — client]` dans le code et
 listée dans le rapport de livraison. **Aucun contenu fictif de remplissage.**
@@ -270,9 +293,12 @@ afin de comprendre l'offre sans friction.
 
 **Critères d'acceptation**
 - Parité **totale** EN/DE : aucune page, aucune section, aucun message d'erreur non traduit.
+- L'anglais est la langue **canonique** de rédaction ; l'allemand est une **adaptation professionnelle**, pas une traduction mot-à-mot (`Request a Quote` → `Angebot anfragen`, `Explore Our Drinks` → `Getränkesortiment entdecken`).
+- Les H1/H2 sont **réécrits** pour sonner juste en allemand commercial, pas transposés littéralement.
+- Terminologie B2B allemande correcte : *Großhandel · Anfrage · Angebot · Sortiment*.
 - Sélecteur de langue accessible depuis toutes les pages, indiquant la langue courante.
 - Le changement de langue conserve la page équivalente (pas de retour à l'accueil).
-- URLs distinctes et statiques : `/` (EN) et `/de/` (DE).
+- URLs distinctes et statiques, **slugs traduits** : `/drinks/` ↔ `/de/getraenke/`.
 - `hreflang` réciproques + `x-default` ; `<html lang>` correct.
 - Aucun texte codé en dur hors des fichiers de traduction.
 
@@ -391,6 +417,46 @@ afin de mettre en ligne sans dépendre du prestataire.
 
 ---
 
+### US-020 — Rester pleinement utilisable sans animation
+**P0**
+
+En tant qu'utilisateur sensible au mouvement, ou dont le système réduit les animations,
+je veux une expérience complète et esthétique sans mouvement, afin de ne subir ni inconfort
+ni perte de contenu.
+
+**Valeur business** — Le site repose fortement sur le mouvement. Si la version réduite est
+un repli dégradé, une part des visiteurs voit un site médiocre. Ce n'est pas acceptable
+pour un livrable premium.
+
+**Critères d'acceptation**
+- Sous `prefers-reduced-motion: reduce` : aucun parallaxe, aucun épinglage, aucun mouvement automatique, aucun défilement cinématique, aucune rotation.
+- Le hero s'affiche dans sa **composition finale, immédiatement** — et cette composition est **dessinée pour être belle à l'arrêt**, pas subie comme un repli.
+- Aucun contenu, aucune information, aucun CTA n'est perdu ou rendu inaccessible.
+- Les transitions de page sont neutralisées.
+- Le site reste entièrement fonctionnel et composé **sans JavaScript** : hero, navigation, catalogue et formulaire opérationnels.
+- `Add to Enquiry` disparaît proprement sans JS ; le formulaire reste utilisable via son champ de texte libre.
+- Vérifié section par section, sur l'ensemble des pages, en TR-018.
+
+---
+
+### US-021 — Sélectionner des produits pendant l'exploration
+**P1** · *complète US-009 — spécification UX détaillée en `doc/content-architecture.md` §9*
+
+En tant qu'acheteur explorant le catalogue, je veux constituer une liste des références qui
+m'intéressent au fil de ma navigation, afin d'envoyer une demande précise sans rien recopier.
+
+**Critères d'acceptation**
+- `+ Add to Enquiry` sur les cartes marque et produit ; bascule avec `aria-pressed` ; retrait par re-clic.
+- Visible au survol **et au focus clavier** sur desktop ; toujours visible sur tactile.
+- Compteur discret dans le header (desktop) ; barre inférieure apparaissant uniquement si `count > 0` (mobile).
+- Panneau latéral : liste, retrait unitaire, `Clear all`, CTA `Request Quote` ; piégeage du focus, `Esc`, focus restauré.
+- La sélection pré-remplit *Products / Brands of Interest* sous forme de puces retirables + texte libre éditable.
+- Persistance en `sessionStorage` — jamais `localStorage`.
+- **Lexique strictement non e-commerce** : jamais *cart*, *basket*, *order*, *checkout*, *buy*. Aucun sélecteur de quantité, aucun prix, aucun total.
+- Amélioration progressive : sans JS, la fonctionnalité disparaît sans casser la conversion.
+
+---
+
 ## 3. Hors périmètre v1
 
 Explicitement exclus, à ne pas implémenter : e-commerce, prix publics, comptes clients,
@@ -403,18 +469,43 @@ pages de marque individuelles (voir §5), langues autres que EN/DE.
 |---|---|---|---|
 | R1 | **Aucun visuel produit ne peut être fourni légalement pour l'instant** | **Critique** — toute la direction artistique repose sur les produits comme source de couleur | Système de « slots » d'assets : le design fonctionne dès la v1 avec un traitement typographique/silhouette, et accepte les vrais visuels en remplacement direct sans refonte |
 | R2 | Droits d'usage des logos et visuels de marque (Coca-Cola, Red Bull…) | Élevé — juridique | L'usage référentiel par un distributeur réel est généralement admis, mais **doit être validé par le client / son conseil** avant mise en production. Aucun asset de marque n'est repris du site concurrent |
-| R3 | Assortiment réel inconnu — le benchmark est inaccessible depuis cet environnement | Élevé | Catalogue initial construit sur les 15 marques confirmées par le client ; toute autre référence est marquée « à valider » et n'est pas publiée sans accord |
+| R3 | **`REFERENCE_CATALOG` ≠ stock réel** — les 66 marques décrivent l'assortiment cible, pas la disponibilité d'Ivan | Élevé | Aucune mention de stock, de disponibilité ni de quantité. `availabilityStatus: TBC` par défaut et non rendu. Le catalogue sert à démontrer l'assortiment cible, ce qui est légitime, à condition de ne rien affirmer |
+| R7 | **Marques sous licence tierce** (Squid Game, Chupa Chups, Mentos, Toxic Waste) — sensibilité supérieure aux marques de boissons classiques | Moyen | Traitées à part dans le registre d'assets, validation distincte requise avant production |
+| R8 | **Marques à périmètre partiel** — A&W, Bundaberg, Krombacher Spezi, Hero, XXL Nutrition : seule une partie de la gamme est dans le scope | Moyen | Champ `scopeNote` obligatoire sur ces marques ; aucun SKU affiché sans confirmation ; contrôle au build contre la liste d'exclusions |
 | R4 | Aucun témoignage, référence client ni chiffre vérifiable | Moyen — conversion | Aucune preuve sociale fabriquée. La crédibilité repose sur l'identité juridique vérifiable. Gap documenté et remonté au client |
 | R5 | Envoi d'e-mail depuis Hostinger (délivrabilité, SPF/DKIM) | Moyen | Envoi depuis un expéditeur du domaine avec `Reply-To` acheteur ; vérification SPF/DKIM documentée dans la procédure de déploiement |
 | R6 | Pas de téléphone commercial fourni | Faible | Le canal e-mail suffit à la v1 ; champ prévu, à activer dès réception |
 
-## 5. Décisions client en attente
+## 5. Décisions client
 
-1. **Assortiment définitif** — liste des marques et références réellement distribuées.
-2. **Visuels produits** — shooting, assets officiels fabricants, ou validation d'une autre source.
-3. **Validation juridique** de l'affichage des marques tierces.
-4. **Téléphone commercial** à publier, et **délai de réponse** annoncé aux prospects.
-5. **Langue par défaut** — EN proposé à la racine, DE sur `/de/`.
-6. **Pages de marque dédiées** — écartées en v1 (risque de contenu pauvre), fort potentiel SEO en v2.
-7. **Accusé de réception automatique** à l'acheteur — oui/non.
-8. **Analytics** — aucune par défaut (aucune bannière cookie requise). À activer sur demande, avec solution respectueuse de la vie privée.
+### Tranchées
+
+| | Décision | Arbitrage |
+|---|---|---|
+| **D1** | Langues | ✅ **EN canonique + DE** — confirmé le 2026-08-14 |
+| **D2** | Marques tierces | ✅ **Usage référentiel assumé** en tant que distributeur réel + mention de non-affiliation en footer |
+
+### En attente — bloquantes pour la production
+
+| | Décision | Recommandation |
+|---|---|---|
+| **D3** | **Dairy / Protein Drinks** (Barebells, Chocomel, Fristi, Optimel, Pınar) — inclure ? | **NON.** L'argument de vente n°1 est la spécialisation ; le lacté brouille exactement ce qui différencie Ivan d'un généraliste. Réversible sans coût |
+| **D4** | **Concentrates & Syrups** (Karvan Cévitam, RAAK, Slimpie) — inclure ? | Si oui : filtre supplémentaire sur `/drinks/` uniquement, absent de la homepage et de la navigation, signal chromatique neutre |
+| **D5** | **Arizona** — exclue par défaut (marque associée aux iced teas). Réintégrer ? | **Maintenir l'exclusion** sauf validation explicite d'un SKU non-thé |
+| **D6** | **XXL Nutrition** — quels SKU prêts à boire exactement ? | Aucun compléments alimentaires. Liste précise requise, sinon retrait |
+| **D7** | **Périmètre partiel** — confirmer les SKU admis pour A&W, Bundaberg, Krombacher Spezi, Hero | Sans confirmation, ces marques restent affichées sans SKU |
+| **D8** | **Assets produits** — logos officiels et packshots détourés | Prioriser les 16 marques *featured* + les 6 du hero. Voir `doc/assets-guide.md` (TR-004) |
+| **D9** | **Contenu légal** — `LEGAL_CONTENT_REQUIRES_VALIDATION`. Impressum, Privacy et Cookies doivent être adaptés à l'entité allemande | **Revue juridique obligatoire avant mise en production.** Ne jamais copier les documents du benchmark |
+| **D10** | **SEO** — formulations finales et ciblage géographique | À valider avant publication ; aucun marché inventé |
+
+### En attente — non bloquantes
+
+| | Décision | Défaut appliqué |
+|---|---|---|
+| **D11** | **H1 du hero** — 3 variantes à départager | Variante A *« Soft drinks without borders. »* recommandée. Arbitrage sur rendu réel avant TR-019 |
+| **D12** | **Téléphone commercial** | Non publié tant qu'il n'est pas fourni |
+| **D13** | **Délai de réponse** | **Aucun délai promis** — le processus s'arrête à « Let's talk business » |
+| **D14** | **Accusé de réception automatique** à l'acheteur | Non implémenté par défaut ; ajout simple si souhaité |
+| **D15** | **Pages de marque individuelles** | Écartées en v1 (contenu insuffisant → pages pauvres). Fort potentiel SEO en v2 |
+| **D16** | **Terms & Conditions** | Page non créée tant qu'Ivan ne fournit pas de CGV |
+| **D17** | **Analytics** | Aucune — donc **aucune bannière cookie**. Activable sur demande avec une solution respectueuse de la vie privée |
