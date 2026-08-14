@@ -1,0 +1,23 @@
+---
+/**
+ * Vue provisoire TR-001.
+ *
+ * Sert uniquement à prouver que les 16 routes résolvent et que l'i18n est
+ * câblée. Remplacée page par page par les vues réelles à partir de TR-006.
+ * Aucun contenu de cette vue ne doit survivre à TR-016.
+ */
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+const meta = i18n.t.pages[page];
+---
+
+<h1>{meta.title}</h1>
+<p>{meta.description}</p>
+<p data-tr-001-marker={`${page}:${locale}`}>TR-001 — route placeholder.</p>

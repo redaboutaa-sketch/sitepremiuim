@@ -455,7 +455,7 @@ m'intéressent au fil de ma navigation, afin d'envoyer une demande précise sans
 - Compteur discret dans le header (desktop) ; barre inférieure apparaissant uniquement si `count > 0` (mobile).
 - Panneau latéral : liste, retrait unitaire, `Clear all`, CTA `Request Quote` ; piégeage du focus, `Esc`, focus restauré.
 - La sélection pré-remplit *Products / Brands of Interest* sous forme de puces retirables + texte libre éditable.
-- Persistance en `sessionStorage` — jamais `localStorage`. Effacée à la fermeture de l'onglet, ne contient que des identifiants de marques et produits choisis par l'utilisateur, n'est transmise à aucun serveur avant l'envoi du formulaire. **Aucune qualification juridique n'est portée par le produit** (voir US-016).
+- Persistance en `sessionStorage` — jamais `localStorage`. Stockage **limité à la session de navigation**, sans intention de persistance entre sessions ; ne contient que des identifiants de marques et produits choisis par l'utilisateur ; n'est transmis à aucun serveur avant l'envoi du formulaire. **Aucune qualification juridique n'est portée par le produit** (voir US-016).
 - **Lexique strictement non e-commerce** : jamais *cart*, *basket*, *order*, *checkout*, *buy*. Aucun sélecteur de quantité, aucun prix, aucun total.
 - Amélioration progressive : sans JS, la fonctionnalité disparaît sans casser la conversion.
 

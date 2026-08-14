@@ -295,7 +295,7 @@ Desktop : apparaît au survol et **toujours au focus clavier**. Tactile : toujou
 périmée d'une session à l'autre, et empreinte minimale.
 
 **Description factuelle, à reprendre telle quelle dans la page Cookies :**
-- la liste est écrite dans le `sessionStorage` du navigateur, effacée à la fermeture de l'onglet ;
+- la liste est écrite dans le `sessionStorage` du navigateur, un stockage **limité à la session de navigation** — le site ne cherche pas à la conserver d'une session à l'autre ;
 - elle contient uniquement les identifiants des marques et produits sélectionnés par l'utilisateur ;
 - elle n'est transmise à aucun serveur tant que l'utilisateur n'envoie pas le formulaire ;
 - aucun identifiant publicitaire, aucun profilage, aucun traceur, aucun tiers.

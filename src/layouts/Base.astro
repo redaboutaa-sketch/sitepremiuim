@@ -1,0 +1,37 @@
+---
+/**
+ * Squelette HTML commun à toutes les pages.
+ *
+ * TR-001 : structure sémantique et <head> uniquement.
+ * Le header, la navigation et le footer arrivent en TR-005 ;
+ * les styles en TR-002.
+ */
+import BaseHead from '@/components/seo/BaseHead.astro';
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+---
+
+<!doctype html>
+<html lang={i18n.htmlLang}>
+  <head>
+    <BaseHead page={page} locale={locale} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{i18n.t.nav.skipToContent}</a>
+
+    <!-- TR-005 : <header> -->
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <!-- TR-005 : <footer> -->
+  </body>
+</html>

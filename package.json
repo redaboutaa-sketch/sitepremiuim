@@ -1,0 +1,30 @@
+{
+  "name": "ivan-arsenov",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "IVAN ARSENOV — B2B soft drinks specialist. Static site.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:staging": "ASSET_MODE=staging astro build",
+    "preview": "astro preview",
+    "serve": "npx --yes serve dist -l 4321",
+    "check": "astro check",
+    "qa:routes": "node scripts/qa-routes.mjs",
+    "qa:shots": "playwright test tests/visual",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.62.1",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

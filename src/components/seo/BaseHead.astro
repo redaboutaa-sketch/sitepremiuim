@@ -1,0 +1,54 @@
+---
+/**
+ * <head> commun.
+ *
+ * Règle de canonicalisation (SPEC CHECK Δ1) :
+ *   - canonical TOUJOURS auto-référente, dans les deux langues ;
+ *   - une page DE ne canonicalise JAMAIS vers son équivalent EN ;
+ *   - les variantes ne sont reliées que par des hreflang réciproques,
+ *     chaque page déclarant en, de et elle-même, plus x-default → EN.
+ *
+ * La locale est passée explicitement par la route plutôt que déduite de
+ * `Astro.currentLocale` : les slugs allemands étant traduits, une déduction
+ * implicite serait fragile.
+ */
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+
+const meta = i18n.t.pages[page];
+const canonical = i18n.canonical(page);
+const alternates = i18n.alternates(page);
+const siteName = i18n.t.meta.siteName;
+const fullTitle = page === 'home' ? `${siteName} — ${meta.title}` : `${meta.title} — ${siteName}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>{fullTitle}</title>
+<meta name="description" content={meta.description} />
+
+<link rel="canonical" href={canonical} />
+{alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={meta.description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={locale === 'de' ? 'de_DE' : 'en_GB'} />
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="robots" content="index, follow" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{/* Placeholder — à remplacer par le monogramme IA officiel (D8). */}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="mask-icon" href="/favicon.svg" color="#0A0A0B" />
