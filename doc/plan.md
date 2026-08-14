@@ -72,22 +72,32 @@ page de style interne (`noindex`, retirée du build de production)
 ### TR-003 — Modèle de données et catalogue
 **Dépend de** TR-001 · **Couvre** US-002, US-003, US-004, US-005 · **Source** `doc/catalog.md`
 
-Schémas Zod pour marques, familles et produits — 18 champs (`brand`, `productName`,
+Schémas Zod pour marques, familles et produits — 19 champs (`brand`, `productName`,
 `category`, `subcategory`, `variant`, `flavour`, `country`, `packageType`, `volume`,
 `image`, `logo`, `featured`, `internationalFind`, `specialEdition`, `availabilityStatus`,
-`assetStatus`, `searchTerms`, `scopeNote`) · saisie des **66 marques** · 6 familles
-(la 6ᵉ conditionnée à D4) · marqueur `internationalFind` **transversal aux familles**
+`assetStatus`, `skuPolicy`, `searchTerms`, `scopeNote`) · saisie des **62 marques
+publiables** · **5 familles** · marqueur `internationalFind` **transversal aux familles**
 
-**Contrôles au build — bloquants**
-1. Champ inconnu = `null`, jamais une valeur plausible inventée
-2. `null` → **aucun rendu** (ni « N/A », ni « — »)
-3. `availabilityStatus: 'TBC'` → aucune mention de disponibilité
-4. Une marque de la **liste d'exclusions** (Amstel, Bavaria, Heineken, Banditos, Dilmah, Nescafé, Lipton, Fuze Tea, Arizona) fait **échouer le build**
-5. `slug` en doublon → build en échec
-6. Marques à périmètre partiel → `scopeNote` obligatoire
+> **Portée du contrôle** — la validation s'exécute sur le **schéma de données publiable**
+> (`src/data/**` validé par Zod au build), **jamais** par une recherche de chaînes dans le
+> dépôt. « Heineken » peut légitimement apparaître dans `doc/catalog.md`, un commentaire ou
+> un test : ce qui est interdit, c'est qu'une **entrée de catalogue publiable** le porte.
 
-**Acceptation** — les 6 contrôles passent · aucune marque hors périmètre · aucun SKU, format ou pays inventé
-**Validation** — build + tests unitaires sur les règles de validation
+**Contrôles de schéma — bloquants**
+
+| # | Règle |
+|---|---|
+| 1 | Aucune entrée publiable ne porte un `slug` de la **liste d'exclusions** (Amstel, Bavaria, Heineken, Banditos, Dilmah, Nescafé, Lipton, Fuze Tea, Arizona, Barebells, Chocomel, Fristi, Optimel, Pınar, Karvan Cévitam, RAAK, Slimpie, XXL Nutrition) |
+| 2 | `slug` en doublon |
+| 3 | `skuPolicy: 'brand-level-only'` (A&W, Bundaberg, Krombacher Spezi, Hero) + `productName` non nul |
+| 4 | `category` hors des 5 familles autorisées |
+
+**Contrôles de rendu — testés**
+Champ inconnu = `null`, jamais une valeur inventée · `null` → aucun rendu (ni « N/A », ni « — ») ·
+`availabilityStatus: 'TBC'` → aucune mention de disponibilité
+
+**Acceptation** — les 4 contrôles de schéma font échouer le build sur violation · les 3 contrôles de rendu passent · aucun SKU, format ou pays inventé
+**Validation** — tests unitaires : une entrée exclue, un doublon, un `productName` sur marque `brand-level-only` et une famille invalide doivent chacun faire échouer la validation
 
 ---
 
@@ -101,12 +111,20 @@ composant `ProductObject` à ratio fixe : visuel réel s'il existe → traitemen
 `doc/assets-guide.md` (spécifications à transmettre au client) ·
 `npm run audit:assets` → rapport de statut par marque
 
-**Règle `ASSET_REQUIRES_VALIDATION`** — utilisable en développement et staging,
-**fait échouer le build de production**. Les marques sous licence tierce (Squid Game,
+**Règle `ASSET_REQUIRES_VALIDATION`** — le contrôle porte sur **l'asset**, pas sur le build.
+
+| Environnement | Comportement |
+|---|---|
+| **Développement / staging** | Asset **rendu normalement**. Aucun blocage — le staging doit permettre de juger le design complet |
+| **Production** | Asset **non publié**. L'entrée bascule automatiquement sur le repli typographique et **reste présente au catalogue** |
+
+La marque n'est jamais retirée du site : seul son visuel non validé l'est. Le build de
+production **réussit** ; `npm run audit:assets` liste les assets substitués, et cette liste
+figure dans le rapport de livraison. Les marques sous licence tierce (Squid Game,
 Chupa Chups, Mentos, Toxic Waste) sont suivies dans un registre distinct.
 
-**Acceptation** — aucun hotlink vers le benchmark · aucune composition graphique reprise du benchmark · une page mêlant assets réels et replis reste cohérente · aucun décalage de mise en page
-**Validation** — capture comparative 100 % / 0 % / mixte + rapport d'audit
+**Acceptation** — aucun hotlink vers le benchmark · aucune composition graphique reprise du benchmark · une page mêlant assets réels et replis reste cohérente · aucun décalage de mise en page · **un build de production contenant un asset `requires_validation` réussit et substitue le repli** ; **le même build en staging affiche l'asset**
+**Validation** — capture comparative 100 % / 0 % / mixte · build staging vs production sur une marque `requires_validation` · rapport d'audit
 
 ---
 
@@ -131,10 +149,10 @@ profondeur (Coca-Cola, Fanta, Red Bull, Monster, Pepsi, Sprite) · monogramme IA
 filigrane 4 % · *mask reveal* du H1 par mots · GSAP + ScrollTrigger différés, chargés
 uniquement si mouvement autorisé et pointeur fin · parallaxe pointeur **amortie ≤ 14 px** ·
 dérive `--signal` · variante mobile distincte (2 plans, pas d'épinglage) ·
-**les 3 variantes de H1 implémentées derrière un commutateur** pour arbitrage D11
+**H1 arrêté (D11) : *« Soft drinks without borders. »***
 
 **Acceptation** — H1 et CTA lisibles sans JS · composition finale immédiate et **belle à l'arrêt** en reduced-motion · aucun débordement à 320 px · LCP < 2,5 s · zéro erreur console · aucun saut de mise en page · **ni gaming, ni nightclub** : aucun néon, aucun glow
-**Validation** — captures desktop/mobile · test JS désactivé · test reduced-motion · mesure LCP · captures comparées des 3 H1
+**Validation** — captures desktop/mobile · test JS désactivé · test reduced-motion · mesure LCP
 
 ---
 
@@ -194,7 +212,7 @@ dans le header (desktop) · barre inférieure conditionnelle (mobile) · panneau
 retrait unitaire, `Clear all`, CTA `Request Quote` · persistance **`sessionStorage`** ·
 notice souple à 25 éléments
 
-**Acceptation** — piégeage du focus, `Esc`, focus restauré · **lexique strictement non e-commerce** (jamais *cart*, *basket*, *order*, *checkout*, *buy*) · aucun sélecteur de quantité, aucun prix, aucun total · **sans JS les boutons ne sont pas rendus et la conversion reste intacte** · stockage documenté dans la page Cookies comme strictement nécessaire
+**Acceptation** — piégeage du focus, `Esc`, focus restauré · **lexique strictement non e-commerce** (jamais *cart*, *basket*, *order*, *checkout*, *buy*) · aucun sélecteur de quantité, aucun prix, aucun total · **sans JS les boutons ne sont pas rendus et la conversion reste intacte** · **la page Cookies décrit l'usage technique du `sessionStorage` sans porter de qualification juridique** (voir TR-016)
 **Validation** — parcours complet clavier et tactile · test sans JS · test de persistance inter-pages
 
 ---
@@ -204,7 +222,7 @@ notice souple à 25 éléments
 
 H1 *Explore Our Drinks* · catalogue sur off-white · recherche instantanée +
 filtres `All · Carbonated · Energy & Sport · Water · Juice & Fruit · International`
-(+ Concentrates si D4) · état synchronisé avec l'URL · filtres en colonne desktop,
+(**cinq familles** — Concentrates exclue, D4) · état synchronisé avec l'URL · filtres en colonne desktop,
 tiroir mobile · `Add to Enquiry` sur chaque carte · état vide utile
 
 **Acceptation** — filtrage < 100 ms, CLS 0 · URL partageable, retour navigateur fonctionnel · nombre de résultats en `aria-live` · intégralement clavier · **catalogue complet rendu au build → lisible sans JS** · **aucun prix** · aucune mention de disponibilité
@@ -215,7 +233,7 @@ tiroir mobile · `Add to Enquiry` sur chaque carte · état vide utile
 ### TR-013 — Page Brands
 **Dépend de** TR-012 · **Couvre** US-005, US-009
 
-H1 *Brands for every kind of refreshment.* · traitement **éditorial** des 66 marques ·
+H1 *Brands for every kind of refreshment.* · traitement **éditorial** des 62 marques ·
 chaque marque → `/drinks/?brand=<slug>` + `Add to Enquiry` · pas de page de marque
 individuelle en v1 (D15)
 
@@ -254,10 +272,16 @@ consentement RGPD non pré-coché · **configuration hors dépôt**
 **Dépend de** TR-005 · **Couvre** US-007, US-016
 
 `/imprint/` (§5 DDG, données réelles) · `/privacy/` (traitement du formulaire) ·
-`/cookies/` (documente l'absence de cookies non essentiels et le `sessionStorage`
-strictement nécessaire de l'enquiry list) · Terms non créée tant qu'Ivan ne fournit rien (D16)
+`/cookies/` · Terms non créée tant qu'Ivan ne fournit rien (D16)
 
-**Acceptation** — mentions obligatoires complètes · atteignables depuis chaque page · **`LEGAL_CONTENT_REQUIRES_VALIDATION` porté visiblement dans le code et le rapport de livraison** · **aucun document du benchmark copié** · revue juridique signalée comme obligatoire avant production
+**Page Cookies — décrire, ne pas conclure.** Elle énonce des **faits techniques
+vérifiables** : polices auto-hébergées, aucune ressource externe, aucun tracker, aucun
+cookie tiers ; `sessionStorage` de l'enquiry list contenant uniquement les identifiants
+sélectionnés par l'utilisateur, effacé à la fermeture de l'onglet, non transmis avant envoi
+du formulaire. Elle **ne formule aucune qualification juridique** — ni exemption, ni
+obligation de bannière, ni base légale. Ces qualifications relèvent de D9.
+
+**Acceptation** — mentions obligatoires complètes · atteignables depuis chaque page · **`LEGAL_CONTENT_REQUIRES_VALIDATION` porté visiblement dans le code et le rapport de livraison** · **aucun document du benchmark copié** · **aucune conclusion juridique auto-générée dans le contenu livré** · revue juridique signalée comme obligatoire avant production
 **Validation** — liste de conformité + note explicite au client
 
 ---
@@ -277,14 +301,15 @@ terminologie *Großhandel · Anfrage · Angebot · Sortiment*
 ### TR-018 — SEO technique
 **Dépend de** TR-017 · **Couvre** US-015
 
-`title`/`description` rédigés par page et par langue · canonical · OG/Twitter avec image
-dédiée · `hreflang` réciproques + `x-default` → EN · `Organization`, `WholesaleStore`,
-`BreadcrumbList`, `WebSite` · sitemap bilingue · robots.txt ·
+`title`/`description` rédigés par page et par langue · **canonical auto-référente sur
+chaque page, dans les deux langues** · OG/Twitter avec image dédiée · `hreflang`
+réciproques (chaque page déclare `en`, `de` et elle-même) + `x-default` → EN ·
+`Organization`, `WholesaleStore`, `BreadcrumbList`, `WebSite` · sitemap bilingue · robots.txt ·
 thèmes : *B2B soft drinks supplier · soft drink wholesaler · international soft drinks ·
 energy drinks wholesale · soft drinks for professional buyers · international beverage brands*
 
-**Acceptation** — JSON-LD valide · aucun doublon de `title`/`description` · hiérarchie de titres correcte · **aucun bourrage de mots-clés** · **aucun marché géographique inventé** (D10 en attente)
-**Validation** — extraction et validation du JSON-LD · audit des métadonnées sur tout le `dist/`
+**Acceptation** — JSON-LD valide · aucun doublon de `title`/`description` · hiérarchie de titres correcte · **aucune page DE ne canonicalise vers une page EN** · chaque page se canonicalise elle-même · `hreflang` réciproques et complets · **aucun bourrage de mots-clés** · **aucun marché géographique inventé** (D10 en attente)
+**Validation** — extraction et validation du JSON-LD · audit automatisé sur tout le `dist/` vérifiant que `canonical === URL de la page` pour les 16 routes, et la réciprocité des `hreflang`
 
 ---
 
@@ -358,8 +383,10 @@ TR-001 ─┬─ TR-002 ─┬─ TR-005 ─┬─ TR-006 ── TR-007 ── T
 
 - [ ] Toutes les US **P0** satisfaites, tous leurs critères validés
 - [ ] Build sans erreur ni avertissement TypeScript
-- [ ] Les 6 contrôles bloquants du catalogue passent
-- [ ] Aucune marque exclue présente dans les données, le balisage ou les mots-clés
+- [ ] Les 4 contrôles de schéma du catalogue font échouer le build sur violation
+- [ ] Aucune **entrée de catalogue publiable** ne porte un slug exclu (contrôle de schéma, pas recherche de chaînes)
+- [ ] Aucun `productName` sur une marque `brand-level-only`
+- [ ] Catalogue V1 = 62 marques, 5 familles
 - [ ] Aucune mention de stock, de disponibilité, de quantité ou de prix
 - [ ] Aucun SKU, format, contenance ou pays inventé
 - [ ] Aucune erreur console significative
@@ -372,7 +399,10 @@ TR-001 ─┬─ TR-002 ─┬─ TR-005 ─┬─ TR-006 ── TR-007 ── T
 - [ ] Parité EN/DE complète, adaptation allemande professionnelle
 - [ ] SEO technique, sitemap et robots.txt en place
 - [ ] Core Web Vitals dans les cibles
-- [ ] Aucun asset `ASSET_REQUIRES_VALIDATION` dans le build de production
+- [ ] Aucun asset `ASSET_REQUIRES_VALIDATION` **publié** en production (repli substitué, marque conservée), et staging les affiche
+- [ ] Rapport `audit:assets` livré avec la liste des assets substitués
+- [ ] Canonical auto-référente sur les 16 routes ; aucune page DE canonicalisée vers EN
+- [ ] Aucune conclusion juridique auto-générée dans le contenu livré
 - [ ] `LEGAL_CONTENT_REQUIRES_VALIDATION` remonté au client
 - [ ] Aucun secret exposé
 - [ ] Aucun débordement horizontal, aucun lien mort

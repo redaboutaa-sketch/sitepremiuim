@@ -22,7 +22,16 @@
 | `/cookies/` | `/de/cookies/` | Politique de stockage |
 
 **Slugs allemands traduits** — meilleur SEO local, et cohérent avec une entité allemande.
-`hreflang` réciproques + `x-default` → EN.
+
+### Règle de canonicalisation
+
+L'anglais est la langue **source éditoriale**. Cela ne lui confère **aucun statut
+canonique en SEO**.
+
+- **Chaque page porte une canonical auto-référente** — `/drinks/` canonicalise vers `/drinks/`, `/de/getraenke/` canonicalise vers `/de/getraenke/`.
+- **Jamais** de canonical d'une page DE vers son équivalent EN. Ce serait désindexer la version allemande.
+- Les variantes sont reliées **uniquement** par `hreflang` réciproques : chaque page déclare `en`, `de` **et elle-même**.
+- `x-default` → EN.
 
 **Navigation principale** — `Drinks · Brands · About · Contact` + CTA `Request a Quote` + sélecteur `EN | DE`.
 Pas de pages de marque individuelles en v1 (contenu insuffisant → pages pauvres).
@@ -89,6 +98,8 @@ Puis l'index des 5 familles, chacune avec sa description et son signal chromatiq
 | 03 | **Water** | Still, sparkling and flavoured water. |
 | 04 | **Juice & Fruit** | Fruit drinks, juices and tropical flavours. |
 | 05 | **International Finds** | Regional variants, special flavours and distinctive imported-style products. |
+
+*(Cinq familles. Concentrates & Syrups exclue de la V1 — décision D4.)*
 
 ⚠️ *Ne jamais prétendre importer directement tant que ce n'est pas confirmé —
 la formulation « imported-style » est volontaire et doit être conservée telle quelle.*
@@ -168,7 +179,7 @@ capturées côte à côte, et arbitrées sur pièces.
 
 Recherche + filtres + catalogue.
 Filtres : `All · Carbonated · Energy & Sport · Water · Juice & Fruit · International`
-*(+ Concentrates & Syrups si décision D3 = oui)*
+*(cinq familles — Concentrates & Syrups exclue de la V1, décision D4)*
 
 **Aucun prix public en v1.** Chaque élément mène à `Add to Enquiry` ou `Request Quote`.
 
@@ -280,10 +291,19 @@ Desktop : apparaît au survol et **toujours au focus clavier**. Tactile : toujou
 | Limite atteinte | Notice discrète à 25 éléments, pas de blocage brutal |
 
 ### Persistance
-`sessionStorage` — **pas** `localStorage`. Deux raisons : pas de liste périmée d'une
-session à l'autre, et empreinte de vie privée minimale. Stockage strictement nécessaire à
-un service explicitement demandé par l'utilisateur → **exempté de consentement ePrivacy**.
-Documenté dans la page Cookies.
+`sessionStorage` — **pas** `localStorage`. Deux raisons fonctionnelles : pas de liste
+périmée d'une session à l'autre, et empreinte minimale.
+
+**Description factuelle, à reprendre telle quelle dans la page Cookies :**
+- la liste est écrite dans le `sessionStorage` du navigateur, effacée à la fermeture de l'onglet ;
+- elle contient uniquement les identifiants des marques et produits sélectionnés par l'utilisateur ;
+- elle n'est transmise à aucun serveur tant que l'utilisateur n'envoie pas le formulaire ;
+- aucun identifiant publicitaire, aucun profilage, aucun traceur, aucun tiers.
+
+⚠️ **Aucune qualification juridique n'est formulée ici** — ni exemption, ni obligation de
+consentement. Cette qualification relève de `LEGAL_CONTENT_REQUIRES_VALIDATION` (D9) et
+doit être arrêtée par le conseil juridique d'Ivan Arsenov. La page Cookies décrit
+l'usage technique ; elle ne conclut pas.
 
 ### Indicateur
 - **Desktop** — compteur discret dans le header, adjacent au CTA : `3 selected`

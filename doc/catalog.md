@@ -26,7 +26,9 @@ Cinq familles principales + une famille conditionnelle.
 | 03 | **Water** | `water` | Still, sparkling and flavoured water. | Bleu glacier |
 | 04 | **Juice & Fruit** | `juice-fruit` | Fruit drinks, juices and tropical flavours. | Ambre |
 | 05 | **International Finds** | `international` | Regional variants, special flavours and distinctive imported-style products. | Magenta |
-| 06 | **Concentrates & Syrups** ⏸ | `concentrates` | *Conditionnelle — décision D3.* | Graphite (neutre) |
+
+**Cinq familles. Pas de sixième.** *Concentrates & Syrups* est **exclue de la V1**
+(décision D4 = NON, 2026-08-14). Ni famille, ni filtre, ni données, ni assets.
 
 ### 1.1 « International Finds » est **transversal**, pas seulement une famille
 
@@ -43,19 +45,38 @@ Une même référence peut ainsi apparaître dans *Carbonated* **et** dans *Inte
 sans duplication de données. La famille 05 est la vue filtrée sur ce marqueur, complétée par
 les marques nativement « novelty / licensed » qui n'ont pas d'autre famille naturelle.
 
-### 1.2 Famille 06 — Concentrates & Syrups
+### 1.2 Concentrates & Syrups — exclue de la V1
 
-Conditionnée à la décision **D3**. Si retenue :
-- **jamais** visuellement dominante ;
-- **absente** de la homepage et de la navigation principale ;
-- présente uniquement comme filtre supplémentaire sur `/drinks/` ;
-- signal chromatique volontairement neutre (graphite), pour qu'elle ne capte pas l'attention.
-
-Le cœur du site reste les boissons prêtes à boire.
+**Décision D4 = NON** (2026-08-14). Karvan Cévitam, RAAK et Slimpie ne sont ni saisies,
+ni filtrables, ni illustrées. Le catalogue V1 est intégralement composé de boissons
+prêtes à boire. Réintégrable ultérieurement par ajout de données, sans refonte.
 
 ---
 
-## 2. Inventaire — 66 marques
+## 2. Inventaire — 62 marques publiables
+
+**26** Carbonated · **11** Energy & Sport · **8** Water · **13** Juice & Fruit · **4** International
+
+*(Après application des décisions du 2026-08-14 : −3 Concentrates & Syrups, −1 XXL Nutrition,
+Dairy/Protein et Arizona non intégrées.)*
+
+### 2.1 Marques **brand-level only** — décision D7
+
+Ces quatre marques sont publiées **au niveau marque uniquement**. Aucun SKU, aucune
+variante, aucun format n'est affiché tant que les références précises admises ne sont pas
+confirmées par Ivan. Le champ `productName` reste `null` et n'est **pas rendu**.
+
+| Marque | Restriction |
+|---|---|
+| **A&W** | Root Beer = soft drink non alcoolisée. SKU précis non confirmés |
+| **Bundaberg** | Références non alcoolisées uniquement. SKU précis non confirmés |
+| **Krombacher Spezi** | Spezi / soft drinks uniquement — **jamais les bières Krombacher**. SKU précis non confirmés |
+| **Hero** | Boissons et jus uniquement — pas les confitures ni l'alimentaire. SKU précis non confirmés |
+
+Le schéma marque ces entrées `skuPolicy: 'brand-level-only'` : toute tentative de saisir un
+`productName` sur l'une d'elles **fait échouer la validation du catalogue**.
+
+---
 
 Légende du champ `assetStatus` :
 `ASSET_REQUIRES_VALIDATION` = utilisable en conception/staging uniquement, **jamais en production**.
@@ -91,7 +112,7 @@ Légende du champ `assetStatus` :
 | Sunkist | `sunkist` | | |
 | Yummy Miami Soda | `yummy-miami-soda` | | Marqueur international |
 
-### B — Energy · Sport · Functional · 12 marques
+### B — Energy · Sport · Functional · 11 marques
 
 | Marque | Slug | Featured | Note de périmètre |
 |---|---|---|---|
@@ -106,7 +127,11 @@ Légende du champ `assetStatus` :
 | Red Bull | `red-bull` | ★ | |
 | Slammers Energy | `slammers-energy` | | |
 | Vitamin Well | `vitamin-well` | | |
-| XXL Nutrition | `xxl-nutrition` | | ⚠️ **Boissons prêtes à boire uniquement — aucun complément alimentaire.** SKU à préciser (décision D6) |
+
+> **XXL Nutrition — RETIRÉE de la V1** (décision D6, 2026-08-14).
+> La marque n'est ni saisie, ni affichée, tant que la liste précise de ses SKU
+> prêts à boire n'est pas confirmée. Aucun complément alimentaire ne peut figurer
+> au catalogue. Réintégration = ajout de données une fois les SKU fournis.
 
 ### C — Water · Mineral · Flavoured · 8 marques
 
@@ -139,13 +164,9 @@ Légende du champ `assetStatus` :
 | Rauch | `rauch` | | |
 | Taksi | `taksi` | | |
 
-### E — Concentrates & Syrups · 3 marques ⏸ *(conditionnel — décision D3)*
+### E — Concentrates & Syrups — ❌ **EXCLUE DE LA V1** (décision D4)
 
-| Marque | Slug |
-|---|---|
-| Karvan Cévitam | `karvan-cevitam` |
-| RAAK | `raak` |
-| Slimpie | `slimpie` |
+Karvan Cévitam · RAAK · Slimpie — non saisies, non filtrables, non illustrées.
 
 ### F — International · Novelty · Licensed · 4 marques
 
@@ -190,7 +211,10 @@ Les 50 autres marques servent à démontrer la **profondeur internationale** du 
 | Nescafé | Café |
 | Lipton | Thé |
 | Fuze Tea | Thé |
-| **Arizona** | **Exclue par défaut** — marque très fortement associée aux iced teas. Réintégrable uniquement sur validation explicite d'un SKU non-thé (décision D4) |
+| **Arizona** | ❌ **EXCLUE** — décision D5 confirmée le 2026-08-14. Marque trop fortement associée aux iced teas. Non réintégrable en V1 |
+| **Barebells · Chocomel · Fristi · Optimel · Pınar** | ❌ **EXCLUES** — décision D3 = NON (2026-08-14). Boissons lactées / protéinées hors d'une définition stricte de « Soft Drinks » |
+| **Karvan Cévitam · RAAK · Slimpie** | ❌ **EXCLUES** — décision D4 = NON (2026-08-14). Concentrates & Syrups hors V1 |
+| **XXL Nutrition** | ⏸ **RETIRÉE** — décision D6 (2026-08-14). En attente de la liste des SKU prêts à boire |
 
 Aucune de ces marques ne doit apparaître dans les données, les assets, le balisage,
 les mots-clés ou les traductions.
@@ -200,21 +224,14 @@ En cas d'ambiguïté sur une marque ou un SKU → ne pas intégrer, et lever une
 
 ---
 
-## 5. Décision en attente — Boissons lactées / protéinées
+## 5. Décision tranchée — Boissons lactées / protéinées
 
-**`DECISION REQUIRED — Include Dairy / Protein Drinks? YES / NO`**
+**`DECISION REQUIRED — Include Dairy / Protein Drinks?` → ✅ NON** (2026-08-14)
 
-Marques concernées : **Barebells · Chocomel · Fristi · Optimel · Pınar**
+**Barebells · Chocomel · Fristi · Optimel · Pınar** ne sont pas intégrées.
 
-Non alcoolisées, mais hors d'une définition stricte de « Soft Drinks ».
-
-**Recommandation client : NON** — pour préserver un positionnement parfaitement net :
-*100 % Soft Drinks*.
-
-**Ma recommandation : NON également.** L'argument de vente n°1 du site est la
-**spécialisation**. Ajouter le lacté brouille précisément ce qui différencie Ivan Arsenov
-d'un grossiste généraliste. Cinq marques supplémentaires ne compensent pas la dilution
-du positionnement. *Réversible sans coût : c'est un ajout de données, pas une refonte.*
+Le positionnement reste **100 % Soft Drinks**. Réversible ultérieurement par simple
+ajout de données, sans refonte.
 
 ---
 
@@ -241,15 +258,37 @@ Champs par référence (marque et produit). **Aucun champ n'est inventé.**
 | `specialEdition` | boolean | ✅ | |
 | `availabilityStatus` | enum | ✅ | Défaut `TBC` — **non rendu** tant qu'il vaut `TBC` |
 | `assetStatus` | enum | ✅ | `validated` · `requires_validation` · `missing` |
+| `skuPolicy` | enum | ✅ | `full` · `brand-level-only` (A&W, Bundaberg, Krombacher Spezi, Hero) |
 | `searchTerms` | string[] | | Alias et graphies alternatives |
 | `scopeNote` | string \| null | | Restriction de périmètre (ex. « non-alcoholic SKUs only ») |
 
-### Règles de validation appliquées au build
+### Règles de validation
 
-1. Un champ inconnu vaut `null` — **jamais** une valeur plausible inventée.
-2. Un champ `null` **ne produit aucun rendu** — ni « N/A », ni « — », ni libellé vide.
-3. `availabilityStatus: 'TBC'` → aucune mention de disponibilité affichée.
-4. Toute marque de la liste d'exclusions (§4) fait **échouer le build**.
-5. `assetStatus: 'requires_validation'` → autorisé en développement et staging,
-   **fait échouer le build de production**.
-6. Un `slug` en doublon fait échouer le build.
+**Portée du contrôle** — toutes les règles ci-dessous s'appliquent au **schéma de données
+publiable** (`src/data/**` validé par Zod au build), et **non** à une recherche de chaînes
+dans le dépôt. Le nom « Heineken » peut légitimement apparaître dans `doc/catalog.md`,
+dans un commentaire ou dans un test : ce qui est interdit, c'est qu'une entrée de catalogue
+**publiable** le porte. Le contrôle s'exécute sur les entrées validées, pas sur des fichiers.
+
+| # | Règle | Portée | Sanction |
+|---|---|---|---|
+| 1 | Un champ inconnu vaut `null` — jamais une valeur plausible inventée | Saisie | Revue |
+| 2 | Un champ `null` **ne produit aucun rendu** — ni « N/A », ni « — », ni libellé vide | Rendu | Test |
+| 3 | `availabilityStatus: 'TBC'` → aucune mention de disponibilité rendue | Rendu | Test |
+| 4 | **Aucune entrée publiable ne peut porter un `slug` figurant dans la liste d'exclusions** (§4) | Schéma | **Build en échec** |
+| 5 | `slug` en doublon | Schéma | **Build en échec** |
+| 6 | `skuPolicy: 'brand-level-only'` + `productName` non nul | Schéma | **Build en échec** |
+| 7 | `category` hors des 5 familles autorisées | Schéma | **Build en échec** |
+
+### Règle d'asset — `assetStatus: 'requires_validation'`
+
+Le contrôle porte sur **l'asset**, pas sur le build entier.
+
+| Environnement | Comportement |
+|---|---|
+| **Développement / staging** | L'asset est **rendu normalement**. Aucun blocage — le staging doit permettre de juger le design complet |
+| **Production** | L'asset **n'est pas publié**. L'entrée bascule automatiquement sur le **repli typographique composé** (TR-004) et reste présente au catalogue |
+
+La marque n'est donc jamais retirée du site : seul son visuel non validé l'est. Le build de
+production **réussit**, et `npm run audit:assets` rapporte la liste des assets substitués
+afin qu'ils soient traités. Cette liste figure dans le rapport de livraison.
