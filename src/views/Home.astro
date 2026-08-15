@@ -7,6 +7,7 @@
  * S1 hero · S2 featured · S3 éditorial calme · S4 second grand moment ·
  * S5 process sobre · S6 CTA final.
  */
+import Categories from '@/components/home/Categories.astro';
 import FeaturedBrands from '@/components/home/FeaturedBrands.astro';
 import Hero from '@/components/home/Hero.astro';
 import type { Locale } from '@/i18n';
@@ -20,6 +21,7 @@ const { locale } = Astro.props;
 
 <Hero locale={locale} />
 <FeaturedBrands locale={locale} />
+<Categories locale={locale} />
 
 <script>
   import '@/scripts/hero.ts';

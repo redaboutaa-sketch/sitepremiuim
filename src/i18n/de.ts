@@ -54,6 +54,11 @@ export const de: Dictionary = {
     hint: 'Weiterscrollen — 16 von 62 Marken',
   },
 
+  categories: {
+    h2: 'Eine Kategorie. Mehr Tiefe.',
+    copy: 'Ivan Arsenov konzentriert sich auf alkoholfreie Getränke. Kein sortimentsfremder Katalog — sondern eine gezielte Auswahl an Erfrischungsgetränken für Fachhändler.',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

@@ -1,0 +1,150 @@
+---
+/**
+ * S3 — ONE CATEGORY. DEEPER FOCUS.
+ *
+ * Rupture volontaire : surface Paper, aucune image produit, registre calme.
+ * Après la piste de S2, la page respire — c'est cette alternance qui rend
+ * les moments forts lisibles comme des moments forts.
+ *
+ * Les cinq familles sont un INDEX, pas une grille de cartes : des lignes
+ * séparées par des filets d'un pixel, numérotées, comme la table des matières
+ * d'un catalogue de spécimens.
+ *
+ * ⚠️ « imported-style » est conservé tel quel dans la description de la
+ * famille International : aucune revendication d'importation directe tant
+ * qu'Ivan ne l'a pas confirmée.
+ */
+import { CATEGORIES } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+---
+
+<section class="categories section" data-surface="paper" aria-labelledby="categories-title">
+  <div class="container">
+    <div class="categories__head">
+      <h2 class="t-h2 reveal" id="categories-title">{t.categories.h2}</h2>
+      <p class="t-body-l categories__copy reveal">{t.categories.copy}</p>
+    </div>
+
+    <ol class="categories__index" role="list">
+      {
+        CATEGORIES.map((category) => (
+          <li class="categories__row reveal" data-family={category.slug}>
+            <a class="categories__link" href={`${i18n.path('drinks')}?category=${category.slug}`}>
+              <span class="t-index categories__no">{category.index}</span>
+              <span class="categories__body">
+                <span class="t-h3 categories__name">{category.name[locale]}</span>
+                <span class="t-body categories__desc">{category.description[locale]}</span>
+              </span>
+              <span class="categories__mark" aria-hidden="true"></span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .categories__head {
+    display: grid;
+    gap: var(--sp-5);
+    margin-block-end: var(--sp-9);
+  }
+
+  @media (min-width: 1024px) {
+    /* Asymétrie : le titre occupe cinq colonnes, la copie sept, décalée. */
+    .categories__head {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--sp-8);
+      align-items: end;
+    }
+  }
+
+  .categories__copy {
+    color: var(--fg-secondary);
+    max-inline-size: 52ch;
+  }
+
+  /* ── Index des familles ────────────────────────────────────────────── */
+
+  .categories__index {
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .categories__row {
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .categories__link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: var(--sp-5);
+    padding-block: var(--sp-6);
+    transition: background-color var(--dur-base) var(--ease-out);
+  }
+
+  .categories__no {
+    /* Chiffres tabulaires : les numéros s'alignent d'une ligne à l'autre. */
+    inline-size: 2.5rem;
+    color: var(--fg-muted);
+  }
+
+  .categories__body {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  @media (min-width: 768px) {
+    .categories__body {
+      grid-template-columns: 14rem 1fr;
+      gap: var(--sp-6);
+      align-items: baseline;
+    }
+  }
+
+  .categories__name {
+    color: var(--fg);
+  }
+
+  .categories__desc {
+    color: var(--fg-secondary);
+    max-inline-size: 46ch;
+  }
+
+  /*
+   * Le seul élément coloré de la section : un filet court à la couleur de la
+   * famille, qui s'allonge au survol. La couleur reste une indication, jamais
+   * une décoration — et jamais plus de quelques pixels sur fond papier.
+   */
+  .categories__mark {
+    inline-size: var(--sp-6);
+    block-size: 2px;
+    background: var(--signal);
+    align-self: center;
+    transform-origin: right;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .categories__link:hover {
+      background: var(--paper-alt);
+    }
+
+    .categories__link:hover .categories__mark {
+      transform: scaleX(2.4);
+    }
+  }
+
+  .categories__link:focus-visible .categories__mark {
+    transform: scaleX(2.4);
+  }
+</style>

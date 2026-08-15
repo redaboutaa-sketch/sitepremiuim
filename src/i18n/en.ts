@@ -50,6 +50,11 @@ export const en = {
     hint: 'Scroll to explore — 16 of 62 brands',
   },
 
+  categories: {
+    h2: 'One category. Deeper focus.',
+    copy: 'Ivan Arsenov is focused on non-alcoholic beverages. No unrelated product catalogue — just a dedicated selection of soft drinks for professional buyers.',
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',
