@@ -1,0 +1,97 @@
+---
+/**
+ * S5 — SIMPLE BY DESIGN.
+ *
+ * Section la plus sobre du site, et c'est délibéré : elle lève la crainte
+ * n°1 de l'acheteur B2B — « est-ce encore un tunnel e-commerce ? ». Une
+ * réponse rassurante doit avoir l'air simple, pas spectaculaire.
+ *
+ * Purement typographique : trois temps numérotés, aucun pictogramme, aucune
+ * carte, aucune illustration.
+ *
+ * ⚠️ Aucun délai de réponse n'est promis (décision D13). Le parcours
+ * s'arrête à « Let's talk business ».
+ */
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const STEPS = [t.process.step1, t.process.step2, t.process.step3];
+---
+
+<section class="process section" data-surface="paper" aria-labelledby="process-title">
+  <div class="container">
+    <h2 class="t-h2 process__title reveal" id="process-title">{t.process.h2}</h2>
+
+    <ol class="process__steps" role="list">
+      {
+        STEPS.map((step, i) => (
+          <li class="process__step reveal">
+            <span class="t-index process__no">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="t-h3 process__name">{step.title}</h3>
+            <p class="t-body process__desc">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .process__title {
+    max-inline-size: 16ch;
+    margin-block-end: var(--sp-9);
+  }
+
+  .process__steps {
+    display: grid;
+    gap: 0;
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .process__step {
+    display: grid;
+    gap: var(--sp-3);
+    padding-block: var(--sp-7);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  @media (min-width: 768px) {
+    /* Les trois temps se lisent en colonnes, mais restent séparés par des
+       filets verticaux plutôt que posés dans des cartes. */
+    .process__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-block-end: var(--hairline) solid var(--rule);
+    }
+
+    .process__step {
+      padding: var(--sp-7) var(--sp-6) var(--sp-8);
+      border-block-end: none;
+      border-inline-start: var(--hairline) solid var(--rule);
+    }
+
+    .process__step:first-child {
+      padding-inline-start: 0;
+      border-inline-start: none;
+    }
+  }
+
+  .process__no {
+    color: var(--fg-muted);
+  }
+
+  .process__name {
+    color: var(--fg);
+  }
+
+  .process__desc {
+    color: var(--fg-secondary);
+    max-inline-size: 32ch;
+  }
+</style>

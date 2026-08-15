@@ -139,3 +139,69 @@ test('S4 — aucun SKU inventé : seules marques et familles sont nommées', asy
   // Aucun format ni contenance ne doit apparaître.
   expect(text).not.toMatch(/\d+\s?(ml|cl|l\b|oz)/i);
 });
+
+/* ================================================================== *
+ * S5 — Simple by design.  ·  S6 — CTA final
+ * ================================================================== */
+
+test('S5 — trois temps numérotés, sans pictogramme ni carte', async ({ page }) => {
+  await page.goto('/');
+  const steps = page.locator('.process__step');
+  await expect(steps).toHaveCount(3);
+  await expect(steps.nth(0)).toContainText('Explore');
+  await expect(steps.nth(1)).toContainText('Enquire');
+  await expect(steps.nth(2)).toContainText("Let's talk business");
+  await expect(page.locator('.process svg, .process img')).toHaveCount(0);
+});
+
+test('S5 — aucun délai de réponse promis', async ({ page }) => {
+  await page.goto('/');
+  const text = (await page.locator('.process').textContent())!.toLowerCase();
+  for (const banned of ['24 hour', '48 hour', 'within a day', 'same day', 'immediately']) {
+    expect(text, banned).not.toContain(banned);
+  }
+  expect(text).not.toMatch(/\bwithin \d+\b/);
+});
+
+test('S6 — un seul CTA, primaire, vers la demande d’offre', async ({ page }) => {
+  await page.goto('/');
+  const links = page.locator('[data-final-cta] a');
+  await expect(links).toHaveCount(1);
+  await expect(links).toHaveClass(/btn--primary/);
+  await expect(links).toHaveAttribute('href', '/contact/');
+});
+
+test('S6 — le spécimen final est décoratif', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.final__object')).toHaveAttribute('aria-hidden', 'true');
+});
+
+test('la homepage compte six sections, dans l’ordre prévu', async ({ page }) => {
+  await page.goto('/');
+  const surfaces = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('main > section')).map(
+      (el) => (el as HTMLElement).dataset.surface,
+    ),
+  );
+  expect(surfaces).toEqual(['ink', 'ink', 'paper', 'ink', 'paper', 'ink']);
+});
+
+test('un seul style de CTA primaire sur toute la homepage', async ({ page }) => {
+  await page.goto('/');
+  // Hero + CTA final + header : le primaire ne se dilue jamais.
+  const primaries = await page.locator('main a.btn--primary').count();
+  expect(primaries).toBe(2);
+});
+
+test('hiérarchie de titres correcte sur la homepage complète', async ({ page }) => {
+  await page.goto('/');
+  const levels = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('main h1, main h2, main h3')).map((el) =>
+      Number(el.tagName[1]),
+    ),
+  );
+  expect(levels[0]).toBe(1);
+  for (let i = 1; i < levels.length; i++) {
+    expect(levels[i]! - levels[i - 1]!, `saut de niveau à l'index ${i}`).toBeLessThanOrEqual(1);
+  }
+});

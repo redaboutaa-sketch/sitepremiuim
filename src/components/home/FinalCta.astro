@@ -1,0 +1,91 @@
+---
+/**
+ * S6 — CTA FINAL.
+ *
+ * Grand moment simple. Retour à l'encre, un seul spécimen très grand, une
+ * ligne de display et le CTA principal. Aucune répétition de la navigation,
+ * aucun rappel de catalogue : à ce point de la page, il ne reste qu'une seule
+ * action possible.
+ */
+import ProductObject from '@/components/media/ProductObject.astro';
+import { brandBySlug } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const feature = brandBySlug('coca-cola')!;
+---
+
+<section class="final section" data-surface="ink" data-final-cta aria-labelledby="final-title">
+  <div class="container final__grid">
+    <div class="final__content">
+      <p class="t-label t-label--ruled reveal">{t.finalCta.eyebrow}</p>
+      <h2 class="t-display-l final__title reveal" id="final-title">{t.finalCta.h2}</h2>
+      <p class="t-body-l t-secondary final__copy reveal">{t.finalCta.copy}</p>
+      <p class="reveal final__action">
+        <a class="btn btn--primary" href={i18n.path('contact')}>{t.cta.primary}</a>
+      </p>
+    </div>
+
+    <div class="final__object" data-family={feature.category} aria-hidden="true">
+      <ProductObject brand={feature} usage="hero" variant="plain" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--section-y);
+  }
+
+  .final__grid {
+    position: relative;
+    display: grid;
+    gap: var(--sp-8);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .final__grid {
+      grid-template-columns: 7fr 4fr;
+      gap: var(--sp-10);
+    }
+  }
+
+  .final__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 18ch;
+  }
+
+  .final__copy {
+    max-inline-size: 46ch;
+  }
+
+  .final__action {
+    margin-block-start: var(--sp-7);
+  }
+
+  /* Un seul objet, très grand, débordant à droite : le même cadrage que le
+     plan avant du hero. La page se referme comme elle s'est ouverte. */
+  .final__object {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .final__object {
+      display: block;
+      justify-self: end;
+      inline-size: min(100%, 320px);
+      transform: scale(1.15);
+      transform-origin: bottom right;
+    }
+  }
+</style>

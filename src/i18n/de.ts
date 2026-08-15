@@ -66,6 +66,19 @@ export const de: Dictionary = {
     cta: 'Internationale Entdeckungen ansehen',
   },
 
+  process: {
+    h2: 'Bewusst einfach.',
+    step1: { title: 'Entdecken', body: 'Sehen Sie sich die Getränke und Marken an, die zu Ihrem Geschäft passen.' },
+    step2: { title: 'Anfragen', body: 'Wählen Sie die Produkte aus, die Sie interessieren, und schildern Sie uns Ihren Bedarf.' },
+    step3: { title: 'Ins Geschäft kommen', body: 'Ivan Arsenov prüft Ihre Anfrage und führt das Gespräch direkt mit Ihnen weiter.' },
+  },
+
+  finalCta: {
+    eyebrow: 'Reden wir über Getränke',
+    h2: 'Suchen Sie die passenden Produkte für Ihr Sortiment?',
+    copy: 'Sagen Sie uns, wonach Sie suchen — und starten Sie das direkte Gespräch mit Ivan Arsenov.',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

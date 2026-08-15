@@ -9,7 +9,9 @@
  */
 import Categories from '@/components/home/Categories.astro';
 import Discovery from '@/components/home/Discovery.astro';
+import FinalCta from '@/components/home/FinalCta.astro';
 import FeaturedBrands from '@/components/home/FeaturedBrands.astro';
+import Process from '@/components/home/Process.astro';
 import Hero from '@/components/home/Hero.astro';
 import type { Locale } from '@/i18n';
 
@@ -24,6 +26,8 @@ const { locale } = Astro.props;
 <FeaturedBrands locale={locale} />
 <Categories locale={locale} />
 <Discovery locale={locale} />
+<Process locale={locale} />
+<FinalCta locale={locale} />
 
 <script>
   import '@/scripts/hero.ts';

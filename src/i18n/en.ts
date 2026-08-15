@@ -62,6 +62,19 @@ export const en = {
     cta: 'See international finds',
   },
 
+  process: {
+    h2: 'Simple by design.',
+    step1: { title: 'Explore', body: 'Browse the drinks and brands relevant to your business.' },
+    step2: { title: 'Enquire', body: 'Select the products you are interested in and send us your requirements.' },
+    step3: { title: "Let's talk business", body: 'Ivan Arsenov will review your enquiry and continue the conversation directly with you.' },
+  },
+
+  finalCta: {
+    eyebrow: "Let's talk drinks",
+    h2: 'Looking for the right products for your business?',
+    copy: "Tell us what you're looking for and start a direct B2B conversation with Ivan Arsenov.",
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',
