@@ -339,14 +339,33 @@ d'environnement, donc à la faire entrer dans les bundles client. On
    le répertoire du sous-domaine. Le `noindex` empêche l'indexation, pas la
    consultation par quelqu'un qui connaît l'URL.
 
-### Contrôles après mise en préproduction
+### Contrôles après mise en préproduction — automatisés
+
+Deux commandes, à lancer **depuis un poste ayant accès au site** :
+
+```bash
+# 1. Audit du site RÉELLEMENT EN LIGNE — aucun navigateur requis
+npm run qa:remote -- https://staging.ivanarsenov.de --expect=staging
+
+# 2. Parcours navigateur complet contre la même URL distante
+BASE_URL=https://staging.ivanarsenov.de npm run qa:remote:e2e
+```
+
+`qa:remote` couvre ce qu'un audit de `dist/` ne peut pas voir : HTTPS,
+certificat, chaîne de redirection, en-têtes réellement émises, assets
+réellement servis, 404, absence du styleguide, sonde du formulaire. Il
+échoue avec un code 1 si un contrôle bloquant tombe.
+
+C'est la distinction qui compte : **un artefact correct mal déployé reste un
+site cassé**. Un `.htaccess` non monté — parce que le gestionnaire de
+fichiers masque les fichiers cachés — laisse les balises `noindex` en place
+et supprime l'en-tête `X-Robots-Tag`, la CSP et la page 404. Seule
+l'interrogation du serveur le montre.
+
+Contrôle manuel complémentaire, quelques jours plus tard :
 
 | Contrôle | Attendu |
 | --- | --- |
-| `curl -sI https://staging.ivanarsenov.de/` | `200` + `x-robots-tag: noindex, nofollow` |
-| `curl -s https://staging.ivanarsenov.de/robots.txt` | `Disallow: /` |
-| Source d'une page | `<meta name="robots" content="noindex, nofollow">` |
-| `/styleguide/` | `404` |
 | Recherche `site:staging.ivanarsenov.de` | aucun résultat, durablement |
 
 ### Le formulaire en préproduction

@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 const CHROMIUM = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium';
 
+/** Cible distante éventuelle — désactive le serveur local. */
+const REMOTE = process.env.BASE_URL;
+
 /**
  * QA navigateur. Sert le `dist/` statique — donc on teste exactement
  * l'artefact qui sera uploadé chez Hostinger, pas le serveur de dev.
@@ -15,7 +18,15 @@ export default defineConfig({
   timeout: 30_000,
 
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    /*
+     * `BASE_URL` permet de rejouer la suite contre un environnement DISTANT
+     * (préproduction) plutôt que contre `dist/` servi localement. C'est la
+     * seule façon de valider ce qui est réellement en ligne : un artefact
+     * correct mal déployé reste un site cassé.
+     *
+     *   BASE_URL=https://staging.ivanarsenov.de npm run qa:remote:e2e
+     */
+    baseURL: REMOTE ?? 'http://127.0.0.1:4321',
     trace: 'off',
     screenshot: 'off',
     // Le Chromium préinstallé (build 1194) ne correspond pas au build attendu
@@ -26,7 +37,8 @@ export default defineConfig({
 
   // Les tests unitaires du catalogue ne touchent pas au navigateur : NO_SERVER=1
   // évite de servir dist/ pour rien, et permet d'utiliser ce gate AVANT le build.
-  webServer: process.env.NO_SERVER
+  // Une cible distante n'a évidemment pas besoin qu'on serve `dist/`.
+  webServer: process.env.NO_SERVER || REMOTE
     ? undefined
     : {
         command: 'npx --yes serve dist -l 4321 --no-clipboard',
