@@ -12,6 +12,7 @@
  *
  * Sans JavaScript, il reste dense en permanence — lisible dans tous les cas.
  */
+import EnquiryIndicator from '@/components/enquiry/EnquiryIndicator.astro';
 import LangSwitch from './LangSwitch.astro';
 import SiteMark from './SiteMark.astro';
 import { useI18n, type Locale, type PageKey } from '@/i18n';
@@ -58,6 +59,7 @@ const NAV: Array<{ key: PageKey; label: string }> = [
     </nav>
 
     <div class="header__actions">
+      <EnquiryIndicator locale={locale} class="header__enquiry" />
       <LangSwitch page={page} locale={locale} />
       <a class="btn btn--primary header__cta" href={i18n.path('contact')}>{t.cta.primary}</a>
 
@@ -138,6 +140,12 @@ const NAV: Array<{ key: PageKey; label: string }> = [
 
   .header__cta {
     display: none;
+  }
+
+  /* Le compteur n'apparaît qu'avec une sélection ; il reste visible sur
+     mobile, où il remplace le CTA absent du header. */
+  .header__enquiry {
+    order: -1;
   }
 
   /* ── Bouton de menu — tactile et clavier, jamais dépendant du survol ── */

@@ -1,0 +1,101 @@
+---
+/**
+ * + ADD TO ENQUIRY
+ *
+ * Bascule accessible : `aria-pressed` porte l'état, et le libellé change
+ * réellement — un bouton qui annonce toujours « Add » ment au lecteur d'écran.
+ *
+ * ⚠️ Rendu uniquement si JavaScript est disponible : sans lui, la sélection
+ * ne peut pas exister, et un bouton mort serait pire que pas de bouton. Le
+ * formulaire reste utilisable via son champ de texte libre.
+ *
+ * Lexique strictement B2B. Jamais cart, basket, checkout, buy, order, total.
+ */
+import type { Brand } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  brand: Brand;
+  locale: Locale;
+  class?: string;
+}
+
+const { brand, locale, class: className } = Astro.props;
+const t = useI18n(locale).t;
+---
+
+<button
+  type="button"
+  class:list={['enquiry-btn', className]}
+  data-enquiry-add={brand.slug}
+  data-brand-slug={brand.slug}
+  data-brand-name={brand.brand}
+  data-label-add={t.enquiry.add}
+  data-label-selected={t.enquiry.selected}
+  data-label-full={t.enquiry.full}
+  aria-pressed="false"
+  hidden
+>
+  <span class="enquiry-btn__mark" aria-hidden="true"></span>
+  <span data-enquiry-label>{t.enquiry.add}</span>
+</button>
+
+<script>
+  // Les boutons n'apparaissent qu'une fois le script chargé.
+  for (const el of document.querySelectorAll('[data-enquiry-add][hidden]')) {
+    el.removeAttribute('hidden');
+  }
+</script>
+
+<style>
+  .enquiry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-block-size: 44px;
+    padding-block: var(--sp-2);
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    font-stretch: calc(var(--wdth-label) * 1%);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    text-align: start;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  /* Marque de sélection : un carré vide qui se remplit. Pas de coche, pas de
+     pastille rouge, aucun vocabulaire de panier. */
+  .enquiry-btn__mark {
+    inline-size: 10px;
+    block-size: 10px;
+    flex: none;
+    border: var(--hairline) solid var(--rule-strong);
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .enquiry-btn:hover {
+    color: var(--fg-secondary);
+  }
+
+  .enquiry-btn:hover .enquiry-btn__mark {
+    border-color: var(--fg-secondary);
+  }
+
+  .enquiry-btn[aria-pressed='true'] {
+    color: var(--fg);
+  }
+
+  .enquiry-btn[aria-pressed='true'] .enquiry-btn__mark {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+
+  .enquiry-btn[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+</style>

@@ -7,6 +7,7 @@
  * les styles en TR-002.
  */
 import BaseHead from '@/components/seo/BaseHead.astro';
+import EnquiryPanel from '@/components/enquiry/EnquiryPanel.astro';
 import Footer from '@/components/shell/Footer.astro';
 import Header from '@/components/shell/Header.astro';
 import MobileNav from '@/components/shell/MobileNav.astro';
@@ -62,8 +63,12 @@ const i18n = useI18n(locale);
 
     <Footer page={page} locale={locale} />
 
+    <EnquiryPanel locale={locale} />
+
     <script>
       import '@/scripts/shell.ts';
+      import { initEnquiry } from '@/scripts/enquiry-ui.ts';
+      initEnquiry();
     </script>
   </body>
 </html>

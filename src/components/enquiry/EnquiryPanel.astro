@@ -1,0 +1,137 @@
+---
+/**
+ * PANNEAU DE SÉLECTION
+ *
+ * Liste d'intérêt, pas panier : aucune quantité, aucun prix, aucun total.
+ * Focus piégé, `Esc`, focus restauré, arrière-plan inerte.
+ */
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+---
+
+<div
+  class="enquiry-panel"
+  data-enquiry-panel
+  data-label-remove={t.enquiry.remove}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="enquiry-panel-title"
+  hidden
+>
+  <div class="enquiry-panel__inner">
+    <div class="enquiry-panel__head">
+      <h2 class="t-h3" id="enquiry-panel-title">{t.enquiry.panelTitle}</h2>
+      <button type="button" class="enquiry-panel__close t-label" data-enquiry-close>
+        {t.enquiry.close}
+      </button>
+    </div>
+
+    <p class="t-small t-secondary enquiry-panel__lead">{t.enquiry.panelLead}</p>
+
+    <ul class="enquiry-panel__items" data-enquiry-list role="list"></ul>
+    <p class="t-body t-muted" data-enquiry-empty hidden>{t.enquiry.empty}</p>
+
+    <div class="enquiry-panel__foot">
+      <a class="btn btn--primary btn--full" href={i18n.path('contact')}>{t.enquiry.request}</a>
+      <button type="button" class="enquiry-panel__clear t-label" data-enquiry-clear>
+        {t.enquiry.clearAll}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enquiry-panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-panel);
+    background: rgb(10 10 11 / 0.72);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .enquiry-panel[hidden] {
+    display: none;
+  }
+
+  .enquiry-panel__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    inline-size: min(100%, 26rem);
+    block-size: 100%;
+    padding: var(--sp-6) var(--sp-6) var(--sp-7);
+    background: var(--ink-900);
+    border-inline-start: var(--hairline) solid var(--rule);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .enquiry-panel__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding-block-end: var(--sp-4);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .enquiry-panel__close,
+  .enquiry-panel__clear,
+  .enquiry-panel__remove {
+    min-block-size: 44px;
+    color: var(--fg-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .enquiry-panel__close:hover,
+  .enquiry-panel__clear:hover,
+  .enquiry-panel__remove:hover {
+    color: var(--fg);
+  }
+
+  .enquiry-panel__lead {
+    max-inline-size: 34ch;
+  }
+
+  .enquiry-panel__items {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .enquiry-panel :global(.enquiry-panel__item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding-block: var(--sp-3);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .enquiry-panel :global(.enquiry-panel__remove) {
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    flex: none;
+  }
+
+  .enquiry-panel__foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+    padding-block-start: var(--sp-5);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+</style>

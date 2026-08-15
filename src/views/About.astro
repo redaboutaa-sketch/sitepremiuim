@@ -1,0 +1,147 @@
+---
+/**
+ * PAGE /about/
+ *
+ * ⚠️ Aucun storytelling fabriqué. Le corps de texte est repris TEL QUEL du
+ * copy deck client : ni date de création, ni effectif, ni historique, ni
+ * « passion d'enfance ». Ces informations n'existent pas.
+ *
+ * La crédibilité repose sur ce qui est vérifiable : identité juridique
+ * complète et numéro de TVA contrôlable via VIES.
+ */
+import { COMPANY, addressLines } from '@/data/company';
+import { catalogStats } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+const stats = catalogStats();
+---
+
+<section class="about section" data-surface="ink">
+  <div class="container about__grid">
+    <div>
+      <p class="t-label t-label--ruled">{t.about.eyebrow}</p>
+      <h1 class="t-h1 about__title">{t.about.h1}</h1>
+    </div>
+
+    <div class="about__body">
+      {t.about.body.map((paragraph) => <p class="t-body-l t-secondary">{paragraph}</p>)}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" data-surface="paper">
+  <div class="container">
+    <p class="t-label t-label--ruled">{t.about.detailsLabel}</p>
+
+    <dl class="about__facts">
+      <div class="about__fact">
+        <dt class="t-label">{t.about.factSelection}</dt>
+        <dd class="t-h3">{t.drinks.countMany.replace('{n}', String(stats.total))}</dd>
+      </div>
+      <div class="about__fact">
+        <dt class="t-label">{t.about.factFamilies}</dt>
+        <dd class="t-h3">{t.about.familiesValue}</dd>
+      </div>
+      <div class="about__fact">
+        <dt class="t-label">{t.about.factBased}</dt>
+        <dd class="t-h3">{COMPANY.address.city}, {COMPANY.address.country}</dd>
+      </div>
+      <div class="about__fact">
+        <dt class="t-label">{t.footer.vatId}</dt>
+        <dd class="t-h3 about__vat">{COMPANY.vatId}</dd>
+      </div>
+    </dl>
+
+    <address class="about__address t-body">
+      <strong>{COMPANY.legalName}</strong>
+      {addressLines().map((line) => <span>{line}</span>)}
+      <a class="link-nav" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+    </address>
+
+    <p class="about__action">
+      <a class="btn btn--primary" href={i18n.path('contact')}>{t.cta.primary}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .about__grid {
+    display: grid;
+    gap: var(--sp-7);
+  }
+
+  @media (min-width: 1024px) {
+    .about__grid {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--sp-10);
+    }
+  }
+
+  .about__title {
+    margin-block-start: var(--sp-5);
+    max-inline-size: 14ch;
+  }
+
+  .about__body {
+    display: grid;
+    gap: var(--sp-5);
+    max-inline-size: 58ch;
+  }
+
+  .about__facts {
+    display: grid;
+    gap: 0;
+    margin-block: var(--sp-7) var(--sp-8);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  @media (min-width: 768px) {
+    .about__facts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-block-end: var(--hairline) solid var(--rule);
+    }
+  }
+
+  .about__fact {
+    display: grid;
+    gap: var(--sp-3);
+    padding-block: var(--sp-5);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  @media (min-width: 768px) {
+    .about__fact {
+      padding: var(--sp-5) var(--sp-5) var(--sp-6);
+      border-block-end: none;
+      border-inline-start: var(--hairline) solid var(--rule);
+    }
+
+    .about__fact:first-child {
+      padding-inline-start: 0;
+      border-inline-start: none;
+    }
+  }
+
+  .about__vat {
+    font-variant-numeric: tabular-nums;
+    user-select: all;
+  }
+
+  .about__address {
+    display: grid;
+    gap: var(--sp-1);
+    font-style: normal;
+    color: var(--fg-secondary);
+  }
+
+  .about__action {
+    margin-block-start: var(--sp-7);
+  }
+</style>

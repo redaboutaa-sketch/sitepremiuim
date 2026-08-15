@@ -1,0 +1,176 @@
+---
+/**
+ * GRILLE DU CATALOGUE
+ *
+ * Les 62 marques sont rendues par le serveur : la page est lisible et
+ * indexable sans JavaScript, et le filtrage n'est qu'un masquage côté client.
+ *
+ * Ce n'est pas une grille e-commerce : pas de carte flottante, pas d'ombre,
+ * pas de prix, pas de note, pas de badge. Chaque entrée est un spécimen
+ * indexé dans une cellule à filets mutualisés.
+ */
+import EnquiryButton from '@/components/enquiry/EnquiryButton.astro';
+import ProductObject from '@/components/media/ProductObject.astro';
+import { CATEGORIES, allBrands, searchIndex } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const familyLabel = (slug: string) =>
+  CATEGORIES.find((c) => c.slug === slug)?.name[locale] ?? '';
+
+const brands = allBrands().map((brand, i) => ({
+  brand,
+  index: String(i + 1).padStart(2, '0'),
+  search: searchIndex(brand),
+}));
+---
+
+<div class="catalog">
+  <p
+    class="catalog__count t-label"
+    data-result-count
+    data-label-one={t.drinks.countOne}
+    data-label-many={t.drinks.countMany}
+    aria-live="polite"
+    role="status"
+  >
+    {t.drinks.countMany.replace('{n}', String(brands.length))}
+  </p>
+
+  <ul class="catalog__grid cells" role="list" data-catalog>
+    {
+      brands.map(({ brand, index, search }) => (
+        <li
+          class="catalog__cell"
+          data-brand={brand.slug}
+          data-category={brand.category}
+          data-international={brand.internationalFind ? 'true' : 'false'}
+          data-search={search}
+          data-family={brand.category}
+        >
+          <ProductObject brand={brand} usage="packshot" index={index} variant="plain" />
+
+          <div class="catalog__meta">
+            <p class="t-h3 catalog__name" data-brand-slug={brand.slug} data-brand-name={brand.brand}>
+              {brand.brand}
+            </p>
+            <p class="t-label catalog__family">{familyLabel(brand.category)}</p>
+            {
+              brand.internationalFind && (
+                <p class="t-index catalog__tag">{t.drinks.internationalTag}</p>
+              )
+            }
+            {brand.scopeNote && <p class="visually-hidden">{brand.scopeNote}</p>}
+          </div>
+
+          <EnquiryButton brand={brand} locale={locale} class="catalog__action" />
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="catalog__empty" data-catalog-empty hidden>
+    <p class="t-h3">{t.drinks.emptyTitle}</p>
+    <p class="t-body t-secondary catalog__empty-copy">{t.drinks.emptyCopy}</p>
+    <p class="catalog__empty-actions">
+      <button class="btn btn--secondary" type="button" data-catalog-reset>{t.drinks.reset}</button>
+      <a class="btn btn--text" href={i18n.path('contact')}>{t.drinks.emptyCta}</a>
+    </p>
+  </div>
+</div>
+
+<style>
+  .catalog__count {
+    padding-block: var(--sp-5);
+    color: var(--fg-muted);
+  }
+
+  .catalog__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 640px) {
+    .catalog__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .catalog__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .catalog__grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .catalog__cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-5) var(--sp-4) var(--sp-4);
+    min-inline-size: 0;
+    transition: background-color var(--dur-base) var(--ease-out);
+  }
+
+  .catalog__cell[hidden] {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .catalog__cell:hover {
+      background: var(--paper-alt);
+    }
+  }
+
+  .catalog__meta {
+    display: grid;
+    gap: var(--sp-1);
+  }
+
+  .catalog__name {
+    color: var(--fg);
+    overflow-wrap: break-word;
+  }
+
+  .catalog__family {
+    color: var(--fg-muted);
+  }
+
+  .catalog__tag {
+    color: var(--signal-text);
+  }
+
+  .catalog__action {
+    margin-block-start: auto;
+  }
+
+  .catalog__empty {
+    display: grid;
+    gap: var(--sp-4);
+    justify-items: start;
+    padding-block: var(--sp-9);
+  }
+
+  .catalog__empty-copy {
+    max-inline-size: 44ch;
+  }
+
+  .catalog__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-5);
+    margin-block-start: var(--sp-3);
+  }
+</style>

@@ -1,11 +1,11 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Placeholder from '@/views/Placeholder.astro';
+import About from '@/views/About.astro';
 
 const page = 'about' as const;
 const locale = 'en' as const;
 ---
 
 <Base page={page} locale={locale}>
-  <Placeholder page={page} locale={locale} />
+  <About locale={locale} />
 </Base>

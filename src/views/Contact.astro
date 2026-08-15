@@ -1,0 +1,300 @@
+---
+/**
+ * PAGE /contact/ — Business Enquiry.
+ *
+ * Conversion principale du site.
+ *
+ * ⚠️ FORM_UI_READY ≠ FORM_DELIVERY_READY
+ * L'interface est complète et testée. Le TRANSPORT réel (PHP sur Hostinger)
+ * n'est pas configuré : aucun e-mail n'est envoyé aujourd'hui. Le formulaire
+ * le dit explicitement à l'utilisateur plutôt que de simuler une livraison.
+ *
+ * ⚠️ Aucun délai de réponse n'est promis (décision D13).
+ */
+import { COMPANY, addressLines } from '@/data/company';
+import { allBrands } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const brands = allBrands();
+
+/** Champs requis : le strict nécessaire pour rappeler et qualifier. */
+const REQUIRED = ['firstName', 'lastName', 'company', 'country', 'email', 'message'] as const;
+const OPTIONAL = ['vat', 'phone', 'volume'] as const;
+---
+
+<section class="contact section" data-surface="ink">
+  <div class="container contact__grid">
+    <div class="contact__aside">
+      <p class="t-label t-label--ruled">{t.contact.eyebrow}</p>
+      <h1 class="t-h1 contact__title">{t.contact.h1}</h1>
+      <p class="t-body-l t-secondary contact__intro">{t.contact.intro}</p>
+
+      <address class="contact__address t-body">
+        <strong>{COMPANY.legalName}</strong>
+        {addressLines().map((line) => <span>{line}</span>)}
+        <a class="link-nav" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+      </address>
+    </div>
+
+    <form
+      class="contact__form"
+      data-enquiry-form
+      data-messages={JSON.stringify({
+        submit: t.cta.sendEnquiry,
+        submitting: t.contact.submitting,
+        invalid: t.contact.invalid,
+        success: t.contact.success,
+        serverError: t.contact.serverError,
+        notConfigured: t.contact.notConfigured,
+        remove: t.enquiry.remove,
+        err_firstName_required: t.contact.errors.firstName,
+        err_lastName_required: t.contact.errors.lastName,
+        err_company_required: t.contact.errors.company,
+        err_country_required: t.contact.errors.country,
+        err_email_required: t.contact.errors.email,
+        err_email_format: t.contact.errors.emailFormat,
+        err_message_required: t.contact.errors.message,
+        err_consent: t.contact.errors.consent,
+      })}
+      method="post"
+      action="/api/enquiry.php"
+      novalidate
+    >
+      {/* Piège à robots : invisible, hors du parcours clavier et non annoncé. */}
+      <div class="contact__honeypot" aria-hidden="true">
+        <label for="company-website">Company website</label>
+        <input id="company-website" name="company_website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <input type="hidden" name="started_at" data-started-at value="" />
+
+      <div class="contact__rows">
+        <div class="field">
+          <label class="field__label" for="firstName">{t.contact.fields.firstName}</label>
+          <input class="field__input" id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+          <p class="field__error" data-error-for="firstName" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="lastName">{t.contact.fields.lastName}</label>
+          <input class="field__input" id="lastName" name="lastName" type="text" autocomplete="family-name" required />
+          <p class="field__error" data-error-for="lastName" hidden></p>
+        </div>
+
+        <div class="field field--wide">
+          <label class="field__label" for="company">{t.contact.fields.company}</label>
+          <input class="field__input" id="company" name="company" type="text" autocomplete="organization" required />
+          <p class="field__error" data-error-for="company" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="country">{t.contact.fields.country}</label>
+          <input class="field__input" id="country" name="country" type="text" autocomplete="country-name" required />
+          <p class="field__error" data-error-for="country" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="vat">
+            {t.contact.fields.vat} <span class="field__optional">{t.contact.optional}</span>
+          </label>
+          <input class="field__input" id="vat" name="vat" type="text" autocomplete="off" />
+          <p class="field__error" data-error-for="vat" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="email">{t.contact.fields.email}</label>
+          <input class="field__input" id="email" name="email" type="email" autocomplete="email" required />
+          <p class="field__error" data-error-for="email" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="phone">
+            {t.contact.fields.phone} <span class="field__optional">{t.contact.optional}</span>
+          </label>
+          <input class="field__input" id="phone" name="phone" type="tel" autocomplete="tel" />
+          <p class="field__error" data-error-for="phone" hidden></p>
+        </div>
+
+        {/* Sélection transférée depuis l'enquiry list — éditable, retirable. */}
+        <div class="field field--wide">
+          <span class="field__label">
+            {t.contact.fields.interest} <span class="field__optional">{t.contact.optional}</span>
+          </span>
+          <ul class="contact__chips" data-selection-chips role="list"></ul>
+          <p class="t-small t-muted" data-selection-empty>{t.contact.noSelection}</p>
+          <label class="visually-hidden" for="interest">{t.contact.fields.interest}</label>
+          <textarea
+            class="field__input contact__textarea"
+            id="interest"
+            name="interest"
+            rows="2"
+            placeholder={t.contact.interestPlaceholder}
+          ></textarea>
+        </div>
+
+        <div class="field field--wide">
+          <label class="field__label" for="volume">
+            {t.contact.fields.volume} <span class="field__optional">{t.contact.optional}</span>
+          </label>
+          <input class="field__input" id="volume" name="volume" type="text" placeholder={t.contact.volumePlaceholder} />
+        </div>
+
+        <div class="field field--wide">
+          <label class="field__label" for="message">{t.contact.fields.message}</label>
+          <textarea class="field__input contact__textarea" id="message" name="message" rows="5" required></textarea>
+          <p class="field__error" data-error-for="message" hidden></p>
+        </div>
+
+        <div class="field field--wide contact__consent">
+          <label class="contact__check">
+            <input type="checkbox" id="consent" name="consent" required />
+            <span class="t-small" set:html={t.contact.consent.replace('{privacy}', `<a class="link-inline" href="${i18n.path('privacy')}">${t.footer.privacy}</a>`)} />
+          </label>
+          <p class="field__error" data-error-for="consent" hidden></p>
+        </div>
+      </div>
+
+      <div class="contact__submit">
+        <button class="btn btn--primary" type="submit" data-submit>
+          <span data-submit-label>{t.cta.sendEnquiry}</span>
+        </button>
+        <p class="t-small t-muted contact__required">{t.contact.requiredNote}</p>
+      </div>
+
+      {/* États annoncés aux technologies d'assistance. */}
+      <div class="contact__status" data-form-status role="status" aria-live="polite" tabindex="-1" hidden></div>
+    </form>
+  </div>
+</section>
+
+{/* Table de correspondance slug → nom, pour les chips. Aucune donnée métier
+    n'est dupliquée : elle est dérivée du catalogue validé. */}
+<script type="application/json" data-brand-names set:html={JSON.stringify(
+  Object.fromEntries(brands.map((b) => [b.slug, b.brand])),
+)} />
+
+<script>
+  import { initEnquiryForm } from '@/scripts/enquiry-form.ts';
+  initEnquiryForm();
+</script>
+
+<style>
+  .contact__grid {
+    display: grid;
+    gap: var(--sp-8);
+  }
+
+  @media (min-width: 1024px) {
+    .contact__grid {
+      grid-template-columns: 4fr 7fr;
+      gap: var(--sp-10);
+      align-items: start;
+    }
+  }
+
+  .contact__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 12ch;
+  }
+
+  .contact__intro {
+    max-inline-size: 40ch;
+  }
+
+  .contact__address {
+    display: grid;
+    gap: var(--sp-1);
+    margin-block-start: var(--sp-7);
+    padding-block-start: var(--sp-5);
+    border-block-start: var(--hairline) solid var(--rule);
+    font-style: normal;
+    color: var(--fg-secondary);
+  }
+
+  .contact__rows {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  @media (min-width: 640px) {
+    .contact__rows {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .contact__textarea {
+    resize: vertical;
+    font-family: var(--font-sans);
+  }
+
+  .contact__honeypot {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .contact__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  .contact__chips:empty {
+    display: none;
+  }
+
+  .contact__check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    cursor: pointer;
+  }
+
+  .contact__check input {
+    inline-size: 18px;
+    block-size: 18px;
+    margin-block-start: 2px;
+    accent-color: var(--paper);
+    flex: none;
+  }
+
+  .contact__submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-5);
+    margin-block-start: var(--sp-7);
+  }
+
+  .contact__status {
+    margin-block-start: var(--sp-6);
+    padding: var(--sp-5);
+    border-inline-start: 2px solid var(--rule-strong);
+    background: var(--ink-800);
+  }
+
+  .contact__status[hidden] {
+    display: none;
+  }
+
+  .contact__status[data-tone='success'] {
+    border-inline-start-color: var(--signal-energy);
+  }
+
+  .contact__status[data-tone='error'] {
+    border-inline-start-color: var(--signal-carbonated-text);
+  }
+</style>

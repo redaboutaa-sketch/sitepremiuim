@@ -1,0 +1,66 @@
+---
+/**
+ * PAGE /drinks/ — outil d'exploration B2B.
+ *
+ * Hiérarchie volontairement en retrait par rapport à la homepage : le hero
+ * de cette page annonce, il ne met pas en scène. Le catalogue est le
+ * protagoniste, pas l'en-tête.
+ *
+ * Surface Paper : le catalogue se lit, il ne se contemple pas.
+ */
+import CatalogFilters from '@/components/catalog/CatalogFilters.astro';
+import CatalogGrid from '@/components/catalog/CatalogGrid.astro';
+import { catalogStats } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+const stats = catalogStats();
+---
+
+<section class="drinks-head section section--tight" data-surface="paper">
+  <div class="container">
+    <p class="t-label t-label--ruled">{t.drinks.eyebrow}</p>
+    <h1 class="t-h1 drinks-head__title">{t.pages.drinks.title}</h1>
+    <p class="t-body-l drinks-head__intro">{t.drinks.intro}</p>
+  </div>
+</section>
+
+<section class="drinks-body" data-surface="paper" aria-label={t.pages.drinks.title}>
+  <div class="container">
+    <CatalogFilters locale={locale} active="all" query="" />
+    <CatalogGrid locale={locale} />
+  </div>
+</section>
+
+<script>
+  import { initCatalog } from '@/scripts/catalog.ts';
+  initCatalog();
+</script>
+
+<style define:vars={{ total: stats.total }}>
+  .drinks-head {
+    padding-block-end: var(--sp-7);
+  }
+
+  .drinks-head__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 16ch;
+  }
+
+  .drinks-head__intro {
+    color: var(--fg-secondary);
+    max-inline-size: 54ch;
+  }
+
+  .drinks-body {
+    background: var(--bg);
+    color: var(--fg);
+    padding-block-end: var(--section-y);
+  }
+</style>

@@ -1,0 +1,177 @@
+---
+/**
+ * PAGE /brands/ — découverte, pas exploration.
+ *
+ * Fonction délibérément distincte de /drinks/ :
+ *   · /drinks/ = trouver et filtrer un catalogue (grille, recherche, filtres)
+ *   · /brands/ = parcourir un univers de marques (registre typographique)
+ *
+ * D'où un traitement inverse : ici les noms sont ÉNORMES et les plateaux
+ * absents. C'est un répertoire, lu comme un générique de fin — pas une
+ * deuxième grille.
+ *
+ * Chaque marque conduit au catalogue filtré correspondant.
+ */
+import EnquiryButton from '@/components/enquiry/EnquiryButton.astro';
+import { CATEGORIES, allBrands, brandsInCategory, catalogStats } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+const stats = catalogStats();
+
+const groups = CATEGORIES.map((category) => ({
+  category,
+  brands: brandsInCategory(category.slug),
+}));
+
+const featuredCount = allBrands().filter((b) => b.featured).length;
+---
+
+<section class="brands-head section section--tight" data-surface="ink">
+  <div class="container">
+    <p class="t-label t-label--ruled">{t.brands.eyebrow}</p>
+    <h1 class="t-h1 brands-head__title">{t.brands.h1}</h1>
+    <p class="t-body-l t-secondary brands-head__intro">{t.brands.intro}</p>
+    <p class="t-index brands-head__stats">
+      {t.brands.stats
+        .replace('{total}', String(stats.total))
+        .replace('{families}', String(CATEGORIES.length))
+        .replace('{featured}', String(featuredCount))}
+    </p>
+  </div>
+</section>
+
+{
+  groups.map(({ category, brands }) => (
+    <section class="brands-group" data-surface="ink" data-family={category.slug}>
+      <div class="container">
+        <div class="brands-group__head">
+          <p class="t-label t-label--ruled">
+            {category.index} — {category.name[locale]}
+          </p>
+          <p class="t-small t-muted brands-group__count">
+            {t.drinks.countMany.replace('{n}', String(brands.length))}
+          </p>
+        </div>
+
+        <ul class="brands-group__list" role="list">
+          {brands.map((brand) => (
+            <li class="brands-group__item">
+              <a class="brands-group__link" href={`${i18n.path('drinks')}?brand=${brand.slug}`}>
+                <span class="brands-group__name" data-brand-slug={brand.slug} data-brand-name={brand.brand}>
+                  {brand.brand}
+                </span>
+                {brand.internationalFind && (
+                  <span class="t-index brands-group__tag">{t.drinks.internationalTag}</span>
+                )}
+              </a>
+              <EnquiryButton brand={brand} locale={locale} class="brands-group__action" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))
+}
+
+<section class="section section--tight" data-surface="ink">
+  <div class="container">
+    <p class="t-body-l t-secondary brands-foot">{t.brands.foot}</p>
+    <p class="brands-foot__action">
+      <a class="btn btn--primary" href={i18n.path('contact')}>{t.cta.primary}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .brands-head__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 18ch;
+  }
+
+  .brands-head__intro {
+    max-inline-size: 52ch;
+  }
+
+  .brands-head__stats {
+    margin-block-start: var(--sp-6);
+    color: var(--fg-muted);
+  }
+
+  .brands-group {
+    padding-block: var(--sp-8);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .brands-group__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    margin-block-end: var(--sp-6);
+  }
+
+  /*
+   * Registre typographique : les noms sont le sujet, à l'échelle du display.
+   * C'est l'inverse exact de /drinks/, où le nom est une légende sous un
+   * plateau. Les deux pages ne peuvent pas être confondues.
+   */
+  .brands-group__list {
+    display: grid;
+    gap: 0;
+  }
+
+  .brands-group__item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    padding-block: var(--sp-4);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .brands-group__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
+    flex-wrap: wrap;
+    min-block-size: 44px;
+  }
+
+  .brands-group__name {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--fg-secondary);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .brands-group__link:hover .brands-group__name,
+  .brands-group__link:focus-visible .brands-group__name {
+    color: var(--fg);
+  }
+
+  .brands-group__tag {
+    color: var(--signal-text);
+  }
+
+  .brands-group__action {
+    flex: none;
+  }
+
+  .brands-foot {
+    max-inline-size: 46ch;
+  }
+
+  .brands-foot__action {
+    margin-block-start: var(--sp-6);
+  }
+</style>

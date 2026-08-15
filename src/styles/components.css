@@ -330,6 +330,22 @@
   border-inline-start: var(--hairline) solid var(--signal);
 }
 
+/*
+ * Sur surface claire, le voile de signal seul est presque invisible : le
+ * plateau paraissait vide, comme un défaut de rendu plutôt qu'un emplacement
+ * en attente. On lui donne un corps neutre, et le signal reste la seule
+ * indication colorée.
+ */
+[data-surface='paper'] .product-object__fallback {
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--signal) 12%, transparent),
+      transparent 65%
+    ),
+    var(--paper-alt);
+}
+
 .product-object__fallback-name {
   font-family: var(--font-display);
   font-size: clamp(1rem, 3.2vw, var(--fs-h3));
@@ -358,4 +374,37 @@
   font-size: var(--fs-index);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
+}
+
+/* ======================================================================
+ * CHIP — marque transférée depuis l'enquiry list vers le formulaire.
+ * Retirable individuellement. Aucun vocabulaire de panier.
+ * =================================================================== */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-block-size: 36px;
+  padding-inline: var(--sp-3);
+  border: var(--hairline) solid var(--rule-strong);
+  font-size: var(--fs-small);
+  color: var(--fg);
+}
+
+.chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  min-block-size: 36px;
+  margin-inline-end: calc(var(--sp-2) * -1);
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--fg-muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.chip__remove:hover {
+  color: var(--fg);
 }

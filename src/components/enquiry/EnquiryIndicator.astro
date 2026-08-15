@@ -1,0 +1,66 @@
+---
+/**
+ * COMPTEUR DE SÉLECTION
+ *
+ * N'existe que lorsqu'une sélection existe. Aucun badge rouge, aucune
+ * iconographie de panier : un compteur discret en petites capitales.
+ */
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className } = Astro.props;
+const t = useI18n(locale).t;
+---
+
+<button
+  type="button"
+  class:list={['enquiry-indicator', className]}
+  data-enquiry-indicator
+  data-enquiry-open
+  data-label-count-one={t.enquiry.countOne}
+  data-label-count-many={t.enquiry.countMany}
+  hidden
+>
+  <span class="enquiry-indicator__dot" aria-hidden="true"></span>
+  <span data-enquiry-count></span>
+</button>
+
+<style>
+  .enquiry-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-block-size: 44px;
+    padding-inline: var(--sp-4);
+    border: var(--hairline) solid var(--rule-strong);
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    font-stretch: calc(var(--wdth-label) * 1%);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--fg);
+    white-space: nowrap;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .enquiry-indicator[hidden] {
+    display: none;
+  }
+
+  .enquiry-indicator:hover {
+    border-color: var(--fg);
+  }
+
+  .enquiry-indicator__dot {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--radius-full);
+    background: var(--fg);
+    flex: none;
+  }
+</style>

@@ -1,0 +1,184 @@
+---
+/**
+ * FILTRES ET RECHERCHE
+ *
+ * Rendus par le serveur, opérationnels sans JavaScript : ce sont de vrais
+ * liens vers des URL filtrées, et un formulaire GET pour la recherche.
+ * Le script les intercepte pour filtrer instantanément côté client, sans
+ * rechargement — mais la page reste utilisable s'il ne s'exécute pas.
+ *
+ * Pas un tableau de bord SaaS : des libellés en petites capitales séparés par
+ * des filets, dans la même grammaire que l'index des familles de la homepage.
+ */
+import { CATEGORIES } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  active: string;
+  query: string;
+}
+
+const { locale, active, query } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const base = i18n.path('drinks');
+const filters = [
+  { slug: 'all', label: t.drinks.filterAll },
+  ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.name[locale] })),
+];
+---
+
+<div class="filters" data-filters>
+  <form class="filters__search" method="get" action={base} role="search">
+    <label class="visually-hidden" for="catalog-search">{t.drinks.searchLabel}</label>
+    <input
+      class="filters__input"
+      id="catalog-search"
+      type="search"
+      name="q"
+      value={query}
+      placeholder={t.drinks.searchPlaceholder}
+      autocomplete="off"
+      data-search-input
+    />
+    <button class="filters__reset t-label" type="button" data-search-reset hidden>
+      {t.drinks.reset}
+    </button>
+    <noscript><button class="btn btn--secondary" type="submit">{t.drinks.searchLabel}</button></noscript>
+  </form>
+
+  <nav class="filters__list" aria-label={t.drinks.filterLabel}>
+    {
+      filters.map((f) => (
+        <a
+          class="filters__item t-label"
+          href={f.slug === 'all' ? base : `${base}?category=${f.slug}`}
+          data-filter={f.slug}
+          data-family={f.slug === 'all' ? undefined : f.slug}
+          aria-current={active === f.slug ? 'true' : undefined}
+        >
+          {f.label}
+        </a>
+      ))
+    }
+  </nav>
+</div>
+
+<style>
+  .filters {
+    display: grid;
+    gap: var(--sp-5);
+    padding-block: var(--sp-5);
+    border-block: var(--hairline) solid var(--rule);
+  }
+
+  @media (min-width: 1024px) {
+    .filters {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--sp-8);
+    }
+  }
+
+  .filters__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .filters__input {
+    inline-size: 100%;
+    max-inline-size: 26rem;
+    min-block-size: 44px;
+    padding: var(--sp-2) 0;
+    border: none;
+    border-block-end: var(--hairline) solid var(--rule-strong);
+    background: transparent;
+    color: var(--fg);
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .filters__input::placeholder {
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+  }
+
+  .filters__input:hover {
+    border-block-end-color: var(--fg-muted);
+  }
+
+  .filters__input:focus-visible {
+    border-block-end-color: var(--fg);
+    outline-offset: 6px;
+  }
+
+  .filters__reset {
+    min-block-size: 44px;
+    color: var(--fg-muted);
+    flex: none;
+  }
+
+  .filters__reset:hover {
+    color: var(--fg);
+  }
+
+  .filters__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) 0;
+  }
+
+  .filters__item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-inline: var(--sp-4);
+    color: var(--fg-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .filters__item:first-child {
+    padding-inline-start: 0;
+  }
+
+  /* Séparateur par filet, pas par puce ni par pilule. */
+  .filters__item + .filters__item::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inline-size: var(--hairline);
+    block-size: 0.75em;
+    background: var(--rule);
+  }
+
+  .filters__item:hover {
+    color: var(--fg-secondary);
+  }
+
+  /* L'état actif est signalé par un filet à la couleur de la famille —
+     jamais par un fond plein ni une pilule. */
+  .filters__item[aria-current='true'] {
+    color: var(--fg);
+  }
+
+  .filters__item[aria-current='true']::after {
+    content: '';
+    position: absolute;
+    inset-inline: var(--sp-4);
+    inset-block-end: 10px;
+    block-size: 2px;
+    background: var(--signal);
+  }
+
+  .filters__item:first-child[aria-current='true']::after {
+    inset-inline-start: 0;
+  }
+</style>
