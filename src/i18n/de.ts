@@ -173,6 +173,88 @@ export const de: Dictionary = {
     },
   },
 
+  legal: {
+    "eyebrow": "Rechtliches",
+    "pendingTitle": "Entwurf zur rechtlichen Prüfung.",
+    "pendingBody": "Die Angaben zum Unternehmen sind korrekt. Die nachstehenden Rechtstexte sind ein strukturierter Platzhalter und müssen vor der Veröffentlichung durch die Rechtsberatung von Ivan Arsenov geprüft werden.",
+    "controllerHeading": "Verantwortlicher",
+    "imprint": {
+      "title": "Impressum",
+      "providerHeading": "Angaben gemäß § 5 DDG",
+      "contactHeading": "Kontakt",
+      "taxHeading": "Steuerliche Angaben",
+      "taxNumber": "Steuernummer",
+      "responsibleHeading": "Inhaltlich verantwortlich",
+      "trademarkHeading": "Marken Dritter"
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "sections": [
+        {
+          "heading": "Was diese Website erhebt",
+          "body": [
+            "Diese Website nutzt keine Analysewerkzeuge, keine Werbe-Identifikatoren und keine Tracker Dritter. Es werden keine Cookies zu Mess- oder Profilzwecken gesetzt.",
+            "Personenbezogene Daten werden ausschließlich verarbeitet, wenn Sie das Formular für Geschäftsanfragen absenden."
+          ]
+        },
+        {
+          "heading": "Formular für Geschäftsanfragen",
+          "body": [
+            "Erhoben werden Name, Firma, Land, E-Mail-Adresse und Nachricht sowie optional USt-IdNr., Telefon, Marken von Interesse und geschätztes Volumen.",
+            "Diese Angaben dienen ausschließlich der Beantwortung Ihrer Anfrage und der Fortführung des geschäftlichen Gesprächs.",
+            "Rechtsgrundlage, Speicherdauer und Ihre Rechte sind vor der Veröffentlichung rechtlich zu bestätigen."
+          ]
+        },
+        {
+          "heading": "Hosting und externe Dienste",
+          "body": [
+            "Schriften werden von dieser Domain ausgeliefert. Die Website stellt keine Anfragen an Server Dritter.",
+            "Die Verarbeitung von Server-Logdaten durch den Hosting-Anbieter unterliegt einer gesonderten Vereinbarung, die vor der Veröffentlichung zu dokumentieren ist."
+          ]
+        },
+        {
+          "heading": "Ihre Rechte",
+          "body": [
+            "Sie können Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit verlangen sowie der Verarbeitung widersprechen.",
+            "Der genaue Wortlaut dieser Rechte und die zuständige Aufsichtsbehörde sind rechtlich zu bestätigen."
+          ]
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Cookies & lokale Speicherung",
+      "sections": [
+        {
+          "heading": "Cookies",
+          "body": [
+            "Diese Website setzt keine Cookies zu Analyse-, Werbe- oder Profilzwecken.",
+            "Es wird kein Dienst Dritter geladen, daher kann kein Dritter über diese Website Cookies setzen."
+          ]
+        },
+        {
+          "heading": "Auswahl für Anfragen",
+          "body": [
+            "Wenn Sie eine Marke Ihrer Anfrage hinzufügen, werden die von Ihnen gewählten Kennungen im sessionStorage Ihres Browsers gespeichert — einer auf die Browsing-Sitzung begrenzten Speicherung, ohne Absicht der Persistenz zwischen Sitzungen.",
+            "Sie enthält ausschließlich die von Ihnen gewählten Markenkennungen. Kein Werbe-Identifikator, kein Profiling, keine personenbezogenen Daten.",
+            "Sie wird an keinen Server übermittelt, solange Sie das Anfrageformular nicht absenden."
+          ]
+        },
+        {
+          "heading": "Schriften und Assets",
+          "body": [
+            "Schriften und Bilder werden von dieser Domain ausgeliefert. Es erfolgt keine Anfrage an ein Content Delivery Network, sodass durch diese Website keine Besucher-IP an Dritte übermittelt wird."
+          ]
+        },
+        {
+          "heading": "Einwilligungsregime",
+          "body": [
+            "Diese Seite beschreibt die technische Nutzung der Browser-Speicherung. Das anwendbare Einwilligungsregime ist vor der Veröffentlichung durch die Rechtsberatung von Ivan Arsenov zu bestimmen."
+          ]
+        }
+      ]
+    }
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

@@ -1,0 +1,155 @@
+---
+/**
+ * PAGES LÉGALES — Impressum, Privacy, Cookies.
+ *
+ * ⚠️ LEGAL_CONTENT_REQUIRES_VALIDATION
+ * Les données d'identification sont réelles et fournies par le client. Les
+ * TEXTES juridiques sont des placeholders structurés : ils couvrent les
+ * rubriques attendues mais doivent être revus par le conseil juridique
+ * d'Ivan Arsenov avant mise en production.
+ *
+ * Aucun document du benchmark n'est copié.
+ * La page Cookies DÉCRIT l'usage technique et NE CONCLUT PAS sur le régime
+ * de consentement applicable — cette qualification relève de D9.
+ */
+import { COMPANY, addressLines } from '@/data/company';
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: Extract<PageKey, 'imprint' | 'privacy' | 'cookies'>;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+const doc = t.legal[page];
+
+/** Une page légale non-Impressum est composée de sections titrées. */
+interface Section {
+  heading: string;
+  body: string[];
+}
+const sections: Section[] = page === 'imprint' ? [] : (doc as { sections: Section[] }).sections;
+---
+
+<section class="legal section" data-surface="ink">
+  <div class="container">
+    <p class="t-label t-label--ruled">{t.legal.eyebrow}</p>
+    <h1 class="t-h1 legal__title">{doc.title}</h1>
+
+    <p class="legal__notice t-small" data-legal-pending>
+      <strong>{t.legal.pendingTitle}</strong> {t.legal.pendingBody}
+    </p>
+
+    {
+      page === 'imprint' && (
+        <div class="legal__body">
+          <h2 class="t-h3">{t.legal.imprint.providerHeading}</h2>
+          <address class="legal__address t-body">
+            <strong>{COMPANY.legalName}</strong>
+            {addressLines().map((line) => <span>{line}</span>)}
+          </address>
+
+          <h2 class="t-h3">{t.legal.imprint.contactHeading}</h2>
+          <p class="t-body">
+            <a class="link-inline" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          </p>
+
+          <h2 class="t-h3">{t.legal.imprint.taxHeading}</h2>
+          <dl class="legal__facts">
+            <div>
+              <dt class="t-label">{t.footer.vatId}</dt>
+              <dd class="t-body legal__mono">{COMPANY.vatId}</dd>
+            </div>
+            <div>
+              <dt class="t-label">{t.legal.imprint.taxNumber}</dt>
+              <dd class="t-body legal__mono">{COMPANY.taxNumber}</dd>
+            </div>
+          </dl>
+
+          <h2 class="t-h3">{t.legal.imprint.responsibleHeading}</h2>
+          <p class="t-body">{COMPANY.legalName}, {addressLines().join(', ')}</p>
+
+          <h2 class="t-h3">{t.legal.imprint.trademarkHeading}</h2>
+          <p class="t-body t-secondary">{t.footer.trademarkNotice}</p>
+        </div>
+      )
+    }
+
+    {
+      page !== 'imprint' && (
+        <div class="legal__body">
+          {sections.map((section) => (
+            <>
+              <h2 class="t-h3">{section.heading}</h2>
+              {section.body.map((paragraph) => (
+                <p class="t-body t-secondary">{paragraph}</p>
+              ))}
+            </>
+          ))}
+
+          <h2 class="t-h3">{t.legal.controllerHeading}</h2>
+          <address class="legal__address t-body">
+            <strong>{COMPANY.legalName}</strong>
+            {addressLines().map((line) => <span>{line}</span>)}
+            <a class="link-inline" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          </address>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .legal__title {
+    margin-block: var(--sp-5) var(--sp-6);
+    max-inline-size: 18ch;
+  }
+
+  /* Le bandeau de validation reste VISIBLE en staging : il doit sauter aux
+     yeux du client, pas se cacher dans un commentaire de code. */
+  .legal__notice {
+    max-inline-size: 62ch;
+    margin-block-end: var(--sp-8);
+    padding: var(--sp-4) var(--sp-5);
+    border-inline-start: 2px solid var(--signal-juice);
+    background: var(--ink-800);
+    color: var(--fg-secondary);
+  }
+
+  .legal__body {
+    display: grid;
+    gap: var(--sp-4);
+    max-inline-size: 68ch;
+  }
+
+  .legal__body :global(h2) {
+    margin-block-start: var(--sp-6);
+    color: var(--fg);
+  }
+
+  .legal__address {
+    display: grid;
+    gap: var(--sp-1);
+    font-style: normal;
+    color: var(--fg-secondary);
+  }
+
+  .legal__facts {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  @media (min-width: 640px) {
+    .legal__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .legal__mono {
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-secondary);
+    user-select: all;
+  }
+</style>

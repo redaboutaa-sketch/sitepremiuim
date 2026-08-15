@@ -169,6 +169,88 @@ export const en = {
     },
   },
 
+  legal: {
+    "eyebrow": "Legal",
+    "pendingTitle": "Draft for legal review.",
+    "pendingBody": "Company identification details are accurate. The legal wording below is a structured placeholder and must be reviewed by Ivan Arsenov's legal adviser before publication.",
+    "controllerHeading": "Controller",
+    "imprint": {
+      "title": "Imprint",
+      "providerHeading": "Information pursuant to § 5 DDG",
+      "contactHeading": "Contact",
+      "taxHeading": "Tax identification",
+      "taxNumber": "Tax number",
+      "responsibleHeading": "Responsible for content",
+      "trademarkHeading": "Third-party trademarks"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "heading": "What this website collects",
+          "body": [
+            "This website has no analytics, no advertising identifiers and no third-party trackers. No cookies are set for measurement or profiling.",
+            "Personal data is processed only when you submit the business enquiry form."
+          ]
+        },
+        {
+          "heading": "Business enquiry form",
+          "body": [
+            "The form collects your name, company, country, email address and message, plus optional VAT number, phone, brands of interest and estimated volume.",
+            "These details are used solely to answer your enquiry and to continue the commercial conversation.",
+            "Legal basis, retention period and your rights are to be confirmed by legal review before publication."
+          ]
+        },
+        {
+          "heading": "Hosting and external services",
+          "body": [
+            "Fonts are served from this domain. The website makes no requests to third-party servers.",
+            "Server log data handled by the hosting provider is subject to a separate agreement, to be documented before publication."
+          ]
+        },
+        {
+          "heading": "Your rights",
+          "body": [
+            "You may request access, rectification, erasure, restriction of processing, data portability and object to processing.",
+            "The exact wording of these rights and the supervisory authority reference are to be confirmed by legal review."
+          ]
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Cookies & Local Storage",
+      "sections": [
+        {
+          "heading": "Cookies",
+          "body": [
+            "This website sets no cookies for analytics, advertising or profiling.",
+            "No third-party service is loaded, so no third party can set cookies through this website."
+          ]
+        },
+        {
+          "heading": "Enquiry selection",
+          "body": [
+            "When you add a brand to your enquiry, the identifiers you select are written to your browser's sessionStorage — a storage limited to the browsing session, with no intention of persistence between sessions.",
+            "It contains only the brand identifiers you have chosen. No advertising identifier, no profiling, no personal data.",
+            "It is not transmitted to any server unless you submit the enquiry form."
+          ]
+        },
+        {
+          "heading": "Fonts and assets",
+          "body": [
+            "Typefaces and images are served from this domain. No request is made to a content delivery network, so no visitor IP address is transmitted to a third party by this website."
+          ]
+        },
+        {
+          "heading": "Consent regime",
+          "body": [
+            "This page describes the technical use of browser storage. The applicable consent regime is to be determined by Ivan Arsenov's legal adviser before publication."
+          ]
+        }
+      ]
+    }
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',
