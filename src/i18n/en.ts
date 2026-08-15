@@ -251,6 +251,11 @@ export const en = {
     }
   },
 
+  notFound: {
+    title: 'This page does not exist.',
+    copy: 'The address may have changed, or the link may be incomplete. The full drinks selection is a click away.',
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',

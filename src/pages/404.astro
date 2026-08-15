@@ -1,0 +1,56 @@
+---
+/**
+ * 404.
+ *
+ * Une page d'erreur reste une page du site : même cadre, même typographie,
+ * et surtout une sortie utile. Servie par `.htaccess` chez Hostinger.
+ *
+ * En anglais, langue source : une 404 peut survenir sur n'importe quelle
+ * URL, y compris hors des deux arbres de langue.
+ */
+import Base from '@/layouts/Base.astro';
+import { useI18n } from '@/i18n';
+
+const locale = 'en' as const;
+const i18n = useI18n(locale);
+const t = i18n.t;
+---
+
+<Base page="home" locale={locale}>
+  <section class="notfound section" data-surface="ink">
+    <div class="container">
+      <p class="t-label t-label--ruled">404</p>
+      <h1 class="t-h1 notfound__title">{t.notFound.title}</h1>
+      <p class="t-body-l t-secondary notfound__copy">{t.notFound.copy}</p>
+      <p class="notfound__actions">
+        <a class="btn btn--primary" href={i18n.path('drinks')}>{t.cta.secondary}</a>
+        <a class="btn btn--text" href={i18n.path('contact')}>{t.cta.primary}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    min-block-size: 60svh;
+    display: flex;
+    align-items: center;
+  }
+
+  .notfound__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 16ch;
+  }
+
+  .notfound__copy {
+    max-inline-size: 46ch;
+  }
+
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-5) var(--sp-7);
+    margin-block-start: var(--sp-7);
+  }
+</style>

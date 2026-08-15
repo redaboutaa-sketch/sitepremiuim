@@ -13,6 +13,14 @@
  * implicite serait fragile.
  */
 import { useI18n, type Locale, type PageKey } from '@/i18n';
+import {
+  breadcrumb,
+  categoryList,
+  graph,
+  organization,
+  website,
+  wholesaleStore,
+} from '@/lib/schema';
 
 interface Props {
   page: PageKey;
@@ -27,6 +35,28 @@ const canonical = i18n.canonical(page);
 const alternates = i18n.alternates(page);
 const siteName = i18n.t.meta.siteName;
 const fullTitle = page === 'home' ? `${siteName} — ${meta.title}` : `${meta.title} — ${siteName}`;
+
+/*
+ * Données structurées — uniquement ce qui est vérifiable.
+ * L'accueil porte l'entité et le site ; les pages internes portent un fil
+ * d'Ariane. Le catalogue déclare ses familles, jamais une offre.
+ */
+const nodes: object[] = [organization(), website(locale, siteName)];
+
+if (page === 'home') {
+  nodes.push(wholesaleStore(locale, meta.description));
+} else {
+  nodes.push(
+    breadcrumb(locale, [
+      { page: 'home', name: siteName },
+      { page, name: meta.title },
+    ]),
+  );
+}
+
+if (page === 'drinks') nodes.push(categoryList(locale));
+
+const jsonLd = graph(nodes);
 ---
 
 <meta charset="utf-8" />
@@ -52,3 +82,6 @@ const fullTitle = page === 'home' ? `${siteName} — ${meta.title}` : `${meta.ti
 {/* Placeholder — à remplacer par le monogramme IA officiel (D8). */}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="mask-icon" href="/favicon.svg" color="#0A0A0B" />
+
+<meta name="theme-color" content="#0A0A0B" />
+<script type="application/ld+json" set:html={jsonLd} />

@@ -2,6 +2,23 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+const SITE = 'https://www.ivan-arsenov.de';
+
+/**
+ * Paires de routes EN/DE. Doit rester alignée sur `src/i18n/routes.ts` —
+ * un test du build vérifie la correspondance.
+ */
+const ROUTE_PAIRS = [
+  { en: '/', de: '/de/' },
+  { en: '/drinks/', de: '/de/getraenke/' },
+  { en: '/brands/', de: '/de/marken/' },
+  { en: '/about/', de: '/de/ueber-uns/' },
+  { en: '/contact/', de: '/de/kontakt/' },
+  { en: '/imprint/', de: '/de/impressum/' },
+  { en: '/privacy/', de: '/de/datenschutz/' },
+  { en: '/cookies/', de: '/de/cookies/' },
+];
+
 /**
  * La page de démonstration du design system vit hors de `src/pages/` et n'est
  * injectée qu'en développement ou quand STYLEGUIDE=1 (staging).
@@ -60,9 +77,24 @@ export default defineConfig({
   integrations: [
     styleguideRoute(),
     sitemap({
-      // hreflang est porté par le <head> de chaque page (voir BaseHead.astro).
-      // Les alternates XML seront ajoutés en TR-018.
-      filter: (page) => !page.includes('/styleguide'),
+      filter: (page) => !page.includes('/styleguide') && !page.includes('/404'),
+      /*
+       * Alternates XML en complément des hreflang du <head>. Les slugs
+       * allemands étant traduits, le mappage automatique par préfixe de
+       * @astrojs/sitemap produirait de FAUSSES correspondances : on le fait
+       * à la main depuis la table de routage, seule source de vérité.
+       */
+      serialize(item) {
+        const path = new URL(item.url).pathname;
+        const pair = ROUTE_PAIRS.find((p) => p.en === path || p.de === path);
+        if (!pair) return item;
+        item.links = [
+          { lang: 'en', url: new URL(pair.en, SITE).href },
+          { lang: 'de', url: new URL(pair.de, SITE).href },
+          { lang: 'x-default', url: new URL(pair.en, SITE).href },
+        ];
+        return item;
+      },
     }),
   ],
 

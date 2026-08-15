@@ -255,6 +255,11 @@ export const de: Dictionary = {
     }
   },
 
+  notFound: {
+    title: 'Diese Seite gibt es nicht.',
+    copy: 'Die Adresse hat sich möglicherweise geändert oder der Link ist unvollständig. Das gesamte Getränkesortiment ist einen Klick entfernt.',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',
