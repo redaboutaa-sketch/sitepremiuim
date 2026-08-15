@@ -25,9 +25,6 @@ const t = i18n.t;
 
 const brands = allBrands();
 
-/** Champs requis : le strict nécessaire pour rappeler et qualifier. */
-const REQUIRED = ['firstName', 'lastName', 'company', 'country', 'email', 'message'] as const;
-const OPTIONAL = ['vat', 'phone', 'volume'] as const;
 ---
 
 <section class="contact section" data-surface="ink">
@@ -256,17 +253,26 @@ const OPTIONAL = ['vat', 'phone', 'volume'] as const;
     display: none;
   }
 
+  /* La cible réelle du consentement, c'est ce label entier. Sur deux lignes il
+     tombait à 43px : 0,6px sous le seuil, donc sous le seuil. */
   .contact__check {
     display: flex;
     align-items: flex-start;
     gap: var(--sp-3);
+    min-block-size: 44px;
     cursor: pointer;
   }
 
+  /*
+   * 24px : le minimum de la SC 2.5.8 (Target Size Minimum, AA). La cible
+   * EFFECTIVE reste toute la ligne — le `<label>` enveloppe la case et son
+   * texte, donc un pouce imprécis coche quand même. On ne gonfle pas la case
+   * à 44px : elle cesserait de ressembler à une case à cocher.
+   */
   .contact__check input {
-    inline-size: 18px;
-    block-size: 18px;
-    margin-block-start: 2px;
+    inline-size: 24px;
+    block-size: 24px;
+    margin-block-start: 1px;
     accent-color: var(--paper);
     flex: none;
   }

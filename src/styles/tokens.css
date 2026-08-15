@@ -104,6 +104,14 @@
   --fs-body-l: clamp(1.0625rem, 1.2vw, 1.25rem);
   --fs-body: 1rem;
   --fs-small: 0.875rem;
+  /*
+   * Micro-capitales. 11px se lit très bien sur un écran de bureau à 60cm,
+   * beaucoup moins bien sur un téléphone tenu à bout de bras — et c'est
+   * précisément la taille que porte « ADD TO ENQUIRY », l'action principale
+   * du catalogue. Relevé à 12px sous 640px (voir plus bas) : l'art direction
+   * de bureau validée au Gate 1 est intacte, la lecture au pouce cesse
+   * d'être le parent pauvre.
+   */
   --fs-label: 0.6875rem;
   --fs-index: 0.6875rem;
   --fs-cta: 0.9375rem;
@@ -202,6 +210,20 @@
   --z-header: 100;
   --z-panel: 200;
   --z-skip: 300;
+}
+
+/*
+ * Plancher de lisibilité au pouce. Sous 640px, les micro-capitales passent de
+ * 11px à 12px. C'est un standard que je me fixe, pas une exigence WCAG — les
+ * WCAG n'imposent aucune taille minimale — mais « ADD TO ENQUIRY » en 11px
+ * capitales espacées sur un téléphone se lit mal, et c'est l'action que tout
+ * le parcours B2B doit rendre évidente.
+ */
+@media (max-width: 639.98px) {
+  :root {
+    --fs-label: 0.75rem;
+    --fs-index: 0.75rem;
+  }
 }
 
 /* Marges de grille progressives — le contenu respire davantage en large. */

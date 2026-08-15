@@ -138,6 +138,20 @@ const brands = allBrands().map((brand, i) => ({
     gap: var(--sp-1);
   }
 
+  /*
+   * Un élément de grille a `min-width: auto` : il refuse de descendre sous sa
+   * largeur min-content, et déborde alors de sa propre piste. `overflow-wrap`
+   * seul n'y change RIEN — il coupe le rendu mais laisse min-content calculé
+   * sur le mot le plus long. Il faut donc les deux.
+   *
+   * Repéré en allemand à 320px (« Internationale Funde ») : l'anglais, plus
+   * court, passait sans rien signaler.
+   */
+  .catalog__meta > * {
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+  }
+
   .catalog__name {
     color: var(--fg);
     overflow-wrap: break-word;
