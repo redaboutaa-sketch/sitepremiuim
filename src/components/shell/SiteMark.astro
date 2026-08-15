@@ -1,0 +1,83 @@
+---
+/**
+ * MARQUE DU SITE
+ *
+ * Trois fichiers vectoriels distincts sont attendus (monogramme, lock-up,
+ * wordmark). Tant qu'ils ne sont pas fournis, on affiche le nom **composé en
+ * typographie** — pas un tracé approximatif du logo réel.
+ *
+ * ⚠️ Le repli n'est JAMAIS présenté comme l'asset officiel. Il porte
+ * `data-mark-provisional`, ce qui permet à la QA de détecter automatiquement
+ * une mise en production avec l'identité provisoire.
+ */
+import { COMPANY } from '@/data/company';
+import { resolve, type AssetMode, type AssetUsage } from '@/lib/assets';
+
+interface Props {
+  variant?: Extract<AssetUsage, 'wordmark' | 'lockup' | 'monogram'>;
+  mode?: AssetMode;
+  /** Hauteur de rendu du vectoriel, en pixels. */
+  height?: number;
+  class?: string;
+}
+
+const { variant = 'wordmark', mode, height = 20, class: className } = Astro.props;
+
+const asset = resolve('ivan-arsenov', variant, mode);
+
+const svgs = import.meta.glob<string>('/src/assets/identity/*.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+const svg = asset?.path ? svgs[`/${asset.path}`] : undefined;
+---
+
+{
+  svg ? (
+    <span class:list={['site-mark', className]} style={`--mark-height:${height}px`} set:html={svg} />
+  ) : (
+    <span
+      class:list={['site-mark', 'site-mark--type', className]}
+      data-mark-provisional="identité provisoire — vectoriel officiel non fourni"
+    >
+      {COMPANY.name}
+    </span>
+  )
+}
+
+<style>
+  .site-mark {
+    display: inline-flex;
+    align-items: center;
+    color: var(--fg);
+  }
+
+  .site-mark :global(svg) {
+    block-size: var(--mark-height);
+    inline-size: auto;
+  }
+
+  /*
+   * Repli typographique — Instrument Serif en capitales espacées, à l'image
+   * du wordmark réel, mais assumé comme du texte : aucune tentative de
+   * reproduire la liaison du monogramme.
+   */
+  .site-mark--type {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    /* Compense le letterspacing final pour que l'optique reste alignée. */
+    margin-inline-end: -0.22em;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 768px) {
+    .site-mark--type {
+      font-size: 1.25rem;
+    }
+  }
+</style>

@@ -107,10 +107,16 @@ a {
   text-decoration: none;
 }
 
-/* Le soulignement natif des liens de texte est conservé et affiné —
-   supprimer le soulignement d'un lien en pleine ligne nuit à la lisibilité. */
-p a,
-li a {
+/*
+ * Le soulignement natif des liens EN PLEINE PROSE est conservé et affiné :
+ * le supprimer nuirait à la lisibilité et à l'accessibilité.
+ *
+ * `:not([class])` restreint la règle aux liens de contenu. Sans cette
+ * précision, elle atteignait aussi les liens de navigation — qui vivent dans
+ * des <li> — et les affichait tous soulignés au repos, donnant à chacun
+ * l'apparence de la page courante.
+ */
+:where(p, li) a:not([class]) {
   text-decoration: underline;
   text-underline-offset: 0.22em;
   text-decoration-thickness: 1px;

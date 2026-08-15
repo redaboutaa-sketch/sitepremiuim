@@ -20,6 +20,8 @@ export const en = {
     skipToContent: 'Skip to main content',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
+    primary: 'Main navigation',
+    mobile: 'Site navigation',
     language: 'Language',
   },
 

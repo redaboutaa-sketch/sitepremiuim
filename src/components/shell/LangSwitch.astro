@@ -1,0 +1,85 @@
+---
+/**
+ * SÉLECTEUR DE LANGUE
+ *
+ * Conserve l'ÉQUIVALENT SÉMANTIQUE de la route : depuis `/drinks/` il mène à
+ * `/de/getraenke/`, pas à `/de/`. C'est possible parce que la page courante
+ * est connue par sa clé (`PageKey`) et non par son chemin — la table de
+ * routage fait le reste.
+ *
+ * Deux liens plutôt qu'un `<select>` : un lien est indexable, ouvrable dans
+ * un nouvel onglet, et fonctionne sans JavaScript.
+ */
+import { LOCALES, useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+---
+
+<nav class="lang" aria-label={i18n.t.nav.language}>
+  <ul class="lang__list" role="list">
+    {
+      LOCALES.map((l) => (
+        <li>
+          <a
+            class="lang__link"
+            href={i18n.pathIn(page, l)}
+            hreflang={l}
+            lang={l}
+            aria-current={l === locale ? 'true' : undefined}
+          >
+            {l.toUpperCase()}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .lang__list {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Séparateur typographique plutôt qu'un caractère dans le balisage :
+     le lecteur d'écran n'annonce pas un « slash » parasite. */
+  .lang__list li + li::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--hairline);
+    block-size: 0.75em;
+    background: var(--rule-strong);
+    vertical-align: middle;
+  }
+
+  .lang__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px de cible tactile sans épaissir visuellement le sélecteur. */
+    min-inline-size: 40px;
+    min-block-size: 44px;
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--ls-label);
+    color: var(--fg-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .lang__link:hover {
+    color: var(--fg);
+  }
+
+  /* La langue courante est signalée par la valeur, pas par une couleur
+     d'accent : le sélecteur reste achromatique comme le reste du cadre. */
+  .lang__link[aria-current='true'] {
+    color: var(--fg);
+  }
+</style>

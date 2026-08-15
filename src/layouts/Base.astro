@@ -7,6 +7,9 @@
  * les styles en TR-002.
  */
 import BaseHead from '@/components/seo/BaseHead.astro';
+import Footer from '@/components/shell/Footer.astro';
+import Header from '@/components/shell/Header.astro';
+import MobileNav from '@/components/shell/MobileNav.astro';
 import { useI18n, type Locale, type PageKey } from '@/i18n';
 import '@/styles/index.css';
 
@@ -50,12 +53,17 @@ const i18n = useI18n(locale);
   <body>
     <a class="skip-link" href="#main">{i18n.t.nav.skipToContent}</a>
 
-    <!-- TR-005 : <header> -->
+    <Header page={page} locale={locale} />
+    <MobileNav page={page} locale={locale} />
 
     <main id="main">
       <slot />
     </main>
 
-    <!-- TR-005 : <footer> -->
+    <Footer page={page} locale={locale} />
+
+    <script>
+      import '@/scripts/shell.ts';
+    </script>
   </body>
 </html>

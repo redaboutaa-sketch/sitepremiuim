@@ -24,6 +24,8 @@ export const de: Dictionary = {
     skipToContent: 'Zum Hauptinhalt springen',
     openMenu: 'Menü öffnen',
     closeMenu: 'Menü schließen',
+    primary: 'Hauptnavigation',
+    mobile: 'Seitennavigation',
     language: 'Sprache',
   },
 

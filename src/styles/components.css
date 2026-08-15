@@ -140,11 +140,14 @@
  * LIENS
  * =================================================================== */
 
-/* Lien de navigation — filet qui se trace de gauche à droite au survol. */
+/* Lien de navigation — filet qui se trace de gauche à droite au survol.
+   Hauteur portée à 44px (cible tactile), mais le filet reste calé sous le
+   TEXTE et non sous la boîte : sinon il flotterait 9px trop bas. */
 .link-nav {
   position: relative;
-  display: inline-block;
-  padding-block: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   color: var(--fg-secondary);
   transition: color var(--dur-fast) var(--ease-out);
 }
@@ -153,7 +156,7 @@
   content: '';
   position: absolute;
   inset-inline: 0;
-  inset-block-end: 0;
+  inset-block-end: calc(50% - 0.85em);
   block-size: var(--hairline);
   background: currentColor;
   transform: scaleX(0);
@@ -174,7 +177,15 @@
   color: var(--fg);
 }
 
-/* Lien inline dans un paragraphe — soulignement natif affiné. */
+/* Lien inline dans un paragraphe — soulignement explicite : il porte une
+   classe, donc la règle de prose du reset ne s'y applique pas. */
+.link-inline {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule-strong);
+}
+
 .link-inline:hover {
   text-decoration-color: var(--fg);
 }

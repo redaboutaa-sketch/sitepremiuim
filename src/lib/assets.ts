@@ -45,7 +45,9 @@ export const expectedFilename = (usage: AssetUsage): string =>
     packshot: 'packshot.png',
     'packshot-alt': 'packshot-alt.png',
     hero: 'hero.png',
-    identity: 'identity.svg',
+    monogram: 'monogram.svg',
+    lockup: 'lockup.svg',
+    wordmark: 'wordmark.svg',
     favicon: 'favicon.svg',
     og: 'og.png',
   })[usage];

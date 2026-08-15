@@ -8,14 +8,14 @@
 | | Total | Publiables en production |
 |---|---|---|
 | **Hero** — conditionne la direction artistique | 6 | 0 |
-| **Identité** | 2 | 0 |
+| **Identité** | 4 | 0 |
 | **Featured** | 32 | 0 |
 | **Catalogue** | 46 | 0 |
-| **Total** | 86 | 0 |
+| **Total** | 88 | 0 |
 
-Statuts — validated 0 · requires_validation 1 · missing 85
+Statuts — validated 0 · requires_validation 1 · missing 87
 
-**86 asset(s) sont substitués par le repli typographique en production.**
+**88 asset(s) sont substitués par le repli typographique en production.**
 Aucune marque n'est retirée du site pour autant : seul le visuel est remplacé.
 
 ## Règles appliquées
@@ -47,8 +47,10 @@ Aucune image générée ou substituée n'est présentée comme un vrai produit.
 
 | Marque | Usage | Chemin | Statut | Provenance | Autorisation | Dimensions | Format | Poids | Checksum | Production | Note juridique |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Ivan Arsenov | `identity` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Identité du client, aucune restriction. Fichier vectoriel à obtenir : monogramme seul et lock-up complet, en SVG. |
-| Ivan Arsenov — favicon | `favicon` | `public/favicon.svg` | requires_validation | Placeholder composé en interne — TR-001 | granted — Composition interne, aucune marque tierce | 32×32 | svg | — | — | ❌ repli | Placeholder interne. À remplacer par le monogramme IA officiel (décision D8). |
+| Ivan Arsenov — monogramme IA | `monogram` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Monogramme seul. Sert le filigrane du hero et dérive le favicon. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
+| Ivan Arsenov — lock-up complet | `lockup` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Monogramme + wordmark + filet. Sert le footer et les métadonnées sociales. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
+| Ivan Arsenov — wordmark | `wordmark` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Wordmark seul. Sert la marque du header, où la hauteur est contrainte. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
+| Ivan Arsenov — favicon | `favicon` | `public/favicon.svg` | requires_validation | Placeholder composé en interne — TR-001 | granted — Composition interne, aucune marque tierce | 32×32 | svg | — | — | ❌ repli | Placeholder interne, à ne pas confondre avec le monogramme officiel. À remplacer dès réception du vectoriel (décision D8). |
 
 ### Featured
 

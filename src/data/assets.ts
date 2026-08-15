@@ -20,11 +20,17 @@
 
 /** Ce à quoi sert le fichier. Conditionne les exigences techniques. */
 export type AssetUsage =
+  // Marques du catalogue
   | 'logo'
   | 'packshot'
   | 'packshot-alt'
   | 'hero'
-  | 'identity'
+  // Identité Ivan Arsenov — trois fichiers vectoriels DISTINCTS, pas un seul.
+  // Le monogramme, le lock-up et le wordmark ont des usages différents dans
+  // la mise en page et ne peuvent pas se déduire l'un de l'autre.
+  | 'monogram'
+  | 'lockup'
+  | 'wordmark'
   | 'favicon'
   | 'og';
 
@@ -109,48 +115,65 @@ export const HERO_BRANDS = [
  * Ivan Arsenov ci-dessous.
  */
 export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
-  // ── Identité Ivan Arsenov ────────────────────────────────────────────
-  // Le logo a été présenté par le client le 2026-08-15 : monogramme IA en
-  // sérif haute tension avec liaison en arc sous le A, wordmark IVAN ARSENOV
-  // en capitales espacées, filet de soulignement, noir sur blanc.
-  //
-  // Le FICHIER n'a pas été versé au dépôt. Il n'est pas redessiné : un tracé
-  // approximatif présenté comme l'identité serait une substitution — ce que
-  // le brief interdit explicitement.
-  'ivan-arsenov:identity': {
-    status: 'missing',
-    source: 'Client — visuel présenté en conversation le 2026-08-15, fichier non transmis',
-    authorization: { status: 'granted', evidence: 'Identité propre du client' },
-    legalNote:
-      'Identité du client, aucune restriction. Fichier vectoriel à obtenir : ' +
-      'monogramme seul et lock-up complet, en SVG.',
-  },
+  // ÉTAT AU 2026-08-15 — aucun fichier de marque tierce n'a encore été fourni.
+  // Les surcharges se saisissent ici au fur et à mesure des livraisons.
 };
 
 /**
  * Assets qui ne dépendent pas d'une marque du catalogue.
  * Le favicon actuel est un placeholder assumé, tracé comme tel.
  */
-export const STANDALONE_ASSETS: AssetRecord[] = [
+/**
+ * Identité Ivan Arsenov — TROIS fichiers vectoriels distincts.
+ *
+ * Le logo a été présenté par le client le 2026-08-15 : monogramme IA en sérif
+ * haute tension avec liaison en arc sous le A, wordmark IVAN ARSENOV en
+ * capitales espacées, filet de soulignement.
+ *
+ * Le FICHIER n'a pas été versé au dépôt. Aucun des trois n'est redessiné :
+ * un tracé approximatif présenté comme l'identité serait une contrefaçon de
+ * la marque du client lui-même. Ils restent `missing` jusqu'à réception.
+ */
+const IDENTITY_FILES: Array<{ usage: AssetUsage; label: string; note: string }> = [
   {
-    id: 'ivan-arsenov:identity',
+    usage: 'monogram',
+    label: 'Ivan Arsenov — monogramme IA',
+    note: 'Monogramme seul. Sert le filigrane du hero et dérive le favicon.',
+  },
+  {
+    usage: 'lockup',
+    label: 'Ivan Arsenov — lock-up complet',
+    note: 'Monogramme + wordmark + filet. Sert le footer et les métadonnées sociales.',
+  },
+  {
+    usage: 'wordmark',
+    label: 'Ivan Arsenov — wordmark',
+    note: 'Wordmark seul. Sert la marque du header, où la hauteur est contrainte.',
+  },
+];
+
+function identityAssets(): AssetRecord[] {
+  return IDENTITY_FILES.map(({ usage, label, note }) => ({
+    id: `ivan-arsenov:${usage}`,
     brandSlug: 'ivan-arsenov',
-    brandLabel: 'Ivan Arsenov',
-    usage: 'identity',
-    priority: 'identity',
+    brandLabel: label,
+    usage,
+    priority: 'identity' as const,
     path: null,
-    status: 'missing',
+    status: 'missing' as const,
     source: 'Client — visuel présenté en conversation le 2026-08-15, fichier non transmis',
-    authorization: { status: 'granted', evidence: 'Identité propre du client' },
+    authorization: { status: 'granted' as const, evidence: 'Identité propre du client' },
     width: null,
     height: null,
     format: null,
     bytes: null,
     checksum: null,
-    legalNote:
-      'Identité du client, aucune restriction. Fichier vectoriel à obtenir : monogramme ' +
-      'seul et lock-up complet, en SVG.',
-  },
+    legalNote: `${note} Vectoriel SVG exigé — une version matricielle serait inutilisable.`,
+  }));
+}
+
+export const STANDALONE_ASSETS: AssetRecord[] = [
+  ...identityAssets(),
   {
     id: 'ivan-arsenov:favicon',
     brandSlug: 'ivan-arsenov',
@@ -159,8 +182,8 @@ export const STANDALONE_ASSETS: AssetRecord[] = [
     priority: 'identity',
     path: 'public/favicon.svg',
     // PLACEHOLDER assumé : lettres « IA » composées dans une sérif système.
-    // Ce n'est pas le monogramme officiel et il ne doit pas être présenté
-    // comme tel. À remplacer dès réception du fichier vectoriel.
+    // Ce n'est PAS le monogramme officiel et il ne doit jamais être présenté
+    // comme tel. À dériver du monogramme dès réception du vectoriel.
     status: 'requires_validation',
     source: 'Placeholder composé en interne — TR-001',
     authorization: { status: 'granted', evidence: 'Composition interne, aucune marque tierce' },
@@ -169,6 +192,8 @@ export const STANDALONE_ASSETS: AssetRecord[] = [
     format: 'svg',
     bytes: null,
     checksum: null,
-    legalNote: 'Placeholder interne. À remplacer par le monogramme IA officiel (décision D8).',
+    legalNote:
+      'Placeholder interne, à ne pas confondre avec le monogramme officiel. ' +
+      'À remplacer dès réception du vectoriel (décision D8).',
   },
 ];

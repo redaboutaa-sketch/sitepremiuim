@@ -1,0 +1,227 @@
+---
+/**
+ * FOOTER
+ *
+ * Porte l'identité juridique complète — c'est la seule preuve de crédibilité
+ * réellement vérifiable dont nous disposons. Le numéro de TVA est affiché en
+ * chiffres tabulaires et sélectionnable : un acheteur le contrôle sur VIES.
+ *
+ * La mention de non-affiliation applique la décision D2 : usage référentiel
+ * des marques tierces assumé en tant que distributeur.
+ */
+import SiteMark from './SiteMark.astro';
+import { COMPANY, addressLines } from '@/data/company';
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const NAV: Array<{ key: PageKey; label: string }> = [
+  { key: 'drinks', label: t.nav.drinks },
+  { key: 'brands', label: t.nav.brands },
+  { key: 'about', label: t.nav.about },
+  { key: 'contact', label: t.nav.contact },
+];
+
+const LEGAL: Array<{ key: PageKey; label: string }> = [
+  { key: 'imprint', label: t.footer.imprint },
+  { key: 'privacy', label: t.footer.privacy },
+  { key: 'cookies', label: t.footer.cookies },
+];
+
+const year = 2026;
+---
+
+<footer class="footer" data-footer>
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href={i18n.path('home')} aria-label={t.meta.siteName}>
+          <SiteMark variant="lockup" height={28} />
+        </a>
+        <p class="t-label footer__tagline">{t.meta.tagline}</p>
+      </div>
+
+      <nav class="footer__col" aria-label={t.footer.nav}>
+        <p class="t-label">{t.footer.nav}</p>
+        <ul role="list">
+          {
+            NAV.map((item) => (
+              <li>
+                <a
+                  class="link-nav"
+                  href={i18n.path(item.key)}
+                  aria-current={page === item.key ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label={t.footer.legal}>
+        <p class="t-label">{t.footer.legal}</p>
+        <ul role="list">
+          {
+            LEGAL.map((item) => (
+              <li>
+                <a
+                  class="link-nav"
+                  href={i18n.path(item.key)}
+                  aria-current={page === item.key ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <p class="t-label">{t.footer.contact}</p>
+        <address class="footer__address">
+          <span>{COMPANY.legalName}</span>
+          {addressLines().map((line) => <span>{line}</span>)}
+          <a class="link-nav footer__email" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          {
+            COMPANY.phone && (
+              <a class="link-nav" href={`tel:${COMPANY.phone.replace(/\s/g, '')}`}>
+                {COMPANY.phone}
+              </a>
+            )
+          }
+        </address>
+        <p class="footer__vat t-small">
+          <span class="t-muted">{t.footer.vatId}</span>
+          <span class="footer__vat-value">{COMPANY.vatId}</span>
+        </p>
+      </div>
+    </div>
+
+    <hr class="rule footer__rule" />
+
+    <div class="footer__bottom">
+      <p class="t-small t-muted footer__notice">{t.footer.trademarkNotice}</p>
+      <p class="t-index footer__copy">© {year} {COMPANY.legalName}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink-900);
+    border-block-start: var(--hairline) solid var(--rule);
+    padding-block: var(--sp-9) var(--sp-7);
+  }
+
+  .footer__top {
+    display: grid;
+    gap: var(--sp-8);
+  }
+
+  .footer__brand > a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+  }
+
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    align-items: flex-start;
+  }
+
+  .footer__tagline {
+    color: var(--fg-muted);
+  }
+
+  .footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .footer__col ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .footer__address {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    font-style: normal;
+    font-size: var(--fs-small);
+    color: var(--fg-secondary);
+  }
+
+  .footer__email {
+    margin-block-start: var(--sp-3);
+  }
+
+  .footer__vat {
+    display: flex;
+    gap: var(--sp-3);
+    margin-block-start: var(--sp-4);
+  }
+
+  /* Chiffres tabulaires et sélection facilitée : le numéro se copie pour
+     être vérifié sur VIES. */
+  .footer__vat-value {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--fg-secondary);
+    user-select: all;
+  }
+
+  .footer__rule {
+    margin-block: var(--sp-8) var(--sp-6);
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .footer__notice {
+    max-inline-size: 78ch;
+  }
+
+  @media (min-width: 768px) {
+    .footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer {
+      padding-block: var(--sp-10) var(--sp-7);
+    }
+
+    /* Asymétrie assumée : la marque occupe davantage que les colonnes de
+       liens, comme dans un ours de magazine. */
+    .footer__top {
+      grid-template-columns: 2fr 1fr 1fr 1.4fr;
+      gap: var(--sp-6);
+    }
+
+    .footer__bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--sp-8);
+    }
+  }
+</style>

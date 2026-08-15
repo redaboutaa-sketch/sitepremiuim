@@ -1,0 +1,126 @@
+---
+/**
+ * NAVIGATION MOBILE
+ *
+ * Panneau plein écran. Piégeage du focus, fermeture par `Esc`, restauration
+ * du focus sur le déclencheur, arrière-plan rendu inerte et défilement bloqué.
+ * Voir src/scripts/shell.ts.
+ *
+ * Rendu dans le DOM en permanence et masqué par `hidden` : un panneau injecté
+ * à l'ouverture serait invisible aux tests sans JS et compliquerait la
+ * restauration du focus.
+ */
+import LangSwitch from './LangSwitch.astro';
+import { useI18n, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+const NAV: Array<{ key: PageKey; label: string }> = [
+  { key: 'drinks', label: t.nav.drinks },
+  { key: 'brands', label: t.nav.brands },
+  { key: 'about', label: t.nav.about },
+  { key: 'contact', label: t.nav.contact },
+];
+---
+
+<div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+  <nav class="mobile-nav__inner container" aria-label={t.nav.mobile}>
+    <ul class="mobile-nav__list" role="list">
+      {
+        NAV.map((item, i) => (
+          <li class="mobile-nav__item">
+            <a
+              class="mobile-nav__link"
+              href={i18n.path(item.key)}
+              aria-current={page === item.key ? 'page' : undefined}
+            >
+              <span class="t-index">{String(i + 1).padStart(2, '0')}</span>
+              <span class="mobile-nav__label">{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mobile-nav__foot">
+      <a class="btn btn--primary btn--full" href={i18n.path('contact')}>{t.cta.primary}</a>
+      <LangSwitch page={page} locale={locale} />
+    </div>
+  </nav>
+</div>
+
+<style>
+  .mobile-nav {
+    position: fixed;
+    /* Sous le header : le bouton de fermeture reste atteignable et visible. */
+    inset: 72px 0 0;
+    z-index: var(--z-panel);
+    background: var(--ink-900);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-nav[hidden] {
+    display: none;
+  }
+
+  .mobile-nav__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--sp-8);
+    min-block-size: 100%;
+    padding-block: var(--sp-6) var(--sp-8);
+  }
+
+  .mobile-nav__list {
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .mobile-nav__item {
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .mobile-nav__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
+    /* Ligne entière cliquable, largement au-delà des 44px exigés. */
+    padding-block: var(--sp-5);
+  }
+
+  .mobile-nav__label {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--fg-secondary);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .mobile-nav__link[aria-current='page'] .mobile-nav__label,
+  .mobile-nav__link:hover .mobile-nav__label {
+    color: var(--fg);
+  }
+
+  .mobile-nav__foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    /* Le panneau n'existe pas au-delà du seuil : la navigation est inline. */
+    .mobile-nav {
+      display: none;
+    }
+  }
+</style>
