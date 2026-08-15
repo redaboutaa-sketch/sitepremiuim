@@ -95,7 +95,13 @@ const items = SEQUENCE.map((slug, i) => {
     /* La teinte de section est réaffectée par le spécimen le plus proche du
        centre de la fenêtre. La transition est portée par @property --signal. */
     position: relative;
-    overflow: hidden;
+    /*
+     * PAS d'`overflow: hidden` ici : un ancêtre qui masque le débordement
+     * devient le conteneur de défilement de ses descendants et neutralise
+     * `position: sticky`. La colonne de texte disparaissait alors dès le
+     * premier spécimen. Rien ne déborde dans cette section — le voile est
+     * déjà contenu.
+     */
   }
 
   /*
@@ -127,7 +133,15 @@ const items = SEQUENCE.map((slug, i) => {
     .discovery__grid {
       grid-template-columns: 5fr 7fr;
       gap: var(--sp-10);
-      align-items: start;
+      /* `align-items: start` réduisait la colonne de gauche à la hauteur de
+         son contenu : `position: sticky` n'avait alors aucune course et le
+         bloc disparaissait dès le premier spécimen, laissant la moitié
+         gauche vide sur toute la section. Elle doit s'étirer. */
+      align-items: stretch;
+    }
+
+    .discovery__aside {
+      block-size: 100%;
     }
   }
 
@@ -156,20 +170,38 @@ const items = SEQUENCE.map((slug, i) => {
 
   .discovery__seq {
     display: grid;
-    gap: var(--sp-9);
+    gap: var(--sp-8);
+  }
+
+  /*
+   * Présence des spécimens.
+   *
+   * Le voile du repli est calibré à 7 % pour une grille de catalogue, où les
+   * plateaux se répètent. S4 est le deuxième grand moment visuel de la page :
+   * à cette densité les objets disparaissaient dans le fond et la section
+   * paraissait vide plutôt que ample.
+   */
+  .discovery__item :global(.product-object__fallback) {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--signal) 18%, transparent),
+      color-mix(in srgb, var(--signal) 4%, transparent) 58%,
+      transparent
+    );
+    border-inline-start-width: 2px;
   }
 
   @media (min-width: 640px) {
     .discovery__seq {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--sp-8) var(--sp-6);
+      gap: var(--sp-7) var(--sp-6);
     }
 
     /* Décalage d'une demi-hauteur sur la colonne de droite : la séquence se
        lit en zigzag plutôt qu'en rangées, et les spécimens traversent le
        centre de la fenêtre un par un — ce qui rend la dérive lisible. */
     .discovery__item:nth-child(even) {
-      margin-block-start: var(--sp-10);
+      margin-block-start: var(--sp-9);
     }
   }
 
