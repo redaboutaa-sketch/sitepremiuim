@@ -1,0 +1,203 @@
+---
+/**
+ * S4 — DISCOVER SOMETHING DIFFERENT.
+ *
+ * Deuxième grand moment visuel après le hero. Retour à l'encre, et c'est ici
+ * — et seulement ici — que la dérive chromatique prend son sens : les
+ * familles changent réellement au fil de la séquence, l'environnement suit.
+ *
+ * Composition : colonne de texte collante à gauche, séquence de spécimens à
+ * droite. Le `position: sticky` est natif — aucun épinglage JavaScript, aucun
+ * décalage imposé au flux du document.
+ *
+ * Les marques présentées portent toutes le marqueur transversal
+ * `internationalFind` : elles appartiennent à des familles différentes, ce
+ * qui est précisément le propos de la section.
+ */
+import ProductObject from '@/components/media/ProductObject.astro';
+import { CATEGORIES, brandBySlug } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+/**
+ * Séquence composée : on alterne les familles pour que la dérive chromatique
+ * soit perceptible d'un spécimen au suivant. Un ordre alphabétique
+ * regrouperait les teintes et supprimerait l'effet.
+ */
+const SEQUENCE = [
+  'chupa-chups',
+  'guarana-antarctica',
+  'mountain-dew',
+  'hawai',
+  'fernandes',
+  'mentos',
+  'bundaberg',
+  'yummy-miami-soda',
+];
+
+const familyLabel = (slug: string) =>
+  CATEGORIES.find((c) => c.slug === slug)?.name[locale] ?? '';
+
+const items = SEQUENCE.map((slug, i) => {
+  const brand = brandBySlug(slug)!;
+  return { brand, index: String(i + 1).padStart(2, '0') };
+});
+---
+
+<section
+  class="discovery section"
+  data-surface="ink"
+  data-discovery
+  data-signal-drift
+  aria-labelledby="discovery-title"
+>
+  <div class="container discovery__grid">
+    <div class="discovery__aside">
+      <div class="discovery__sticky">
+        <p class="t-label t-label--ruled reveal">{t.discovery.eyebrow}</p>
+        <h2 class="t-h2 discovery__title reveal" id="discovery-title">{t.discovery.h2}</h2>
+        <p class="t-body-l t-secondary discovery__copy reveal">{t.discovery.copy}</p>
+        <p class="reveal discovery__cta">
+          <a class="btn btn--secondary" href={`${i18n.path('drinks')}?find=international`}>
+            {t.discovery.cta}
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <ol class="discovery__seq" role="list">
+      {
+        items.map(({ brand, index }) => (
+          <li class="discovery__item" data-family={brand.category} data-drift-item>
+            <a class="discovery__link" href={`${i18n.path('drinks')}?brand=${brand.slug}`}>
+              <ProductObject brand={brand} usage="packshot" index={index} variant="plain" />
+              <span class="discovery__caption">
+                <span class="t-h3 discovery__name">{brand.brand}</span>
+                <span class="t-label discovery__family">{familyLabel(brand.category)}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .discovery {
+    /* La teinte de section est réaffectée par le spécimen le plus proche du
+       centre de la fenêtre. La transition est portée par @property --signal. */
+    position: relative;
+    overflow: hidden;
+  }
+
+  /*
+   * Voile de signal — la seule surface colorée du site, maintenue très basse
+   * et confinée au bord haut. C'est ce qui fait « changer l'environnement »
+   * sans jamais teinter la page.
+   */
+  .discovery::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    block-size: 55vh;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--signal) 9%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .discovery__grid {
+    position: relative;
+    display: grid;
+    gap: var(--sp-8);
+  }
+
+  @media (min-width: 1024px) {
+    .discovery__grid {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--sp-10);
+      align-items: start;
+    }
+  }
+
+  .discovery__sticky {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  @media (min-width: 1024px) {
+    /* Sticky natif : aucun épinglage JavaScript, aucun décalage du flux. */
+    .discovery__sticky {
+      position: sticky;
+      inset-block-start: calc(88px + var(--sp-8));
+    }
+  }
+
+  .discovery__copy {
+    max-inline-size: 42ch;
+  }
+
+  .discovery__cta {
+    margin-block-start: var(--sp-3);
+  }
+
+  /* ── Séquence ──────────────────────────────────────────────────────── */
+
+  .discovery__seq {
+    display: grid;
+    gap: var(--sp-9);
+  }
+
+  @media (min-width: 640px) {
+    .discovery__seq {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--sp-8) var(--sp-6);
+    }
+
+    /* Décalage d'une demi-hauteur sur la colonne de droite : la séquence se
+       lit en zigzag plutôt qu'en rangées, et les spécimens traversent le
+       centre de la fenêtre un par un — ce qui rend la dérive lisible. */
+    .discovery__item:nth-child(even) {
+      margin-block-start: var(--sp-10);
+    }
+  }
+
+  .discovery__item {
+    min-inline-size: 0;
+  }
+
+  .discovery__caption {
+    display: block;
+    margin-block-start: var(--sp-4);
+    padding-block-start: var(--sp-3);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .discovery__name {
+    display: block;
+    color: var(--fg-secondary);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .discovery__family {
+    display: block;
+    margin-block-start: var(--sp-1);
+    color: var(--signal-text);
+  }
+
+  .discovery__link:hover .discovery__name,
+  .discovery__link:focus-visible .discovery__name {
+    color: var(--fg);
+  }
+</style>

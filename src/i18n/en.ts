@@ -55,6 +55,13 @@ export const en = {
     copy: 'Ivan Arsenov is focused on non-alcoholic beverages. No unrelated product catalogue — just a dedicated selection of soft drinks for professional buyers.',
   },
 
+  discovery: {
+    eyebrow: 'Beyond the usual',
+    h2: 'Discover something different.',
+    copy: 'Familiar brands can look very different around the world. Explore regional favourites, unusual flavours and distinctive soft drinks designed to bring something new to the shelf.',
+    cta: 'See international finds',
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',

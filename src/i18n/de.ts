@@ -59,6 +59,13 @@ export const de: Dictionary = {
     copy: 'Ivan Arsenov konzentriert sich auf alkoholfreie Getränke. Kein sortimentsfremder Katalog — sondern eine gezielte Auswahl an Erfrischungsgetränken für Fachhändler.',
   },
 
+  discovery: {
+    eyebrow: 'Jenseits des Gewohnten',
+    h2: 'Entdecken Sie etwas anderes.',
+    copy: 'Bekannte Marken sehen weltweit oft ganz anders aus. Entdecken Sie regionale Favoriten, ungewöhnliche Geschmacksrichtungen und besondere Erfrischungsgetränke, die dem Regal etwas Neues geben.',
+    cta: 'Internationale Entdeckungen ansehen',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

@@ -63,3 +63,79 @@ test('S3 — version allemande adaptée, pas transposée', async ({ page }) => {
     'Kohlensäurehaltig',
   );
 });
+
+/* ================================================================== *
+ * S4 — Discover something different.
+ * ================================================================== */
+
+const toDiscovery = async (page: any, offset = 0) => {
+  const top = await page.evaluate(
+    () => document.querySelector('[data-discovery]')!.getBoundingClientRect().top + window.scrollY,
+  );
+  await page.evaluate((y: number) => window.scrollTo(0, y), top + offset);
+  await page.waitForTimeout(600);
+};
+
+test('S4 — la séquence ne présente que des marques internationales', async ({ page }) => {
+  await page.goto('/');
+  const items = page.locator('[data-drift-item]');
+  await expect(items).toHaveCount(8);
+  await expect(items.first()).toContainText('Chupa Chups');
+});
+
+test('S4 — le marqueur international est transversal aux familles', async ({ page }) => {
+  await page.goto('/');
+  const families = await page
+    .locator('[data-drift-item]')
+    .evaluateAll((els) => [...new Set(els.map((e) => (e as HTMLElement).dataset.family))]);
+  // Si la séquence ne couvrait qu'une famille, le marqueur ferait doublon
+  // avec `category` et la section perdrait son propos.
+  expect(families.length).toBeGreaterThan(2);
+});
+
+test('S4 — la dérive suit le spécimen le plus proche du centre', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop');
+  await page.goto('/');
+  await toDiscovery(page, 0);
+  const first = await page.evaluate(
+    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
+  );
+  await toDiscovery(page, 900);
+  const later = await page.evaluate(
+    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
+  );
+  expect(first).toBeTruthy();
+  expect(later, 'la teinte doit avoir changé au fil de la séquence').not.toBe(first);
+});
+
+test('S4 — en reduced-motion, la teinte est arrêtée et ne dérive pas', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await toDiscovery(page, 0);
+  const a = await page.evaluate(
+    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
+  );
+  await toDiscovery(page, 900);
+  const b = await page.evaluate(
+    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
+  );
+  expect(a).toBe('international');
+  expect(b, 'aucune dérive sous reduced-motion').toBe(a);
+});
+
+test('S4 — la colonne de texte est collante sans épinglage JavaScript', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop');
+  await page.goto('/');
+  const position = await page
+    .locator('.discovery__sticky')
+    .evaluate((el) => getComputedStyle(el).position);
+  expect(position).toBe('sticky');
+});
+
+test('S4 — aucun SKU inventé : seules marques et familles sont nommées', async ({ page }) => {
+  await page.goto('/');
+  const text = (await page.locator('[data-discovery]').textContent())!;
+  // Aucun format ni contenance ne doit apparaître.
+  expect(text).not.toMatch(/\d+\s?(ml|cl|l\b|oz)/i);
+});
