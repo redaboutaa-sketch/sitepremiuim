@@ -145,6 +145,20 @@ table {
   outline-offset: var(--focus-offset);
 }
 
+/*
+ * `hidden` doit être inconditionnel.
+ *
+ * La règle du navigateur est `[hidden] { display: none }` — spécificité nulle.
+ * N'importe quelle classe déclarant `display: grid` la bat, et l'élément
+ * reste à l'écran alors que le HTML et l'ARIA le disent masqué. C'est ainsi
+ * que « No brands match that search. » s'affichait sous les 62 marques.
+ * Le `!important` est ici la solution correcte, pas un contournement : rien
+ * dans ce site n'a de raison légitime de montrer un élément marqué `hidden`.
+ */
+[hidden] {
+  display: none !important;
+}
+
 /* Lien d'évitement — hors écran, révélé au focus clavier. */
 .skip-link {
   position: absolute;

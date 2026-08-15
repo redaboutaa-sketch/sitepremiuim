@@ -197,20 +197,58 @@ function initReveal(): void {
     return;
   }
 
+  const pending = new Set(targets);
+
+  const reveal = (el: Element) => {
+    el.setAttribute('data-revealed', 'true');
+    pending.delete(el as HTMLElement);
+    observer.unobserve(el);
+  };
+
+  /**
+   * FILET DE SÉCURITÉ — indispensable, pas décoratif.
+   *
+   * Un IntersectionObserver ne se déclenche que sur un franchissement de
+   * seuil. Un saut instantané — touche Fin, lien d'ancre, restauration de
+   * position au rechargement — fait passer une section de « pas encore
+   * visible » à « déjà dépassée » SANS jamais croiser de seuil : aucune
+   * entrée n'est émise, et la section reste à `opacity: 0` définitivement.
+   *
+   * Ce n'est pas un défaut d'animation, c'est du contenu devenu illisible.
+   * On balaie donc à chaque défilement tout ce qui est passé au-dessus de la
+   * ligne de déclenchement, et on cesse d'écouter une fois la page épuisée.
+   */
+  const sweep = () => {
+    const line = window.innerHeight * 0.88;
+    for (const el of [...pending]) {
+      if (el.getBoundingClientRect().top < line) reveal(el);
+    }
+    if (pending.size === 0) window.removeEventListener('scroll', onScroll);
+  };
+
+  let queued = false;
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      sweep();
+    });
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        entry.target.setAttribute('data-revealed', 'true');
-        // Une fois révélé, l'élément n'a plus rien à observer : on se
-        // désabonne pour ne pas garder 60 cibles actives sur la page.
-        observer.unobserve(entry.target);
+        if (entry.isIntersecting) reveal(entry.target);
       }
     },
     { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
   );
 
   for (const el of targets) observer.observe(el);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  // La position peut déjà être restaurée au chargement.
+  sweep();
 }
 
 initHeader();
