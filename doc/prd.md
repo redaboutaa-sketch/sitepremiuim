@@ -14,11 +14,12 @@
 |---|---|
 | **Entreprise** | Ivan Arsenov Iliev — *IVAN ARSENOV* |
 | **Adresse** | Zwischenbrücken 8, 27793 Wildeshausen, Allemagne |
-| **E-mail** | info@ivan-arsenov.de |
-| **Domaine** | www.ivan-arsenov.de |
+| **E-mail** | info@ivan-arsenov.de — ⚠️ `EMAIL_DOMAIN_REQUIRES_CONFIRMATION` |
+| **Domaine web** | www.ivanarsenov.de — **sans tiret** |
 | **USt-IdNr** | DE464097303 |
 | **St.-Nr.** | 68/120/14293 |
 | **Secteur** | Négoce / grossiste B2B |
+| ⚠️ **Domaine web ≠ domaine e-mail** | Le site est servi depuis `ivanarsenov.de` (sans tiret), la messagerie fournie par le client est sur `ivan-arsenov.de` (avec tiret). Ce n'est **pas** une incohérence à corriger : les deux sont maintenus séparément dans `site.config.mjs` et ne doivent jamais être dérivés l'un de l'autre. L'adresse ne bougera qu'après confirmation explicite d'Ivan. |
 | **Activité** | Fourniture de boissons **non alcoolisées** internationales à des acheteurs professionnels |
 | **Cible** | Acheteurs B2B : détaillants, supermarchés, grossistes secondaires, cash & carry, distributeurs export, horeca, stations-service, magasins spécialisés « international food » |
 | **Zone** | Base Allemagne — vocation commerciale internationale (UE prioritaire) |

@@ -9,6 +9,8 @@
  * qu'aucun numéro commercial n'est fourni (décision D12).
  */
 
+import { CONTACT_EMAIL, SITE_HOST } from '../../site.config.mjs';
+
 export const COMPANY = {
   /** Nom commercial affiché. */
   name: 'Ivan Arsenov',
@@ -23,14 +25,20 @@ export const COMPANY = {
     countryCode: 'DE',
   },
 
-  email: 'info@ivan-arsenov.de',
+  /**
+   * ⚠️ EMAIL_DOMAIN_REQUIRES_CONFIRMATION — voir `site.config.mjs`.
+   * Domaine de messagerie (`ivan-arsenov.de`, avec tiret) DIFFÉRENT du
+   * domaine du site (`ivanarsenov.de`). Donnée client, non dérivée.
+   */
+  email: CONTACT_EMAIL,
   /** `null` tant qu'Ivan n'a pas fourni de numéro commercial (D12). */
   phone: null as string | null,
 
   vatId: 'DE464097303',
   taxNumber: '68/120/14293',
 
-  domain: 'www.ivan-arsenov.de',
+  /** Hôte du site, distinct du domaine de messagerie ci-dessus. */
+  domain: SITE_HOST,
 } as const;
 
 export const addressLines = (): string[] => [

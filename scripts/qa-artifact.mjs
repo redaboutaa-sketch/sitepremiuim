@@ -13,8 +13,24 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
+import { CONTACT_EMAIL, SITE_HOST, SITE_ORIGIN, STAGING_HOST } from '../site.config.mjs';
+
 const DIST = resolve(process.cwd(), 'dist');
-const SITE = 'https://www.ivan-arsenov.de';
+const SITE = SITE_ORIGIN;
+
+/**
+ * Ancien domaine, conservé comme motif de recherche.
+ *
+ * Il ne doit plus apparaître nulle part dans l'artefact SAUF dans les
+ * adresses e-mail : le domaine de messagerie du client est bien
+ * `ivan-arsenov.de`, avec tiret, et diffère volontairement de celui du site.
+ * Un contrôle qui interdirait le motif partout effacerait l'adresse de
+ * contact — c'est-à-dire les demandes d'offre.
+ */
+const LEGACY_HOST = 'ivan-arsenov.de';
+
+/** Cible auditée. `staging` inverse les attentes d'indexabilité. */
+const TARGET = process.env.DEPLOY_TARGET === 'staging' ? 'staging' : 'production';
 
 const ROUTES = [
   ['home', 'index.html', 'en', '/'],
@@ -200,6 +216,115 @@ for (const [name, file] of ROUTES) {
 }
 
 /* ================================================================== *
+ * 3bis · Migration de domaine — aucune URL périmée survivante
+ * ================================================================== */
+
+section('3bis · Migration de domaine');
+
+/**
+ * On cherche l'ancien hôte dans TOUT l'artefact, fichier par fichier, y
+ * compris le XML, le texte et la configuration Apache — pas seulement le
+ * HTML. Chaque occurrence doit être une adresse e-mail, et rien d'autre.
+ */
+const TEXTUAL = /\.(html|xml|txt|json|js|css|svg)$/i;
+
+for (const file of [...files, '.htaccess'].filter((f) => TEXTUAL.test(f) || f === '.htaccess')) {
+  let content;
+  try {
+    content = await readFile(join(DIST, file), 'utf8');
+  } catch {
+    continue;
+  }
+  if (!content.includes(LEGACY_HOST)) continue;
+
+  /*
+   * Chaque occurrence est isolée avec les 24 caractères qui la précèdent.
+   * Une occurrence légitime est immédiatement précédée d'un « @ » (adresse
+   * e-mail) ; tout le reste est une URL restée sur l'ancien domaine.
+   */
+  const bad = [...content.matchAll(new RegExp(`.{0,24}${LEGACY_HOST.replace('.', '\\.')}`, 'g'))]
+    .map((m) => m[0])
+    .filter((occurrence) => !/@[\w.-]*$/.test(occurrence.slice(0, -LEGACY_HOST.length)));
+
+  check(
+    'BLOCK',
+    `aucune URL sur l'ancien domaine · ${file}`,
+    bad.length === 0,
+    bad.map((b) => `« …${b} »`).join(' · '),
+  );
+}
+
+/** L'hôte canonique doit apparaître, sinon la migration n'a rien produit. */
+const home = html.get('index.html') ?? '';
+check('BLOCK', 'le nouvel hôte est bien présent dans le HTML', home.includes(SITE_HOST), SITE_HOST);
+
+/**
+ * DOMAINE WEB ≠ DOMAINE E-MAIL — vérifié dans les deux sens.
+ * L'adresse de contact doit être PRÉSENTE et INCHANGÉE ; l'adresse dérivée
+ * du nouveau domaine ne doit exister nulle part, car personne ne l'a
+ * confirmée.
+ */
+const derivedEmail = `info@${SITE_HOST.replace(/^www\./, '')}`;
+for (const [name, file] of ROUTES) {
+  const doc = html.get(file);
+  if (!doc) continue;
+  check(
+    'BLOCK',
+    `adresse e-mail client préservée · ${name}`,
+    doc.includes(CONTACT_EMAIL),
+    CONTACT_EMAIL,
+  );
+  check(
+    'BLOCK',
+    `aucune adresse e-mail déduite du domaine web · ${name}`,
+    !doc.includes(derivedEmail),
+    derivedEmail,
+  );
+}
+
+/* ================================================================== *
+ * 3ter · Indexabilité conforme à la cible du build
+ *
+ * Un staging indexé fait concurrence au site réel sur ses propres mots-clés,
+ * et il est trop tard quand on s'en aperçoit. L'exclusion est donc posée
+ * trois fois — balise, en-tête HTTP, robots.txt — et vérifiée trois fois.
+ * ================================================================== */
+
+section(`3ter · Indexabilité (cible : ${TARGET})`);
+
+const expectRobots = TARGET === 'staging' ? 'noindex, nofollow' : 'index, follow';
+
+for (const [name, file] of ROUTES) {
+  const doc = html.get(file);
+  if (!doc) continue;
+  const robots = doc.match(/<meta name="robots" content="([^"]+)"/)?.[1] ?? '';
+  check('BLOCK', `meta robots « ${expectRobots} » · ${name}`, robots === expectRobots, robots);
+}
+
+if (await exists('robots.txt')) {
+  const txt = await readFile(join(DIST, 'robots.txt'), 'utf8');
+  if (TARGET === 'staging') {
+    check('BLOCK', 'robots.txt interdit tout le site', /Disallow:\s*\/\s*$/m.test(txt));
+    check('BLOCK', 'aucun sitemap annoncé en préproduction', !txt.includes('Sitemap:'));
+  } else {
+    check('BLOCK', 'robots.txt autorise l’exploration', /Allow:\s*\//.test(txt));
+    check('BLOCK', 'robots.txt annonce le sitemap', txt.includes(`${SITE_ORIGIN}/sitemap-index.xml`));
+  }
+}
+
+if (await exists('.htaccess')) {
+  const conf = await readFile(join(DIST, '.htaccess'), 'utf8');
+  const hasHeader = /X-Robots-Tag "noindex, nofollow"/.test(conf);
+  check(
+    'BLOCK',
+    TARGET === 'staging'
+      ? 'en-tête X-Robots-Tag noindex présent'
+      : 'aucun X-Robots-Tag noindex global en production',
+    TARGET === 'staging' ? hasHeader : !hasHeader,
+  );
+}
+
+/* ================================================================== *
  * 4 · Données structurées
  * ================================================================== */
 
@@ -283,7 +408,25 @@ section('7 · Configuration serveur');
 
 if (await exists('.htaccess')) {
   const conf = await readFile(join(DIST, '.htaccess'), 'utf8');
-  check('BLOCK', 'redirection HTTPS + www', /RewriteRule.*https:\/\/www\./.test(conf));
+
+  check('BLOCK', 'aucun placeholder non substitué', !conf.includes('{{'));
+
+  /*
+   * LE contrôle que ce refactor existe pour rendre possible : l'hôte vers
+   * lequel Apache redirige DOIT être celui vers lequel pointent les
+   * canonicals. Deux fichiers portant chacun leur copie du domaine pouvaient
+   * diverger en silence — et un site qui redirige ailleurs que sa canonical
+   * se dédouble dans l'index.
+   */
+  const redirectHost = conf.match(/RewriteRule \^\(\.\*\)\$ https:\/\/([^/]+)\//)?.[1] ?? '';
+  const expectedHost = TARGET === 'staging' ? STAGING_HOST : SITE_HOST;
+  check('BLOCK', 'redirection HTTPS déclarée', redirectHost !== '');
+  check(
+    'BLOCK',
+    'hôte de redirection identique à l’hôte attendu',
+    redirectHost === expectedHost,
+    `redirect → ${redirectHost} · attendu → ${expectedHost}`,
+  );
   const errorDoc = conf.match(/ErrorDocument 404\s+(\S+)/)?.[1] ?? '';
   check('BLOCK', 'ErrorDocument 404 déclaré', errorDoc !== '');
   // Le chemin déclaré doit exister DANS l'artefact, pas seulement être écrit.

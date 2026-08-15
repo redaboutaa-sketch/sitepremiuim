@@ -16,9 +16,29 @@ d'offre par e-mail.
 | Élément | Où | Note |
 | --- | --- | --- |
 | Accès hPanel Hostinger | — | plan avec PHP ≥ 8.1 |
-| Domaine `ivan-arsenov.de` | DNS pointé sur Hostinger | |
-| Boîte `info@ivan-arsenov.de` | messagerie Hostinger | destinataire des demandes |
-| Boîte ou alias `no-reply@ivan-arsenov.de` | messagerie Hostinger | expéditeur technique |
+| Domaine `ivanarsenov.de` | DNS pointé sur Hostinger | **sans tiret** |
+| Boîte `info@ivan-arsenov.de` | messagerie | destinataire des demandes — **domaine avec tiret** |
+| Boîte ou alias `no-reply@ivan-arsenov.de` | messagerie | expéditeur technique — **domaine avec tiret** |
+
+> ### ⚠️ Domaine web ≠ domaine e-mail
+>
+> Le site est servi depuis **`ivanarsenov.de`** (sans tiret). Les adresses
+> fournies par le client sont sur **`ivan-arsenov.de`** (avec tiret).
+>
+> Ce n'est pas une faute de frappe à corriger : une entreprise peut héberger
+> son site sur un domaine et sa messagerie sur un autre. `info@ivanarsenov.de`
+> **n'a jamais été confirmée** et n'apparaît nulle part dans le code — un test
+> de l'audit d'artefact échoue si elle y entre.
+>
+> Statut : `EMAIL_DOMAIN_REQUIRES_CONFIRMATION`. Avant la mise en production,
+> demander à Ivan laquelle des deux boîtes existe réellement. Une adresse de
+> contact fausse dans un pied de page B2B, c'est une demande d'offre qui
+> n'arrive jamais.
+>
+> Point pratique : si la boîte vit sur `ivan-arsenov.de` alors que le site est
+> sur `ivanarsenov.de`, l'expéditeur technique `no-reply@ivan-arsenov.de` reste
+> cohérent avec SPF **du domaine de messagerie** — c'est bien celui-là qui
+> compte pour `From`, pas celui du site.
 
 L'expéditeur technique n'est pas un détail de confort : mettre l'adresse du
 prospect en `From` fait échouer SPF et envoie la demande en spam. Le prospect
@@ -112,7 +132,7 @@ indisponible sur ce seul motif serait un faux négatif qui coûte une affaire.
 ### Vérification
 
 ```bash
-curl -s https://www.ivan-arsenov.de/api/enquiry.php?probe=1
+curl -s https://www.ivanarsenov.de/api/enquiry.php?probe=1
 # attendu : {"delivery":"ready"}
 ```
 
@@ -124,7 +144,7 @@ La sonde constate qu'un endpoint **se déclare** configuré. Elle ne prouve
 rien sur la livraison réelle. `FORM_DELIVERY_READY` ne passe à `PASS`
 qu'après ceci, effectué sur l'environnement cible :
 
-1. Ouvrir `https://www.ivan-arsenov.de/contact/`.
+1. Ouvrir `https://www.ivanarsenov.de/contact/`.
 2. Ajouter deux marques depuis `/drinks/` au préalable.
 3. Remplir les six champs requis avec des données réelles et joignables.
 4. Envoyer.
@@ -149,23 +169,51 @@ actuel.
 
 ## 5 · HTTPS et domaine canonique
 
+> ### ⚠️ État DNS constaté — à vérifier avant toute action
+>
+> Relevé depuis cet environnement (résolution DNS fonctionnelle, vérifiée
+> contre un domaine témoin) :
+>
+> | Hôte | Résolution |
+> | --- | --- |
+> | `ivanarsenov.de` | **aucun enregistrement** |
+> | `www.ivanarsenov.de` | **aucun enregistrement** |
+> | `staging.ivanarsenov.de` | **aucun enregistrement** |
+> | `ivan-arsenov.de` | `91.184.0.200` · `2a02:2268:1:0:f816:3eff:fe7b:63c6` |
+>
+> Deux conséquences directes :
+>
+> 1. **La stratégie `www` n'est pas vérifiable.** Le nouveau domaine ne
+>    résout pas encore ; rien ne permet de confirmer que Hostinger sert
+>    l'apex, le `www`, ou les deux. La configuration livrée applique la
+>    stratégie `www` approuvée au Gate 2. **Si hPanel montre que l'apex doit
+>    être canonique**, ne pas déployer en l'état : changer `SITE_HOST` dans
+>    `site.config.mjs` et rebâtir — une seule valeur, tout suit.
+> 2. **Quelque chose répond déjà sur l'ancien domaine.** Ne pas supposer que
+>    le compte est vide. Vérifier l'état réel de `public_html` avant tout
+>    téléversement, et **ne remplacer aucun site existant** sans confirmation
+>    d'Ivan.
+>
+> Je n'ai aucun accès au compte Hostinger — ni identifiants, ni connecteur.
+> Ces points ne peuvent être levés que par vous, dans hPanel.
+
 1. hPanel → Sécurité → SSL : installer le certificat gratuit sur
-   `ivan-arsenov.de` **et** `www.ivan-arsenov.de`.
+   `ivanarsenov.de` **et** `www.ivanarsenov.de`.
 2. Ne pas activer la redirection HTTPS de hPanel : `.htaccess` la fait déjà,
    et combinée elle produirait un double saut.
 
 `.htaccess` canonicalise en une seule redirection 301 vers
-`https://www.ivan-arsenov.de/…`. Le `site` d'Astro et toutes les canonicals
+`https://www.ivanarsenov.de/…`. Le `site` d'Astro et toutes les canonicals
 pointent sur ce même hôte : un désaccord entre les deux crée des doublons
 d'indexation.
 
 ### Vérification
 
 ```bash
-curl -sI http://ivan-arsenov.de/drinks/     | grep -i '^location'
-curl -sI https://ivan-arsenov.de/drinks/    | grep -i '^location'
+curl -sI http://ivanarsenov.de/drinks/     | grep -i '^location'
+curl -sI https://ivanarsenov.de/drinks/    | grep -i '^location'
 # attendu dans les deux cas, en UN saut :
-# location: https://www.ivan-arsenov.de/drinks/
+# location: https://www.ivanarsenov.de/drinks/
 ```
 
 ---
@@ -174,7 +222,7 @@ curl -sI https://ivan-arsenov.de/drinks/    | grep -i '^location'
 
 | Contrôle | Commande / geste | Attendu |
 | --- | --- | --- |
-| Page d'accueil | `curl -sI https://www.ivan-arsenov.de/` | `200` |
+| Page d'accueil | `curl -sI https://www.ivanarsenov.de/` | `200` |
 | Slash final | ouvrir `/drinks` | redirige vers `/drinks/` |
 | 404 | ouvrir `/nexistepas/` | page 404 du site, statut `404` |
 | Sitemap | `/sitemap-index.xml` | 16 URLs, 48 `xhtml:link` |
@@ -196,8 +244,8 @@ absent** d'un build de production.
 
 À faire une fois la mise en ligne constatée, pas avant :
 
-1. Google Search Console → ajouter la propriété `https://www.ivan-arsenov.de`.
-2. Soumettre `https://www.ivan-arsenov.de/sitemap-index.xml`.
+1. Google Search Console → ajouter la propriété `https://www.ivanarsenov.de`.
+2. Soumettre `https://www.ivanarsenov.de/sitemap-index.xml`.
 3. Vérifier dans l'outil d'inspection que la version EN et la version DE sont
    toutes deux indexables et que les `hreflang` sont réciproques.
 
@@ -234,3 +282,82 @@ changent de nom, donc aucun vidage de cache n'est nécessaire.
   (bandeau `LEGAL_CONTENT_REQUIRES_VALIDATION`).
 - **Consentement cookies** : le site n'en pose aucun, mais le régime
   applicable au `sessionStorage` reste à trancher juridiquement.
+
+---
+
+## 10 · Préproduction — `staging.ivanarsenov.de`
+
+### Construire
+
+```bash
+npm run qa:staging     # build préproduction + audit de l'artefact
+```
+
+`DEPLOY_TARGET=staging` change **quatre** choses, et rien d'autre :
+
+| | Production | Préproduction |
+| --- | --- | --- |
+| Hôte de redirection `.htaccess` | `www.ivanarsenov.de` | `staging.ivanarsenov.de` |
+| `<meta name="robots">` | `index, follow` | `noindex, nofollow` |
+| `X-Robots-Tag` | absent | `noindex, nofollow` |
+| `robots.txt` | `Allow: /` + `Sitemap:` | `Disallow: /`, aucun sitemap |
+
+`ASSET_MODE=staging` est activé en même temps : les visuels en
+`requires_validation` y sont rendus, alors que la production les remplace par
+le repli typographique. C'est l'intérêt d'une préproduction — voir un asset
+avant de l'autoriser.
+
+### Canonicals en préproduction — décision explicite
+
+Les canonicals de la préproduction **pointent vers les URLs de production**.
+C'est intentionnel, et sûr uniquement parce que l'exclusion d'indexation est
+posée **trois fois** : balise, en-tête HTTP et `robots.txt`. Aucune URL de
+préproduction ne peut entrer dans l'index, donc ces canonicals n'ont jamais
+l'occasion d'être interprétées.
+
+L'alternative — canonicals auto-référentes sur l'hôte de préproduction —
+obligerait à faire dépendre `src/i18n/config.ts` d'une variable
+d'environnement, donc à la faire entrer dans les bundles client. On
+échangerait un risque théorique contre un risque réel.
+
+`npm run qa:staging` vérifie les trois exclusions ; il échoue si l'une saute.
+
+### Créer le sous-domaine
+
+1. **D'abord**, vérifier dans hPanel l'état réel du compte : quels domaines y
+   sont rattachés, ce que sert déjà `public_html`, et si un site existe.
+   Ne rien remplacer sans confirmation d'Ivan.
+2. `ivanarsenov.de` doit résoudre avant tout — au relevé le plus récent, ce
+   n'est pas le cas (voir §5).
+3. hPanel → Domaines → Sous-domaines → créer `staging`. Hostinger crée un
+   répertoire dédié (`public_html/staging` ou `domains/staging.…/public_html`
+   selon le plan).
+4. SSL : émettre le certificat pour `staging.ivanarsenov.de`.
+5. Téléverser le contenu de `dist/` **dans le répertoire du sous-domaine**,
+   jamais dans `public_html` racine.
+6. Protection d'accès : hPanel → Fichiers → Protection par mot de passe, sur
+   le répertoire du sous-domaine. Le `noindex` empêche l'indexation, pas la
+   consultation par quelqu'un qui connaît l'URL.
+
+### Contrôles après mise en préproduction
+
+| Contrôle | Attendu |
+| --- | --- |
+| `curl -sI https://staging.ivanarsenov.de/` | `200` + `x-robots-tag: noindex, nofollow` |
+| `curl -s https://staging.ivanarsenov.de/robots.txt` | `Disallow: /` |
+| Source d'une page | `<meta name="robots" content="noindex, nofollow">` |
+| `/styleguide/` | `404` |
+| Recherche `site:staging.ivanarsenov.de` | aucun résultat, durablement |
+
+### Le formulaire en préproduction
+
+Deux options, et le choix doit être **conscient** :
+
+- **Ne pas déposer `api/enquiry.php`** — la sonde répond indisponible, le
+  formulaire l'annonce et ne prétend rien. C'est le défaut, et c'est sûr.
+- **Le déposer avec un destinataire de test** — permet de fermer B1 sans
+  polluer la boîte d'Ivan. Ne jamais pointer la préproduction sur
+  `info@…` en production : un test finit toujours par ressembler à une vraie
+  demande d'offre.
+
+---

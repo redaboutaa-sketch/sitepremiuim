@@ -11,8 +11,12 @@ export type Locale = (typeof LOCALES)[number];
 /** Locale servie à la racine du domaine, et cible de `x-default`. */
 export const DEFAULT_LOCALE: Locale = 'en';
 
-/** Origine de production. Sert à construire canonical, hreflang et sitemap. */
-export const SITE_ORIGIN = 'https://www.ivan-arsenov.de';
+/**
+ * Origine de production. Sert à construire canonical, hreflang et sitemap.
+ * Ré-exportée depuis `site.config.mjs` — jamais redéclarée ici, sous peine de
+ * voir les canonicals et le sitemap diverger en silence.
+ */
+export { SITE_ORIGIN } from '../../site.config.mjs';
 
 /** Attribut `lang` du document et valeur `hreflang`. */
 export const HTML_LANG: Record<Locale, string> = {

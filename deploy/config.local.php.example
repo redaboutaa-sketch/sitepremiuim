@@ -5,9 +5,20 @@
  * Copier en public_html/api/config.local.php et renseigner les valeurs
  * réelles. Le fichier est ignoré par git (.gitignore).
  */
+/*
+ * ⚠️ EMAIL_DOMAIN_REQUIRES_CONFIRMATION
+ *
+ * Le domaine WEB est `ivanarsenov.de` (sans tiret). Les adresses ci-dessous
+ * sont sur `ivan-arsenov.de` (AVEC tiret) parce que c'est ce que le client a
+ * fourni. Ne pas « harmoniser » : site et messagerie peuvent parfaitement
+ * vivre sur deux domaines. À confirmer auprès d'Ivan avant la production.
+ *
+ * `sender` doit appartenir au domaine dont le SPF autorise ce serveur — donc
+ * au domaine de MESSAGERIE, pas à celui du site.
+ */
 return [
     // Boîte qui reçoit les demandes.
     'recipient' => 'info@ivan-arsenov.de',
-    // Expéditeur technique du domaine — requis pour SPF/DKIM.
+    // Expéditeur technique — requis pour SPF/DKIM.
     'sender'    => 'no-reply@ivan-arsenov.de',
 ];

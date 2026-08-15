@@ -1,8 +1,36 @@
 // @ts-check
+import { readFile, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-const SITE = 'https://www.ivan-arsenov.de';
+import { SITE_HOST, SITE_ORIGIN, STAGING_HOST } from './site.config.mjs';
+
+/**
+ * Cible du build. `staging` produit un artefact NON INDEXABLE servi depuis
+ * `staging.<apex>`, avec sa propre canonicalisation d'hôte.
+ */
+const TARGET = process.env.DEPLOY_TARGET === 'staging' ? 'staging' : 'production';
+const HOST = TARGET === 'staging' ? STAGING_HOST : SITE_HOST;
+
+/**
+ * STRATÉGIE DE CANONICALISATION EN PRÉPRODUCTION — décision explicite.
+ *
+ * Les URL absolues restent celles de la PRODUCTION, y compris sur le build de
+ * préproduction. C'est intentionnel et sûr uniquement parce que la
+ * préproduction est rendue non indexable par trois moyens cumulés :
+ *   - `X-Robots-Tag: noindex, nofollow` sur toutes les réponses (.htaccess) ;
+ *   - `<meta name="robots" content="noindex, nofollow">` dans le <head> ;
+ *   - `robots.txt` en `Disallow: /`.
+ * Aucune URL de préproduction ne peut donc entrer dans l'index, et les
+ * canonicals n'ont jamais l'occasion d'être interprétées.
+ *
+ * L'alternative — canonicals auto-référentes sur l'hôte de préproduction —
+ * obligerait à faire dépendre `src/i18n/config.ts` d'une variable
+ * d'environnement, donc à la faire entrer dans les bundles client. On
+ * échangerait un risque théorique contre un risque réel.
+ */
+const SITE = SITE_ORIGIN;
 
 /**
  * Paires de routes EN/DE. Doit rester alignée sur `src/i18n/routes.ts` —
@@ -44,6 +72,52 @@ function styleguideRoute() {
 }
 
 /**
+ * Écrit `dist/.htaccess` depuis `deploy/htaccess.template`, hôte injecté.
+ *
+ * Le fichier était statique dans `public/` et portait sa propre copie du
+ * domaine : la redirection pouvait donc désigner un autre hôte que les
+ * canonicals sans qu'aucun contrôle ne le voie. Il est désormais dérivé de la
+ * même constante, et l'audit de l'artefact vérifie la concordance.
+ */
+function htaccess() {
+  return {
+    name: 'ivan-arsenov:htaccess',
+    hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        const template = await readFile(
+          fileURLToPath(new URL('./deploy/htaccess.template', import.meta.url)),
+          'utf8',
+        );
+
+        const stagingBlock =
+          TARGET === 'staging'
+            ? `
+# ── PRÉPRODUCTION ────────────────────────────────────────────────────────
+# Cet artefact N'EST PAS destiné au public. L'exclusion est posée trois fois
+# — en-tête, balise et robots.txt — parce qu'un seul de ces moyens suffit à
+# être oublié, et qu'un staging indexé fait concurrence au site réel.
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+`
+            : '';
+
+        const out = template
+          .replaceAll('{{HOST}}', HOST)
+          .replaceAll('{{TARGET}}', TARGET)
+          .replace('{{STAGING_BLOCK}}', stagingBlock)
+          .replace('{{STAGING_ROBOTS}}', '');
+
+        if (out.includes('{{')) throw new Error('.htaccess : placeholder non substitué');
+
+        await writeFile(new URL('.htaccess', dir), out, 'utf8');
+        logger.info(`.htaccess généré pour ${HOST} (${TARGET})`);
+      },
+    },
+  };
+}
+
+/**
  * Sortie 100 % statique : `dist/` est uploadable tel quel dans `public_html`
  * chez Hostinger, sans runtime Node.
  *
@@ -51,7 +125,7 @@ function styleguideRoute() {
  * `<route>/index.html`, ce que sert nativement Apache.
  */
 export default defineConfig({
-  site: 'https://www.ivan-arsenov.de',
+  site: SITE,
   output: 'static',
   trailingSlash: 'always',
 
@@ -76,6 +150,7 @@ export default defineConfig({
 
   integrations: [
     styleguideRoute(),
+    htaccess(),
     sitemap({
       filter: (page) => !page.includes('/styleguide') && !page.includes('/404'),
       /*
@@ -99,6 +174,14 @@ export default defineConfig({
   ],
 
   vite: {
+    /*
+     * Exposé via `import.meta.env` plutôt que `process.env` : les modules de
+     * `src/` finissent aussi dans les bundles client, où `process` n'existe
+     * pas. Vite substitue la valeur à la compilation, dans les deux cibles.
+     */
+    define: {
+      'import.meta.env.PUBLIC_DEPLOY_TARGET': JSON.stringify(TARGET),
+    },
     build: {
       /*
        * Vite précharge par défaut les chunks d'import dynamique. GSAP partait

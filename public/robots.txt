@@ -1,9 +1,0 @@
-# ivan-arsenov.de
-User-agent: *
-Allow: /
-
-# La page de démonstration du design system n'existe pas en production,
-# mais la règle protège les environnements de staging.
-Disallow: /styleguide/
-
-Sitemap: https://www.ivan-arsenov.de/sitemap-index.xml

@@ -1,19 +1,29 @@
 # ==========================================================================
 # IVAN ARSENOV — configuration Apache (Hostinger)
 #
-# Déposé à la racine de public_html avec le contenu de dist/.
+# ⚠️ FICHIER GÉNÉRÉ — ne pas éditer dans dist/.
+#    Source : deploy/htaccess.template
+#    L'hôte est injecté depuis site.config.mjs au build. En dur, ce fichier
+#    portait sa propre copie du domaine : la redirection pouvait donc pointer
+#    ailleurs que les canonicals sans qu'aucun test ne le remarque.
+#
+# Cible du build : {{TARGET}}
 # Aucune valeur de ce fichier n'est un secret.
 # ==========================================================================
-
-# ── HTTPS et canonicalisation www ────────────────────────────────────────
+{{STAGING_BLOCK}}
+# ── HTTPS et canonicalisation d'hôte ─────────────────────────────────────
 # Une seule redirection par requête : la condition combinée évite le double
 # saut http://exemple → https://exemple → https://www.exemple.
+#
+# La chaîne de requête est conservée automatiquement : mod_rewrite la
+# réattache quand la substitution n'en contient pas elle-même. Le chemin est
+# repris par $1.
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
   RewriteCond %{HTTPS} !=on [OR]
-  RewriteCond %{HTTP_HOST} !^www\. [NC]
-  RewriteRule ^(.*)$ https://www.ivan-arsenov.de/$1 [R=301,L]
+  RewriteCond %{HTTP_HOST} !={{HOST}} [NC]
+  RewriteRule ^(.*)$ https://{{HOST}}/$1 [R=301,L]
 </IfModule>
 
 # ── Pages d'erreur ───────────────────────────────────────────────────────
@@ -63,7 +73,7 @@ ErrorDocument 404 /404.html
   <FilesMatch "\.php$">
     Header always set X-Robots-Tag "noindex"
   </FilesMatch>
-</IfModule>
+{{STAGING_ROBOTS}}</IfModule>
 
 # ── Divers ───────────────────────────────────────────────────────────────
 Options -Indexes

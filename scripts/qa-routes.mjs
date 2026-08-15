@@ -14,8 +14,9 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import { SITE_ORIGIN as ORIGIN } from '../site.config.mjs';
+
 const DIST = resolve(process.cwd(), 'dist');
-const ORIGIN = 'https://www.ivan-arsenov.de';
 
 const ROUTES = {
   home: { en: '/', de: '/de/' },

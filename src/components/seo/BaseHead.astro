@@ -76,7 +76,20 @@ const jsonLd = graph(nodes);
 <meta property="og:locale" content={locale === 'de' ? 'de_DE' : 'en_GB'} />
 <meta name="twitter:card" content="summary_large_image" />
 
-<meta name="robots" content="index, follow" />
+{
+  /*
+   * La préproduction ne doit jamais entrer dans l'index : elle ferait
+   * concurrence au site réel sur ses propres mots-clés. L'exclusion est
+   * posée trois fois — ici, en en-tête HTTP et dans robots.txt — parce
+   * qu'un seul de ces moyens suffit à être oublié lors d'une mise en ligne.
+   */
+}
+<meta
+  name="robots"
+  content={import.meta.env.PUBLIC_DEPLOY_TARGET === 'staging'
+    ? 'noindex, nofollow'
+    : 'index, follow'}
+/>
 <link rel="sitemap" href="/sitemap-index.xml" />
 
 {/* Placeholder — à remplacer par le monogramme IA officiel (D8). */}

@@ -114,7 +114,8 @@ $headers = [
     'From: ' . $config['sender'],
     'Reply-To: ' . $email,
     'Content-Type: text/plain; charset=UTF-8',
-    'X-Mailer: ivan-arsenov.de',
+    // Identifie le SITE émetteur, pas la boîte : domaine web, sans tiret.
+    'X-Mailer: ivanarsenov.de',
 ];
 
 $sent = mail(
