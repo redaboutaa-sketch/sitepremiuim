@@ -1,0 +1,21 @@
+---
+/**
+ * HOMEPAGE.
+ *
+ * TR-006 : le hero seul. Les sections S2 à S6 arrivent en TR-007 et suivants.
+ */
+import Hero from '@/components/home/Hero.astro';
+import type { Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Hero locale={locale} />
+
+<script>
+  import '@/scripts/hero.ts';
+</script>

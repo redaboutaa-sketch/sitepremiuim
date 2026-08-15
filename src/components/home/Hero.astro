@@ -1,0 +1,411 @@
+---
+/**
+ * HERO — « THE STAGE »
+ *
+ * Un plan-séquence, pas une image d'accueil.
+ *
+ * Composition d'abord, mouvement ensuite : tout ce qui suit est du HTML et du
+ * CSS statiques. Le script n'ajoute que la révélation d'entrée, la parallaxe
+ * amortie et la stratification au défilement — et il ne se charge que si le
+ * mouvement est autorisé.
+ *
+ * Les produits sont POSÉS sur un filet de sol commun, chacun avec son ombre.
+ * Ils ne flottent pas : ils sont exposés. C'est ce qui sépare le studio
+ * packshot de l'esthétique nightclub — aucun néon, aucune lueur, aucun halo.
+ *
+ * ⚠️ Tant que les packshots officiels manquent, chaque emplacement rend le
+ * repli typographique de ProductObject. Aucun visuel n'est inventé. La
+ * composition est calibrée pour tenir dans cet état ET pour accueillir les
+ * vrais détourages sans refonte : seul le contenu des emplacements change.
+ */
+import ProductObject from '@/components/media/ProductObject.astro';
+import { brandBySlug } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+/**
+ * Répartition en profondeur. L'ordre visuel va du plus lointain au plus
+ * proche ; l'ordre DOM suit, pour que la superposition n'exige aucun z-index
+ * arbitraire.
+ *
+ * `x` et `y` sont des pourcentages de la scène — une composition éditoriale
+ * asymétrique, pas une grille régulière.
+ */
+const STAGE = [
+  { slug: 'sprite', plane: 'back', x: 1, y: 24, index: '05' },
+  { slug: 'monster-energy', plane: 'back', x: 33, y: 30, index: '03' },
+  { slug: 'pepsi', plane: 'back', x: 70, y: 20, index: '04' },
+  { slug: 'fanta', plane: 'mid', x: 9, y: 0, index: '02' },
+  { slug: 'red-bull', plane: 'mid', x: 37, y: 0, index: '06' },
+  // Tous les objets sont posés sur le MÊME filet de sol (y = 0). Le plan
+  // avant déborde à droite : c'est le cadrage qui suggère un plan plus large
+  // que l'écran, pas un objet qui tombe de l'étagère.
+  { slug: 'coca-cola', plane: 'front', x: 66, y: 0, index: '01' },
+] as const;
+
+const slots = STAGE.map((s) => ({ ...s, brand: brandBySlug(s.slug)! }));
+
+/** Découpe mot à mot pour la révélation sous masque. */
+const words = t.hero.h1.split(' ');
+---
+
+<section class="hero" data-hero data-surface="ink">
+  {/* Filigrane — les deux lettres composées en typographie, jamais un tracé
+      approximatif du monogramme officiel, qui n'a pas été fourni. */}
+  <span class="hero__monogram" aria-hidden="true" data-mark-provisional="filigrane typographique">
+    IA
+  </span>
+
+  <div class="hero__stage" aria-hidden="true" data-stage>
+    <div class="hero__floor"></div>
+    {
+      slots.map((s) => (
+        <div
+          class:list={['hero__slot', `hero__slot--${s.plane}`]}
+          data-plane={s.plane}
+          data-family={s.brand.category}
+          style={`--x:${s.x}%; --y:${s.y}%`}
+        >
+          <ProductObject brand={s.brand} usage="hero" index={s.index} loading="eager" />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="hero__content container">
+    <p class="t-label t-label--ruled hero__eyebrow">{t.hero.eyebrow}</p>
+
+    <h1 class="hero__title t-display-xl">
+      {
+        /*
+         * Un espace RÉEL sépare les mots. Avec un simple `column-gap`, le
+         * textContent du titre valait « Softdrinkswithoutborders. » : un
+         * lecteur d'écran l'aurait lu comme un seul mot, et le H1 aurait été
+         * indexé sans ses espaces.
+         */
+        words.map((word, i) => (
+          <>
+            <span class="reveal-mask hero__word" style={`--reveal-delay:${i * 70}ms`}>
+              <span>{word}</span>
+            </span>
+            {i < words.length - 1 ? ' ' : ''}
+          </>
+        ))
+      }
+    </h1>
+
+    <p class="hero__support t-body-l t-secondary">{t.hero.support}</p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" href={i18n.path('contact')}>{t.cta.primary}</a>
+      <a class="btn btn--text" href={i18n.path('drinks')}>{t.cta.secondary}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* svh, jamais vh : sur mobile, la barre d'URL ferait sauter la hauteur. */
+    min-block-size: 100svh;
+    padding-block: calc(72px + var(--sp-8)) var(--sp-8);
+    overflow: hidden;
+    background: var(--ink-900);
+  }
+
+  /* ── Filigrane ─────────────────────────────────────────────────────── */
+
+  .hero__monogram {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 4%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    /* Environ 45 % de la hauteur d'écran — présent comme un filigrane de
+       papier, pas comme un logo posé. */
+    font-size: clamp(14rem, 45vh, 30rem);
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: rgb(242 240 236 / 0.035);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* ── Scène ─────────────────────────────────────────────────────────── */
+
+  /*
+   * La scène occupe la MOITIÉ DROITE de la composition, jamais toute la
+   * largeur : sinon les emplacements passent derrière la colonne de texte et
+   * la rendent illisible. La composition est asymétrique — texte à gauche,
+   * scène à droite — comme une double page de magazine.
+   */
+  .hero__stage {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0;
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero__stage {
+      inset-inline-start: 48%;
+      inset-inline-end: 0;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .hero__stage {
+      inset-inline-start: 44%;
+    }
+  }
+
+  /* Filet de sol — l'élément qui ancre la scène. Les produits sont posés
+     dessus ; sans lui, ils flotteraient. */
+  .hero__floor {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 26%;
+    block-size: var(--hairline);
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--rule-strong) 12%,
+      var(--rule-strong) 88%,
+      transparent
+    );
+    transform-origin: left;
+  }
+
+  .hero__slot {
+    position: absolute;
+    inset-inline-start: var(--x);
+    inset-block-end: calc(26% + var(--y));
+    inline-size: clamp(120px, 15vw, 220px);
+    /* La profondeur se joue sur l'échelle, le flou et l'opacité — jamais
+       sur une lueur ni sur un fond coloré. */
+    transform: translate3d(var(--px, 0), var(--py, 0), 0) scale(var(--scale));
+    /*
+     * L'échelle grandit DEPUIS LE SOL, jamais depuis le centre. Avec l'origine
+     * par défaut, un objet mis à l'échelle 1.32 voit son bord inférieur
+     * descendre sous le filet : il ne serait plus posé, il tomberait de
+     * l'étagère.
+     */
+    transform-origin: bottom center;
+    opacity: var(--op);
+    filter: blur(var(--blur));
+    will-change: transform;
+  }
+
+  /*
+   * Le flou n'est appliqué QU'AU PLAN ARRIÈRE. Sur un packshot détouré, un
+   * léger flou de plan avant se lit comme une profondeur de champ ; sur de la
+   * typographie, il se lit comme un défaut de rendu. Le plan avant reste net.
+   */
+  .hero__slot--back {
+    --scale: 0.64;
+    --op: 0.3;
+    --blur: 4px;
+    --depth: 0.35;
+  }
+
+  .hero__slot--mid {
+    --scale: 1;
+    --op: 0.85;
+    --blur: 0px;
+    --depth: 0.62;
+  }
+
+  .hero__slot--front {
+    --scale: 1.32;
+    --op: 1;
+    --blur: 0px;
+    --depth: 1;
+    /* Volontairement débordant à droite : le cadrage donne l'impression
+       d'un plan plus large que l'écran. */
+    inline-size: clamp(150px, 19vw, 280px);
+  }
+
+  /*
+   * Présence du repli dans le hero.
+   *
+   * Le voile de signal du repli est calibré à 7 % pour une grille de
+   * catalogue, où les plateaux se répètent. Sur la scène du hero, isolés et
+   * agrandis, ils disparaissent : le plan avant — le sujet — devient le moins
+   * lisible de la composition. On renforce donc par plan.
+   */
+  .hero__slot :global(.product-object__fallback) {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--signal) 14%, transparent),
+      color-mix(in srgb, var(--signal) 3%, transparent) 55%,
+      transparent
+    );
+  }
+
+  .hero__slot--front :global(.product-object__fallback) {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--signal) 22%, transparent),
+      color-mix(in srgb, var(--signal) 5%, transparent) 60%,
+      transparent
+    );
+    border-inline-start-width: 2px;
+  }
+
+  /* ── Contenu ───────────────────────────────────────────────────────── */
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    inline-size: 100%;
+  }
+
+  @media (min-width: 768px) {
+    /* Le contenu s'arrête avant la scène : aucune superposition, jamais. */
+    .hero__content > * {
+      max-inline-size: min(46%, 44rem);
+    }
+  }
+
+  .hero__eyebrow {
+    margin-block-end: var(--sp-6);
+  }
+
+  .hero__title {
+    /* Disposition en ligne, pas en flex : les espaces entre les mots sont de
+       vrais nœuds de texte et doivent se comporter comme tels — césure,
+       retour à la ligne, sélection. */
+    max-inline-size: 14ch;
+  }
+
+  .hero__word {
+    display: inline-block;
+    vertical-align: bottom;
+    /* Compense la coupe des jambages par le masque de débordement. */
+    padding-block-end: 0.09em;
+    margin-block-end: -0.09em;
+  }
+
+  .hero__support {
+    margin-block-start: var(--sp-6);
+    max-inline-size: 44ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-5) var(--sp-7);
+    margin-block-start: var(--sp-7);
+  }
+
+  /* ── Mobile — composition distincte, pas un redimensionnement ──────── */
+
+  @media (max-width: 767px) {
+    .hero {
+      /* La scène rejoint le flux sur mobile. En colonne avec `order`, le
+         contenu passe devant : dans le DOM la scène précède le texte (pour
+         la superposition desktop), mais sur mobile la promesse doit se lire
+         AVANT le visuel. */
+      display: flex;
+      flex-direction: column;
+      /* Le texte passe AVANT le visuel : sur un salon professionnel, la
+         promesse doit se lire immédiatement. */
+      padding-block: calc(72px + var(--sp-7)) 0;
+      min-block-size: auto;
+    }
+
+    .hero__content {
+      order: 1;
+      padding-block-end: var(--sp-8);
+    }
+
+    .hero__title {
+      max-inline-size: 11ch;
+    }
+
+    .hero__monogram {
+      inset-block-start: auto;
+      inset-block-end: 4%;
+      inset-inline-end: -8%;
+      transform: none;
+      font-size: clamp(10rem, 55vw, 18rem);
+    }
+
+    /*
+     * RECOMPOSITION MOBILE — pas un redimensionnement.
+     *
+     * La scène quitte le positionnement absolu pour devenir une RANGÉE posée
+     * sous le texte. Sur 412 px, trois plateaux superposés en profondeur
+     * deviennent illisibles : les labels se coupent au bord et se chevauchent.
+     * Une rangée alignée sur un sol commun conserve l'idée d'exposition tout
+     * en restant lisible — et accueillera les vrais détourages à l'identique.
+     */
+    .hero__stage {
+      order: 2;
+      position: relative;
+      inset: auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: var(--sp-3);
+      padding-inline: var(--margin);
+      padding-block-end: var(--sp-6);
+      margin-block-start: var(--sp-7);
+      block-size: auto;
+      overflow: hidden;
+    }
+
+    .hero__floor {
+      inset-block-end: var(--sp-6);
+      inset-inline: var(--margin);
+    }
+
+    .hero__slot {
+      position: static;
+      inline-size: auto;
+      flex: 1 1 0;
+      min-inline-size: 0;
+      /* La profondeur passe de la superposition à l'échelle : le plan avant
+         reste le plus grand, sans recouvrir ses voisins. */
+      transform: none;
+      filter: none;
+    }
+
+    /* Le plan arrière n'existe plus : à cette échelle il ne serait plus
+       lisible et n'ajouterait que du bruit. */
+    .hero__slot--back {
+      display: none;
+    }
+
+    .hero__slot--mid {
+      --op: 0.8;
+      max-inline-size: 30%;
+    }
+
+    .hero__slot--front {
+      --op: 1;
+      flex: 1.35 1 0;
+    }
+  }
+
+  /* ── Reduced motion ───────────────────────────────────────────────────
+     La composition finale est déjà celle rendue par le HTML : il n'y a rien
+     à « restaurer ». On neutralise seulement la parallaxe résiduelle. */
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__slot {
+      transform: scale(var(--scale)) !important;
+      transform-origin: bottom center;
+    }
+  }
+</style>

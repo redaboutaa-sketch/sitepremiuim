@@ -34,6 +34,14 @@ export const en = {
     sendEnquiry: 'Send Business Enquiry',
   },
 
+  hero: {
+    eyebrow: 'B2B Soft Drinks · International Selection',
+    h1: 'Soft drinks without borders.',
+    support:
+      'From global icons to distinctive international flavours, Ivan Arsenov brings together a focused selection of non-alcoholic beverages for professional buyers.',
+    stageLabel: 'Selected brands',
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',

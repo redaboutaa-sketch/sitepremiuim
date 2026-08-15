@@ -66,5 +66,17 @@ export default defineConfig({
     }),
   ],
 
+  vite: {
+    build: {
+      /*
+       * Vite précharge par défaut les chunks d'import dynamique. GSAP partait
+       * donc chez TOUS les visiteurs, y compris ceux qui refusent le
+       * mouvement et n'exécuteront jamais ce code. Le site n'ayant presque
+       * pas de JavaScript, le préchargement n'apporte rien et coûte 60 Ko.
+       */
+      modulePreload: false,
+    },
+  },
+
   devToolbar: { enabled: false },
 });

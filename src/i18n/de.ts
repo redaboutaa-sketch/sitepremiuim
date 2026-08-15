@@ -38,6 +38,14 @@ export const de: Dictionary = {
     sendEnquiry: 'Geschäftsanfrage senden',
   },
 
+  hero: {
+    eyebrow: 'B2B Erfrischungsgetränke · Internationale Auswahl',
+    h1: 'Erfrischung ohne Grenzen.',
+    support:
+      'Von Weltmarken bis zu besonderen internationalen Geschmacksrichtungen: Ivan Arsenov bündelt eine fokussierte Auswahl alkoholfreier Getränke für Fachhändler.',
+    stageLabel: 'Ausgewählte Marken',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

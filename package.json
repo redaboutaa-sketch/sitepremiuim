@@ -13,7 +13,7 @@
     "check": "astro check",
     "qa:routes": "node scripts/qa-routes.mjs",
     "qa:shots": "STYLEGUIDE=1 astro build && playwright test tests/visual",
-    "test": "playwright test tests/smoke.spec.ts tests/catalog.spec.ts tests/assets.spec.ts tests/shell.spec.ts",
+    "test": "playwright test tests/smoke.spec.ts tests/catalog.spec.ts tests/assets.spec.ts tests/shell.spec.ts tests/hero.spec.ts",
     "qa:contrast": "node scripts/qa-contrast.mjs",
     "fonts": "node scripts/vendor-fonts.mjs",
     "qa": "npm run check && npm run qa:contrast && npm run build && npm run qa:routes && npm run test && npm run qa:shots",
@@ -23,6 +23,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.2.2",
+    "gsap": "^3.15.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
