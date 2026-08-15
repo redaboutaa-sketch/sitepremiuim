@@ -1,0 +1,74 @@
+---
+/**
+ * MARQUE — logo si publiable, wordmark composé sinon.
+ *
+ * Le logo n'est jamais déformé, recoloré ni rogné : ratio d'origine respecté,
+ * zone de protection assurée par le padding de la cellule hôte.
+ *
+ * En l'absence de logo publiable, on affiche le NOM de la marque en
+ * typographie — jamais une approximation graphique du logo réel.
+ */
+import type { Brand } from '@/lib/catalog';
+import { resolve, type AssetMode } from '@/lib/assets';
+
+interface Props {
+  brand: Brand;
+  mode?: AssetMode;
+  /** Hauteur de rendu du logo, en pixels. La largeur suit le ratio. */
+  height?: number;
+}
+
+const { brand, mode, height = 28 } = Astro.props;
+
+const asset = resolve(brand.slug, 'logo', mode);
+
+const svgs = import.meta.glob<string>('/src/assets/brands/**/logo.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+const svg = asset?.path ? svgs[`/${asset.path}`] : undefined;
+---
+
+{
+  svg ? (
+    <span
+      class="brand-mark"
+      style={`--mark-height:${height}px`}
+      role="img"
+      aria-label={brand.brand}
+      set:html={svg}
+    />
+  ) : (
+    <span class="brand-mark brand-mark--wordmark">{brand.brand}</span>
+  )
+}
+
+<style>
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-inline-size: 100%;
+  }
+
+  .brand-mark :global(svg) {
+    block-size: var(--mark-height);
+    inline-size: auto;
+    max-inline-size: 100%;
+    /* Aucune recoloration : le logo garde ses couleurs d'origine. */
+  }
+
+  /* Repli — le nom composé, jamais un tracé approximatif du logo. */
+  .brand-mark--wordmark {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    text-align: center;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+</style>

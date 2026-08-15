@@ -60,11 +60,16 @@ prêtes à boire. Réintégrable ultérieurement par ajout de données, sans ref
 *(Après application des décisions du 2026-08-14 : −3 Concentrates & Syrups, −1 XXL Nutrition,
 Dairy/Protein et Arizona non intégrées.)*
 
-### 2.1 Marques **brand-level only** — décision D7
+### 2.1 Marques **brand-level-only** — décision D7, étendue le 2026-08-15
 
-Ces quatre marques sont publiées **au niveau marque uniquement**. Aucun SKU, aucune
+Ces **huit** marques sont publiées **au niveau marque uniquement**. Aucun SKU, aucune
 variante, aucun format n'est affiché tant que les références précises admises ne sont pas
 confirmées par Ivan. Le champ `productName` reste `null` et n'est **pas rendu**.
+
+Deux motifs distincts mènent à la même règle.
+
+**a — Périmètre partiel de gamme** *(décision initiale, 2026-08-14)*
+Une partie seulement de la gamme de la marque est dans le scope.
 
 | Marque | Restriction |
 |---|---|
@@ -73,8 +78,23 @@ confirmées par Ivan. Le champ `productName` reste `null` et n'est **pas rendu**
 | **Krombacher Spezi** | Spezi / soft drinks uniquement — **jamais les bières Krombacher**. SKU précis non confirmés |
 | **Hero** | Boissons et jus uniquement — pas les confitures ni l'alimentaire. SKU précis non confirmés |
 
-Le schéma marque ces entrées `skuPolicy: 'brand-level-only'` : toute tentative de saisir un
-`productName` sur l'une d'elles **fait échouer la validation du catalogue**.
+**b — Licence tierce** *(extension approuvée par le client le 2026-08-15)*
+Ces marques n'existent au catalogue que par leurs déclinaisons boissons sous licence.
+Afficher un SKU non confirmé y reviendrait à présenter **une confiserie ou un produit
+dérivé comme une boisson**. Elles restent `brand-level-only` **jusqu'à validation d'un
+SKU boisson précis**.
+
+| Marque | Restriction |
+|---|---|
+| **Chupa Chups** | Boissons sous licence uniquement — pas les confiseries |
+| **Mentos** | Sodas et boissons uniquement — pas les bonbons |
+| **Squid Game** | Boissons sous licence uniquement |
+| **Toxic Waste** | Boissons sous licence uniquement — pas les bonbons |
+
+Le schéma marque ces huit entrées `skuPolicy: 'brand-level-only'`. Deux contrôles en
+découlent, tous deux bloquants : saisir un `productName` sur l'une d'elles **fait échouer
+la validation du catalogue**, et laisser sa `scopeNote` nulle la fait échouer également —
+une restriction non documentée se perd.
 
 ---
 

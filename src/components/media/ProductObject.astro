@@ -1,0 +1,84 @@
+---
+/**
+ * OBJET PRODUIT
+ *
+ * Deux rendus possibles, un seul contrat visuel :
+ *   · asset publiable  → packshot détouré, posé, ancré par un filet de sol ;
+ *   · sinon            → repli typographique composé.
+ *
+ * Le ratio est fixe dans les deux cas : aucun décalage de mise en page selon
+ * qu'un fichier existe ou non. Le repli n'est PAS un rectangle gris — il est
+ * dessiné pour être présentable, parce qu'il sera visible en production tant
+ * que les assets ne sont pas fournis et validés.
+ *
+ * ⚠️ Aucune image générée ou substituée n'est jamais présentée comme un vrai
+ * produit : en l'absence d'asset validé, on montre du texte, pas une image
+ * inventée.
+ */
+import { Image } from 'astro:assets';
+
+import type { Brand } from '@/lib/catalog';
+import { categoryBySlug } from '@/lib/catalog';
+import { resolve, type AssetMode, type AssetUsage } from '@/lib/assets';
+
+interface Props {
+  brand: Brand;
+  usage?: Extract<AssetUsage, 'packshot' | 'hero'>;
+  /** Numéro d'index du catalogue. Affiché tel quel, non calculé. */
+  index?: string;
+  mode?: AssetMode;
+  /** Largeurs candidates pour le rendu responsive. */
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  brand,
+  usage = 'packshot',
+  index,
+  mode,
+  widths = [200, 400, 800],
+  loading = 'lazy',
+} = Astro.props;
+
+const asset = resolve(brand.slug, usage, mode);
+
+/**
+ * Les fichiers vivent sous src/assets pour bénéficier de l'optimisation
+ * (AVIF/WebP, tailles responsives, dimensions déclarées → CLS 0).
+ * Le glob est statique : Astro ne peut pas résoudre un import dynamique.
+ */
+const files = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/brands/**/*.{png,jpg,jpeg,webp,avif}',
+  { eager: true },
+);
+
+const file = asset?.path ? files[`/${asset.path}`]?.default : undefined;
+
+const category = categoryBySlug(brand.category);
+const familyLabel = category?.name.en ?? '';
+---
+
+<figure class="product-object" data-family={brand.category}>
+  {
+    file ? (
+      <Image
+        class="product-object__img"
+        src={file}
+        widths={widths}
+        sizes="(min-width: 1024px) 25vw, 45vw"
+        alt={`${brand.brand} — packshot`}
+        loading={loading}
+        decoding="async"
+      />
+    ) : (
+      <div class="product-object__fallback">
+        {index ? <p class="t-index">{index}</p> : <span aria-hidden="true" />}
+        <div>
+          <p class="product-object__fallback-name">{brand.brand}</p>
+          {familyLabel && <p class="t-label" style="margin-block-start: var(--sp-2)">{familyLabel}</p>}
+        </div>
+      </div>
+    )
+  }
+</figure>

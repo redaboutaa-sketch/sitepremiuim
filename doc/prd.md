@@ -492,7 +492,7 @@ pages de marque individuelles (voir §5), langues autres que EN/DE.
 | **D4** | Concentrates & Syrups | ✅ **NON en V1** — Karvan Cévitam, RAAK, Slimpie exclues. **Cinq familles, pas six** |
 | **D5** | Arizona | ✅ **EXCLUE** — non réintégrable en V1 |
 | **D6** | XXL Nutrition | ✅ **RETIRÉE** jusqu'à confirmation de la liste des SKU prêts à boire |
-| **D7** | A&W · Bundaberg · Krombacher Spezi · Hero | ✅ **`brand-level-only`** — publiées au niveau marque uniquement, aucun SKU affiché tant que les références admises ne sont pas confirmées. Contrainte appliquée par le schéma |
+| **D7** | **8 marques `brand-level-only`** — publiées au niveau marque uniquement, aucun SKU affiché tant que les références admises ne sont pas confirmées. Contrainte appliquée par le schéma | ✅ **Périmètre partiel de gamme** (2026-08-14) : A&W · Bundaberg · Krombacher Spezi · Hero. **Licence tierce** (extension approuvée le 2026-08-15) : Chupa Chups · Mentos · Squid Game · Toxic Waste — afficher un SKU non confirmé y reviendrait à présenter une confiserie comme une boisson |
 
 **Catalogue V1 : 62 marques publiables** — 26 Carbonated · 11 Energy & Sport · 8 Water · 13 Juice & Fruit · 4 International.
 

@@ -15,7 +15,7 @@ config.local.php
 test-results/
 playwright-report/
 qa/
-qa/reports/
+
 
 # os / editor
 .DS_Store

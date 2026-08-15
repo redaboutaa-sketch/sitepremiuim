@@ -9,6 +9,13 @@
  * toute dérive du design system se voit ici en premier.
  */
 import '@/styles/index.css';
+import ProductObject from '@/components/media/ProductObject.astro';
+import { brandBySlug } from '@/lib/catalog';
+
+// Marques réelles du catalogue : la démonstration passe par le composant de
+// production, pas par du balisage recopié.
+const DEMO_PRODUCTS = ['monster-energy', 'chaudfontaine', 'chupa-chups', 'coca-cola']
+  .map((slug, i) => ({ brand: brandBySlug(slug)!, index: String(i + 1).padStart(2, '0') }));
 
 const SIGNALS = [
   { key: 'carbonated', label: '01 — Carbonated', graphic: '#C8102E', text: '#FF6B7D', ratio: '6.1:1' },
@@ -372,58 +379,19 @@ const SCALE = [
           </p>
 
           <div class="sg__products">
-            <div data-family="carbonated">
-              <div class="product-object">
-                <svg class="product-object__img" viewBox="0 0 60 130" width="60" height="130" aria-hidden="true">
-                  <rect x="8" y="6" width="44" height="118" rx="5" fill="#3a3a40" />
-                  <rect x="8" y="6" width="12" height="118" rx="5" fill="#4a4a52" />
-                </svg>
+            {DEMO_PRODUCTS.map(({ brand, index }) => (
+              <div>
+                <ProductObject brand={brand} index={index} />
+                <p class="t-index" style="margin-block-start: var(--sp-3)">
+                  {brand.brand} — repli typographique
+                </p>
               </div>
-              <p class="t-index" style="margin-block-start: var(--sp-3)">Asset validé — forme témoin</p>
-            </div>
-
-            <div data-family="energy-sport">
-              <div class="product-object">
-                <div class="product-object__fallback">
-                  <p class="t-index">02</p>
-                  <div>
-                    <p class="product-object__fallback-name">Monster Energy</p>
-                    <p class="t-label" style="margin-block-start: var(--sp-2)">Energy &amp; Sport</p>
-                  </div>
-                </div>
-              </div>
-              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
-            </div>
-
-            <div data-family="water">
-              <div class="product-object">
-                <div class="product-object__fallback">
-                  <p class="t-index">03</p>
-                  <div>
-                    <p class="product-object__fallback-name">Chaudfontaine</p>
-                    <p class="t-label" style="margin-block-start: var(--sp-2)">Water</p>
-                  </div>
-                </div>
-              </div>
-              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
-            </div>
-
-            <div data-family="international">
-              <div class="product-object">
-                <div class="product-object__fallback">
-                  <p class="t-index">05</p>
-                  <div>
-                    <p class="product-object__fallback-name">Chupa Chups</p>
-                    <p class="t-label" style="margin-block-start: var(--sp-2)">International</p>
-                  </div>
-                </div>
-              </div>
-              <p class="t-index" style="margin-block-start: var(--sp-3)">Repli typographique</p>
-            </div>
+            ))}
           </div>
           <p class="t-small t-muted" style="margin-block-start: var(--sp-5)">
-            La forme témoin est une géométrie neutre, pas un produit&nbsp;: elle démontre le
-            traitement (ancrage, ombre, ratio) sans simuler un packshot dont nous ne disposons pas.
+            Aucun asset produit n'ayant encore été fourni, le composant bascule sur le repli
+            typographique&nbsp;— c'est exactement ce que verra la production tant que les fichiers
+            ne sont pas validés. Aucune image n'est inventée ni substituée pour combler le vide.
           </p>
         </div>
       </section>
