@@ -1,0 +1,241 @@
+---
+/**
+ * S2 — FEATURED BRANDS
+ *
+ * Prolongement direct du hero : mêmes plateaux, même filet de sol, même
+ * traitement. La scène du hero s'ouvrait sur six objets ; celle-ci les
+ * décline en une PISTE de seize, parcourue latéralement.
+ *
+ * Ce n'est pas un mur de logos. Chaque marque est un spécimen indexé, posé
+ * sur une ligne de sol continue, avec des hauteurs alternées pour éviter
+ * l'alignement mécanique d'une grille.
+ *
+ * Pas d'épinglage : la piste se déplace en fonction de la progression de la
+ * section dans la fenêtre. Le défilement natif reste intégralement maître.
+ * Sans JavaScript et sous reduced-motion, la piste redevient une zone
+ * défilable horizontalement au doigt ou au clavier — utilisable, pas dégradée.
+ *
+ * ⚠️ « Featured » est une décision de DESIGN, jamais une donnée de vente.
+ * Les libellés « best-selling » et assimilés sont proscrits (doc/catalog.md §3).
+ */
+import ProductObject from '@/components/media/ProductObject.astro';
+import { CATEGORIES, featuredBrands } from '@/lib/catalog';
+import { useI18n, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const i18n = useI18n(locale);
+const t = i18n.t;
+
+/**
+ * Ordre d'exposition — composé, pas alphabétique.
+ * On alterne les familles pour que les teintes se répondent le long de la
+ * piste au lieu de se regrouper par blocs de couleur.
+ */
+const ORDER = [
+  'coca-cola', 'red-bull', 'fanta', 'evian', 'pepsi', 'monster-energy',
+  'orangina', 'powerade', 'sprite', 'capri-sun', 'dr-pepper', 'spa',
+  'mountain-dew', 'schweppes', '7up', 'bundaberg',
+];
+
+const featured = featuredBrands();
+/** Libellé de famille dans la langue courante. */
+const familyLabel = (slug: string) =>
+  CATEGORIES.find((c) => c.slug === slug)?.name[locale] ?? '';
+
+const items = ORDER.map((slug, i) => {
+  const brand = featured.find((b) => b.slug === slug)!;
+  return {
+    brand,
+    index: String(i + 1).padStart(2, '0'),
+    // La ligne de TÊTE ondule, la ligne de SOL ne bouge pas : on fait varier
+    // la HAUTEUR du plateau, jamais son décalage vertical. Décaler l'objet le
+    // décollerait du sol — exactement ce qu'on interdit depuis le hero.
+    aspect: ['3 / 4', '3 / 3.3', '3 / 3.75', '3 / 3'][i % 4]!,
+  };
+});
+---
+
+<section class="featured section" data-surface="ink" data-featured aria-labelledby="featured-title">
+  <div class="container">
+    <p class="t-label t-label--ruled reveal">{t.featured.eyebrow}</p>
+    <h2 class="t-h2 featured__title reveal" id="featured-title">{t.featured.h2}</h2>
+    <p class="t-body-l t-secondary featured__copy reveal">{t.featured.copy}</p>
+  </div>
+
+  <div class="featured__viewport" data-track-viewport>
+    <ul
+      class="featured__track"
+      data-track
+      role="list"
+      tabindex="0"
+      aria-label={t.featured.trackLabel}
+    >
+      {
+        items.map(({ brand, index, aspect }) => (
+          <li class="featured__item" style={`--po-aspect:${aspect}`} data-family={brand.category}>
+            <a class="featured__link" href={`${i18n.path('drinks')}?brand=${brand.slug}`}>
+              <ProductObject brand={brand} usage="packshot" index={index} variant="plain" />
+              <span class="featured__caption">
+                <span class="featured__name t-h3">{brand.brand}</span>
+                <span class="t-label featured__family">{familyLabel(brand.category)}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="featured__floor" aria-hidden="true"></div>
+  </div>
+
+  <div class="container">
+    <p class="t-index featured__hint">{t.featured.hint}</p>
+  </div>
+</section>
+
+<style>
+  .featured {
+    position: relative;
+    overflow: hidden;
+    padding-block-end: var(--section-y-tight);
+  }
+
+  @media (min-width: 768px) {
+    /*
+     * La section doit être sensiblement plus haute que la fenêtre : c'est
+     * cette hauteur excédentaire qui fournit la course de défilement pendant
+     * laquelle la piste avance. Trop courte, la traversée serait brutale.
+     */
+    .featured {
+      min-block-size: 150vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  .featured__title {
+    margin-block: var(--sp-5) var(--sp-5);
+    max-inline-size: 22ch;
+  }
+
+  .featured__copy {
+    max-inline-size: 58ch;
+  }
+
+  /* ── Piste ─────────────────────────────────────────────────────────── */
+
+  .featured__viewport {
+    --caption-h: 4.25rem;
+    position: relative;
+    margin-block-start: var(--sp-8);
+    /* Sans JS et en reduced-motion, la piste reste une zone défilable :
+       c'est le comportement natif, et il est parfaitement utilisable. */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+
+  .featured__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured__track {
+    /* Hauteur réservée aux légendes, pour caler le filet de sol dessus. */
+    --caption-h: 4.25rem;
+
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(var(--sp-5), 3vw, var(--sp-8));
+    padding-inline: var(--margin);
+    padding-block-end: var(--sp-7);
+    inline-size: max-content;
+    will-change: transform;
+  }
+
+  .featured__track:focus-visible {
+    outline: var(--focus-width) solid var(--focus-color);
+    outline-offset: -4px;
+  }
+
+  .featured__item {
+    inline-size: clamp(150px, 15vw, 210px);
+    flex: none;
+    scroll-snap-align: center;
+  }
+
+  .featured__link {
+    display: block;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+
+  .featured__caption {
+    display: block;
+    margin-block-start: var(--sp-4);
+  }
+
+  .featured__name {
+    display: block;
+    color: var(--fg-secondary);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .featured__family {
+    display: block;
+    margin-block-start: var(--sp-1);
+  }
+
+  /*
+   * Au survol, la marque visée gagne en présence pendant que la piste
+   * s'estompe : c'est le geste d'un conservateur qui isole une pièce, pas
+   * un effet de carte qui se soulève.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .featured__track:hover .featured__link {
+      opacity: 0.45;
+    }
+
+    .featured__track:hover .featured__link:hover {
+      opacity: 1;
+    }
+  }
+
+  .featured__link:hover .featured__name,
+  .featured__link:focus-visible .featured__name {
+    color: var(--fg);
+  }
+
+  /* Filet de sol continu, aligné sur la base des plateaux. */
+  /* Le filet passe sous les PLATEAUX, au-dessus des légendes : c'est la
+     ligne d'exposition, pas un soulignement de texte. */
+  .featured__floor {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: calc(var(--sp-7) + var(--caption-h));
+    block-size: var(--hairline);
+    background: linear-gradient(to right, transparent, var(--rule) 8%, var(--rule) 92%, transparent);
+    pointer-events: none;
+  }
+
+  .featured__hint {
+    margin-block-start: var(--sp-5);
+    color: var(--fg-muted);
+  }
+
+  @media (min-width: 1024px) {
+    .featured__item {
+      /* La piste dépasse volontairement la fenêtre : le cadrage suggère un
+         assortiment plus large que l'écran. La hauteur reste contenue pour
+         que titre et piste tiennent ensemble dans le cadre pendant que la
+         piste avance — sinon les plateaux sont coupés en permanence. */
+      inline-size: clamp(180px, 15vw, 235px);
+    }
+  }
+
+  /* Le défilement natif de la piste reste actif en permanence : le pilotage
+     écrit dans `scrollLeft`, il ne se superpose pas à lui. */
+</style>

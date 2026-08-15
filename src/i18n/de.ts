@@ -46,6 +46,14 @@ export const de: Dictionary = {
     stageLabel: 'Ausgewählte Marken',
   },
 
+  featured: {
+    eyebrow: 'Weltmarken · Internationale Favoriten',
+    h2: 'Marken, die man kennt. Geschmacksrichtungen, die überraschen.',
+    copy: 'Bekannte Namen neben internationalen Varianten, besonderen Geschmacksrichtungen und neuen Getränkeformaten — alles in einem fokussierten Sortiment alkoholfreier Getränke.',
+    trackLabel: 'Ausgewählte Marken',
+    hint: 'Weiterscrollen — 16 von 62 Marken',
+  },
+
   pages: {
     home: {
       title: 'B2B Großhandel für Erfrischungsgetränke — Internationale Auswahl',

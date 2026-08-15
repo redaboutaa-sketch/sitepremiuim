@@ -30,6 +30,15 @@ interface Props {
   /** Largeurs candidates pour le rendu responsive. */
   widths?: number[];
   loading?: 'lazy' | 'eager';
+  /**
+   * `labelled` — le repli porte le nom de la marque : l'objet s'identifie
+   *   lui-même, utile quand rien ne l'entoure (scène du hero).
+   * `plain` — le repli reste muet : le nom vit à l'extérieur, dans le même
+   *   emplacement qu'un packshot réel occuperait. C'est ce qui garantit une
+   *   seule grammaire visuelle, que l'asset existe ou non — sans quoi le nom
+   *   apparaît deux fois tant qu'il manque, puis une seule fois ensuite.
+   */
+  variant?: 'labelled' | 'plain';
 }
 
 const {
@@ -39,6 +48,7 @@ const {
   mode,
   widths = [200, 400, 800],
   loading = 'lazy',
+  variant = 'labelled',
 } = Astro.props;
 
 const asset = resolve(brand.slug, usage, mode);
@@ -74,10 +84,18 @@ const familyLabel = category?.name.en ?? '';
     ) : (
       <div class="product-object__fallback">
         {index ? <p class="t-index">{index}</p> : <span aria-hidden="true" />}
-        <div>
-          <p class="product-object__fallback-name">{brand.brand}</p>
-          {familyLabel && <p class="t-label" style="margin-block-start: var(--sp-2)">{familyLabel}</p>}
-        </div>
+        {
+          variant === 'labelled' ? (
+            <div>
+              <p class="product-object__fallback-name">{brand.brand}</p>
+              {familyLabel && (
+                <p class="t-label" style="margin-block-start: var(--sp-2)">{familyLabel}</p>
+              )}
+            </div>
+          ) : (
+            <span aria-hidden="true" />
+          )
+        }
       </div>
     )
   }

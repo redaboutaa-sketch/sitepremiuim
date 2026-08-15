@@ -2,8 +2,12 @@
 /**
  * HOMEPAGE.
  *
- * TR-006 : le hero seul. Les sections S2 à S6 arrivent en TR-007 et suivants.
+ * Six sections, dont le rythme d'impact est délibérément inégal :
+ * un site où chaque section cherche le « wow » devient épuisant.
+ * S1 hero · S2 featured · S3 éditorial calme · S4 second grand moment ·
+ * S5 process sobre · S6 CTA final.
  */
+import FeaturedBrands from '@/components/home/FeaturedBrands.astro';
 import Hero from '@/components/home/Hero.astro';
 import type { Locale } from '@/i18n';
 
@@ -15,7 +19,10 @@ const { locale } = Astro.props;
 ---
 
 <Hero locale={locale} />
+<FeaturedBrands locale={locale} />
 
 <script>
   import '@/scripts/hero.ts';
+  import { initTrack } from '@/scripts/track.ts';
+  initTrack();
 </script>

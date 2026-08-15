@@ -42,6 +42,14 @@ export const en = {
     stageLabel: 'Selected brands',
   },
 
+  featured: {
+    eyebrow: 'Global icons · International favourites',
+    h2: 'Brands people already know. Flavours they may not.',
+    copy: 'Explore recognised names alongside international variants, distinctive flavours and emerging beverage formats — all within one focused soft-drinks portfolio.',
+    trackLabel: 'Featured brands',
+    hint: 'Scroll to explore — 16 of 62 brands',
+  },
+
   pages: {
     home: {
       title: 'B2B Soft Drinks Supplier — International Selection',

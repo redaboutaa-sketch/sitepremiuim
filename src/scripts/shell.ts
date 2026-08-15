@@ -170,5 +170,49 @@ function initMobileNav(): void {
   });
 }
 
+/* ------------------------------------------------------------------ *
+ * Révélation au défilement
+ * ------------------------------------------------------------------ */
+
+/**
+ * Observateur global des éléments `.reveal` et `.reveal-mask`.
+ *
+ * Sans lui, tout élément portant ces classes reste à `opacity: 0` : le CSS
+ * pose l'état initial, c'est ce script qui autorise la transition. Le hero
+ * gère les siens (ils doivent apparaître immédiatement, sans attendre une
+ * intersection) ; toutes les autres sections passent par ici.
+ *
+ * Sous `prefers-reduced-motion`, le CSS impose déjà l'état final : on marque
+ * quand même les éléments pour que l'état du DOM reste cohérent.
+ */
+function initReveal(): void {
+  const targets = Array.from(
+    document.querySelectorAll<HTMLElement>('.reveal, .reveal-mask'),
+  ).filter((el) => !el.closest('[data-hero]'));
+
+  if (targets.length === 0) return;
+
+  if (!('IntersectionObserver' in window)) {
+    for (const el of targets) el.setAttribute('data-revealed', 'true');
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.setAttribute('data-revealed', 'true');
+        // Une fois révélé, l'élément n'a plus rien à observer : on se
+        // désabonne pour ne pas garder 60 cibles actives sur la page.
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+  );
+
+  for (const el of targets) observer.observe(el);
+}
+
 initHeader();
 initMobileNav();
+initReveal();

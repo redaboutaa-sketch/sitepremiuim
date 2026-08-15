@@ -274,8 +274,9 @@
   align-items: flex-end;
   justify-content: center;
   /* Ratio fixe : aucun décalage de mise en page, que l'asset soit présent
-     ou remplacé par le repli typographique. */
-  aspect-ratio: 3 / 4;
+     ou remplacé par le repli typographique. Pilotable pour faire onduler la
+     ligne de tête d'une piste tout en gardant un sol commun. */
+  aspect-ratio: var(--po-aspect, 3 / 4);
   /* Le padding suit la largeur disponible : à 2 colonnes sur mobile, un
      padding fixe de 24px étranglait le texte et provoquait un débordement. */
   padding: clamp(var(--sp-2), 2.5vw, var(--sp-5));
