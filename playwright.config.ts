@@ -24,12 +24,16 @@ export default defineConfig({
     launchOptions: { executablePath: CHROMIUM },
   },
 
-  webServer: {
-    command: 'npx --yes serve dist -l 4321 --no-clipboard',
-    url: 'http://127.0.0.1:4321/',
-    reuseExistingServer: true,
-    timeout: 60_000,
-  },
+  // Les tests unitaires du catalogue ne touchent pas au navigateur : NO_SERVER=1
+  // évite de servir dist/ pour rien, et permet d'utiliser ce gate AVANT le build.
+  webServer: process.env.NO_SERVER
+    ? undefined
+    : {
+        command: 'npx --yes serve dist -l 4321 --no-clipboard',
+        url: 'http://127.0.0.1:4321/',
+        reuseExistingServer: true,
+        timeout: 60_000,
+      },
 
   projects: [
     // `channel` est neutralisé : il prendrait le pas sur `executablePath`.

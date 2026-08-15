@@ -14,7 +14,7 @@ config.local.php
 # QA artefacts
 test-results/
 playwright-report/
-qa/screenshots/
+qa/
 qa/reports/
 
 # os / editor
