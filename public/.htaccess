@@ -1,0 +1,80 @@
+# ==========================================================================
+# IVAN ARSENOV — configuration Apache (Hostinger)
+#
+# Déposé à la racine de public_html avec le contenu de dist/.
+# Aucune valeur de ce fichier n'est un secret.
+# ==========================================================================
+
+# ── HTTPS et canonicalisation www ────────────────────────────────────────
+# Une seule redirection par requête : la condition combinée évite le double
+# saut http://exemple → https://exemple → https://www.exemple.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteCond %{HTTPS} !=on [OR]
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^(.*)$ https://www.ivan-arsenov.de/$1 [R=301,L]
+</IfModule>
+
+# ── Pages d'erreur ───────────────────────────────────────────────────────
+# Astro traite la 404 à part : malgré `format: 'directory'`, elle sort en
+# `404.html` à la racine et NON en `404/index.html`. Pointer sur le second
+# donnait une erreur serveur à la place de la page d'erreur — défaut repéré
+# par l'audit de l'artefact, invisible à la lecture des sources.
+ErrorDocument 404 /404.html
+
+# ── Compression ──────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml application/xml
+</IfModule>
+
+# ── Cache ────────────────────────────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Les fichiers de /_astro/ portent une empreinte dans leur nom : un an,
+  # immuable. Les polices ne changent jamais sous le même nom non plus.
+  <FilesMatch "\.(woff2|avif|webp|png|jpg|jpeg|svg)$">
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Le HTML n'est jamais mis en cache durablement : une correction de contenu
+  # doit être visible immédiatement.
+  <FilesMatch "\.html$">
+    ExpiresDefault "access plus 0 seconds"
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ── En-têtes de sécurité ─────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+
+  # Le site ne charge AUCUNE ressource tierce : la politique peut donc être
+  # stricte sans rien casser. `form-action 'self'` verrouille la cible du
+  # formulaire de demande d'offre.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+
+  # Le formulaire n'accepte que du même site.
+  <FilesMatch "\.php$">
+    Header always set X-Robots-Tag "noindex"
+  </FilesMatch>
+</IfModule>
+
+# ── Divers ───────────────────────────────────────────────────────────────
+Options -Indexes
+
+<Files ~ "^\.">
+  Require all denied
+</Files>
+
+# La configuration locale de l'endpoint (destinataire, expéditeur) ne doit
+# jamais être servie. Elle ne rendrait rien tant que PHP s'exécute, mais un
+# module PHP désactivé la transformerait en fichier texte lisible.
+<Files "config.local.php">
+  Require all denied
+</Files>

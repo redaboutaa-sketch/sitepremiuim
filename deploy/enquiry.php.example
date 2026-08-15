@@ -1,0 +1,127 @@
+<?php
+/**
+ * ENDPOINT DE DEMANDE D'OFFRE — MODÈLE, NON CONFIGURÉ.
+ *
+ * ⚠️ Ce fichier n'est PAS déployé automatiquement. Il est copié en
+ *    public_html/api/enquiry.php, puis complété avec config.local.php
+ *    (hors dépôt) avant que FORM_DELIVERY_READY puisse passer à PASS.
+ *
+ * CONTRAT DE DISPONIBILITÉ (TR-020)
+ * Le front interroge cet endpoint pour savoir si la livraison est active.
+ * La sonde est un GET sur /api/enquiry.php?probe=1 — jamais un HEAD, qu'un
+ * endpoint POST peut légitimement refuser. La réponse fait autorité :
+ *     {"delivery":"ready"}      livraison active
+ *     {"delivery":"not-ready"}  fichier présent mais non configuré
+ * Toute autre réponse, ou l'absence de réponse, vaut "not-ready".
+ *
+ * La preuve DÉFINITIVE de FORM_DELIVERY_READY reste un envoi E2E réel
+ * sur l'environnement cible, pas cette sonde.
+ */
+
+declare(strict_types=1);
+
+$configPath = __DIR__ . '/config.local.php';
+$config = is_readable($configPath) ? require $configPath : null;
+
+$ready = is_array($config)
+    && !empty($config['recipient'])
+    && !empty($config['sender']);
+
+// ── Sonde de disponibilité ───────────────────────────────────────────────
+if (($_GET['probe'] ?? '') === '1') {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-store');
+    echo json_encode(['delivery' => $ready ? 'ready' : 'not-ready']);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit;
+}
+
+if (!$ready) {
+    // On refuse plutôt que d'accepter silencieusement : un formulaire qui
+    // répond 200 sans rien envoyer fait perdre des affaires.
+    http_response_code(503);
+    exit;
+}
+
+// ── Anti-spam sans CAPTCHA ───────────────────────────────────────────────
+if (($_POST['company_website'] ?? '') !== '') {
+    http_response_code(204); // piège rempli : on absorbe sans rien dire
+    exit;
+}
+
+$startedAt = (int) ($_POST['started_at'] ?? 0);
+if ($startedAt > 0 && (time() * 1000 - $startedAt) < 3000) {
+    http_response_code(422); // soumis en moins de 3 secondes
+    exit;
+}
+
+// ── Validation serveur — aucune confiance au client ──────────────────────
+$clean = static fn (string $key, int $max): string =>
+    mb_substr(trim(strip_tags((string) ($_POST[$key] ?? ''))), 0, $max);
+
+$firstName = $clean('firstName', 80);
+$lastName  = $clean('lastName', 80);
+$company   = $clean('company', 160);
+$country   = $clean('country', 80);
+$email     = filter_var(trim((string) ($_POST['email'] ?? '')), FILTER_VALIDATE_EMAIL);
+$message   = $clean('message', 4000);
+
+if ($firstName === '' || $lastName === '' || $company === '' || $country === ''
+    || $email === false || $message === '') {
+    http_response_code(422);
+    exit;
+}
+
+$vat      = $clean('vat', 40);
+$phone    = $clean('phone', 40);
+$interest = $clean('interest', 1000);
+$volume   = $clean('volume', 200);
+
+$brands = array_slice(
+    array_filter(
+        (array) ($_POST['brands'] ?? []),
+        static fn ($b): bool => is_string($b) && preg_match('/^[a-z0-9-]{1,60}$/', $b) === 1
+    ),
+    0,
+    25
+);
+
+// ── Composition ──────────────────────────────────────────────────────────
+$lines = [
+    "Name:      {$firstName} {$lastName}",
+    "Company:   {$company}",
+    "Country:   {$country}",
+    "Email:     {$email}",
+    $vat !== '' ? "VAT:       {$vat}" : null,
+    $phone !== '' ? "Phone:     {$phone}" : null,
+    $brands !== [] ? 'Brands:    ' . implode(', ', $brands) : null,
+    $interest !== '' ? "Interest:  {$interest}" : null,
+    $volume !== '' ? "Volume:    {$volume}" : null,
+    '',
+    $message,
+];
+
+$body = implode("\n", array_filter($lines, static fn ($l): bool => $l !== null));
+
+// `From` reste un expéditeur du domaine — indispensable pour SPF/DKIM.
+// L'adresse du prospect va dans `Reply-To`, jamais dans `From`.
+$headers = [
+    'From: ' . $config['sender'],
+    'Reply-To: ' . $email,
+    'Content-Type: text/plain; charset=UTF-8',
+    'X-Mailer: ivan-arsenov.de',
+];
+
+$sent = mail(
+    $config['recipient'],
+    'Business enquiry — ' . $company,
+    $body,
+    implode("\r\n", $headers)
+);
+
+http_response_code($sent ? 200 : 502);

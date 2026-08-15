@@ -1,0 +1,13 @@
+<?php
+/**
+ * Configuration du formulaire — À NE JAMAIS VERSIONNER.
+ *
+ * Copier en public_html/api/config.local.php et renseigner les valeurs
+ * réelles. Le fichier est ignoré par git (.gitignore).
+ */
+return [
+    // Boîte qui reçoit les demandes.
+    'recipient' => 'info@ivan-arsenov.de',
+    // Expéditeur technique du domaine — requis pour SPF/DKIM.
+    'sender'    => 'no-reply@ivan-arsenov.de',
+];
