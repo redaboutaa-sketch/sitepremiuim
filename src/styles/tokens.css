@@ -34,8 +34,14 @@
   --text-muted: #797980; /* 4.58:1 — AA, plancher vérifié */
 
   --text-on-paper: #0a0a0b; /* 17.39:1 sur paper — AAA */
-  --text-on-paper-sec: #54545c; /* 6.59:1 — AA */
-  --text-on-paper-muted: #6c6c75; /* 4.57:1 — AA, plancher vérifié */
+  --text-on-paper-sec: #54545c; /* 6.59:1 sur paper · 5.97:1 sur paper-alt */
+  /*
+   * Le plancher clair est vérifié sur PAPER-ALT, pas sur paper : le plateau
+   * de repli typographique pose ce gris sur #e8e5df. L'ancienne valeur
+   * (#6c6c75) était conforme sur paper (4.57) et tombait à 4.14 sur alt —
+   * conforme dans le fichier de tokens, non conforme à l'écran.
+   */
+  --text-on-paper-muted: #616169; /* 5.39:1 sur paper · 4.88:1 sur paper-alt */
 
   /* ---------------------------------------------------------------------
    * FILETS — l'élément structurel signature.
@@ -75,6 +81,23 @@
 
   --signal-international: #e0447c;
   --signal-international-text: #ff8fb4;
+
+  /*
+   * Variantes texte pour SURFACE CLAIRE.
+   *
+   * Les `--signal-*-text` ci-dessus sont les variantes ÉCLAIRCIES : elles ne
+   * valent que sur l'encre. Posées sur du papier elles tombent entre 1,45:1
+   * et 2,41:1 — illisibles. Le catalogue étant sur surface claire, il fallait
+   * un second jeu, assombri à teinte et saturation constantes.
+   *
+   * Seuil vérifié sur PAPER-ALT (#e8e5df), la plus sombre des deux surfaces
+   * claires, donc valable sur les deux.
+   */
+  --signal-carbonated-on-paper: #c8102e; /* 4.68:1 sur paper-alt */
+  --signal-energy-on-paper: #007268; /* 4.63:1 */
+  --signal-water-on-paper: #276a98; /* 4.64:1 */
+  --signal-juice-on-paper: #945708; /* 4.61:1 */
+  --signal-international-on-paper: #c1205a; /* 4.61:1 */
 
   /* Signal actif — réaffecté par famille au niveau section (voir motion.css). */
   --signal: var(--text-primary);
@@ -290,4 +313,41 @@
 [data-family='international'] {
   --signal: var(--signal-international);
   --signal-text: var(--signal-international-text);
+}
+
+/*
+ * Le signal TEXTE dépend de la surface autant que de la famille.
+ *
+ * On ne peut pas déléguer ce choix à `[data-surface='paper']` seul : les
+ * propriétés personnalisées sont substituées au moment du calcul, sur
+ * l'élément qui les déclare. Une section papier qui poserait
+ * `--signal-text: var(--signal-text-paper)` résoudrait la variable AVEC SA
+ * PROPRE valeur, pas avec celle de la cellule enfant qui porte la famille.
+ * Il faut donc croiser les deux conditions dans le sélecteur — cinq règles,
+ * explicites, plutôt qu'un tour de passe-passe.
+ */
+[data-surface='paper'] [data-family='carbonated'],
+[data-surface='paper'][data-family='carbonated'] {
+  --signal-text: var(--signal-carbonated-on-paper);
+}
+[data-surface='paper'] [data-family='energy-sport'],
+[data-surface='paper'][data-family='energy-sport'] {
+  --signal-text: var(--signal-energy-on-paper);
+}
+[data-surface='paper'] [data-family='water'],
+[data-surface='paper'][data-family='water'] {
+  --signal-text: var(--signal-water-on-paper);
+}
+[data-surface='paper'] [data-family='juice-fruit'],
+[data-surface='paper'][data-family='juice-fruit'] {
+  --signal-text: var(--signal-juice-on-paper);
+}
+[data-surface='paper'] [data-family='international'],
+[data-surface='paper'][data-family='international'] {
+  --signal-text: var(--signal-international-on-paper);
+}
+
+/* Sur surface claire sans famille active, le signal texte reste l'encre. */
+[data-surface='paper'] {
+  --signal-text: var(--text-on-paper);
 }

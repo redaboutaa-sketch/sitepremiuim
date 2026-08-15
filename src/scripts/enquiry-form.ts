@@ -16,13 +16,43 @@ import { clear, getSelection, remove, subscribe } from './enquiry';
 type Transport = 'configured' | 'not-configured';
 
 /**
- * Détection du transport. L'endpoint PHP n'existe que lorsque le fichier a
- * été déposé et configuré sur Hostinger (voir doc/deploy-hostinger.md).
+ * CONTRAT DE DISPONIBILITÉ DU TRANSPORT (TR-020).
+ *
+ * La sonde est un GET sur `<action>?probe=1`. Elle N'EST PAS un HEAD :
+ * un endpoint POST a le droit de répondre 405 à un HEAD tout en étant
+ * parfaitement opérationnel — le déclarer indisponible sur ce seul motif
+ * serait un faux négatif qui coûterait une affaire à Ivan.
+ *
+ * Seule réponse valant « disponible » :
+ *     HTTP 200 + JSON { "delivery": "ready" }
+ *
+ * Tout le reste — { "delivery": "not-ready" }, corps illisible, statut
+ * d'erreur, panne réseau, 404 (fichier jamais déposé) — vaut indisponible.
+ * Le défaut est donc FERMÉ : en cas de doute on n'annonce pas un envoi.
+ *
+ * ⚠️ Cette sonde n'établit PAS `FORM_DELIVERY_READY`. Elle constate qu'un
+ *    endpoint se déclare configuré. La seule preuve reste un envoi E2E réel
+ *    sur l'environnement cible, réception vérifiée dans la boîte d'Ivan.
  */
 async function probeTransport(action: string): Promise<Transport> {
   try {
-    const response = await fetch(action, { method: 'HEAD' });
-    return response.ok ? 'configured' : 'not-configured';
+    const url = new URL(action, window.location.href);
+    url.searchParams.set('probe', '1');
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (!response.ok) return 'not-configured';
+
+    const payload: unknown = await response.json();
+    const delivery =
+      typeof payload === 'object' && payload !== null
+        ? (payload as Record<string, unknown>).delivery
+        : undefined;
+
+    return delivery === 'ready' ? 'configured' : 'not-configured';
   } catch {
     return 'not-configured';
   }

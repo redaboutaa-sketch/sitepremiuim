@@ -57,6 +57,7 @@ function level(r) {
 
 const INK = token('ink-900');
 const PAPER = token('paper');
+const PAPER_ALT = token('paper-alt');
 
 /** [libellé, premier plan, arrière-plan, seuil requis] */
 const PAIRS = [
@@ -66,6 +67,29 @@ const PAIRS = [
   ['text-on-paper / paper', token('text-on-paper'), PAPER, 4.5],
   ['text-on-paper-sec / paper', token('text-on-paper-sec'), PAPER, 4.5],
   ['text-on-paper-muted / paper', token('text-on-paper-muted'), PAPER, 4.5],
+
+  /*
+   * Il existe DEUX surfaces claires. Ne vérifier que `paper` laissait passer
+   * du texte conforme dans ce fichier et non conforme à l'écran : le plateau
+   * de repli typographique pose le gris atténué sur `paper-alt`, où il
+   * tombait à 4,14:1. Toute couleur pouvant atterrir sur l'une ou l'autre est
+   * désormais vérifiée sur les deux.
+   */
+  ['text-on-paper / paper-alt', token('text-on-paper'), PAPER_ALT, 4.5],
+  ['text-on-paper-sec / paper-alt', token('text-on-paper-sec'), PAPER_ALT, 4.5],
+  ['text-on-paper-muted / paper-alt  (plancher)', token('text-on-paper-muted'), PAPER_ALT, 4.5],
+
+  // Variantes texte des signaux sur surface CLAIRE — le second jeu, assombri.
+  ['signal-carbonated-on-paper / paper-alt', token('signal-carbonated-on-paper'), PAPER_ALT, 4.5],
+  ['signal-energy-on-paper / paper-alt', token('signal-energy-on-paper'), PAPER_ALT, 4.5],
+  ['signal-water-on-paper / paper-alt', token('signal-water-on-paper'), PAPER_ALT, 4.5],
+  ['signal-juice-on-paper / paper-alt', token('signal-juice-on-paper'), PAPER_ALT, 4.5],
+  [
+    'signal-international-on-paper / paper-alt',
+    token('signal-international-on-paper'),
+    PAPER_ALT,
+    4.5,
+  ],
 
   // Variantes texte des signaux — seules autorisées pour du texte coloré.
   ['signal-carbonated-text / ink-900', token('signal-carbonated-text'), INK, 4.5],
