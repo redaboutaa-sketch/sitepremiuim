@@ -1,5 +1,6 @@
 // @ts-check
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
@@ -118,6 +119,60 @@ function htaccess() {
 }
 
 /**
+ * Retire de `dist/` les assets NON VALIDÉS que le bundler a émis sans que
+ * personne ne les affiche.
+ *
+ * `import.meta.glob({ eager: true })` importe TOUT ce qui correspond au motif,
+ * indépendamment de ce qui est réellement rendu. Un fichier de marque en
+ * attente de validation se retrouvait donc écrit dans `dist/_astro/` — donc
+ * publiquement téléchargeable — alors que la production ne l'affiche jamais.
+ * C'est précisément le risque que la gouvernance d'assets existe pour écarter :
+ * l'exposition compte autant que l'affichage.
+ *
+ * Le nettoyage est VÉRIFIÉ, pas aveugle : si l'un de ces fichiers est
+ * réellement référencé par une page, le build échoue. Cela voudrait dire
+ * qu'un asset non validé est affiché en production, et il faut alors le
+ * savoir bruyamment plutôt que supprimer un fichier utilisé.
+ */
+function pruneUnvalidatedAssets() {
+  return {
+    name: 'ivan-arsenov:prune-unvalidated',
+    hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        if (process.env.ASSET_MODE === 'staging') return;
+
+        const root = fileURLToPath(dir);
+        const emitted = await readdir(join(root, '_astro')).catch(() => []);
+        const suspects = emitted.filter((f) => /^logo\.[^.]+\.(webp|png|avif|jpg)$/.test(f));
+        if (suspects.length === 0) return;
+
+        // Concaténation de tout le HTML produit : une référence, où qu'elle soit.
+        const html = [];
+        const walk = async (d) => {
+          for (const entry of await readdir(d, { withFileTypes: true })) {
+            const full = join(d, entry.name);
+            if (entry.isDirectory()) await walk(full);
+            else if (entry.name.endsWith('.html')) html.push(await readFile(full, 'utf8'));
+          }
+        };
+        await walk(root);
+        const haystack = html.join('\n');
+
+        const referenced = suspects.filter((f) => haystack.includes(f));
+        if (referenced.length > 0) {
+          throw new Error(
+            `Assets non validés RÉFÉRENCÉS dans une page de production : ${referenced.join(', ')}`,
+          );
+        }
+
+        for (const f of suspects) await rm(join(root, '_astro', f));
+        logger.info(`${suspects.length} assets non validés retirés du build de production`);
+      },
+    },
+  };
+}
+
+/**
  * Sortie 100 % statique : `dist/` est uploadable tel quel dans `public_html`
  * chez Hostinger, sans runtime Node.
  *
@@ -151,6 +206,7 @@ export default defineConfig({
   integrations: [
     styleguideRoute(),
     htaccess(),
+    pruneUnvalidatedAssets(),
     sitemap({
       filter: (page) => !page.includes('/styleguide') && !page.includes('/404'),
       /*
