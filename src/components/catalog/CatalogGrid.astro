@@ -55,7 +55,7 @@ const brands = allBrands().map((brand, i) => ({
           data-search={search}
           data-family={brand.category}
         >
-          <ProductObject brand={brand} usage="packshot" index={index} variant="plain" />
+          <ProductObject brand={brand} usage="packshot" index={index} variant="plain" allowLogo />
 
           <div class="catalog__meta">
             <p class="t-h3 catalog__name" data-brand-slug={brand.slug} data-brand-name={brand.brand}>

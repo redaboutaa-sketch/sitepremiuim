@@ -360,12 +360,36 @@ for (const [name, file] of ROUTES) {
 section('5 · Assets');
 
 const images = files.filter((f) => /\.(png|jpe?g|webp|avif|gif)$/i.test(f));
-check(
-  'BLOCK',
-  'aucun packshot produit publié (aucun n’est validé)',
-  images.length === 0,
-  images.join(', '),
-);
+
+/*
+ * L'attente dépend de la cible, et c'est tout l'intérêt d'avoir deux artefacts.
+ *
+ *  · PRODUCTION — aucun visuel de marque, sans exception : aucun asset n'est
+ *    `validated`, donc rien ne doit être ni affiché NI même déposé. Un fichier
+ *    présent mais non affiché reste publiquement téléchargeable.
+ *  · PRÉPRODUCTION — les assets `requires_validation` sont précisément ce
+ *    qu'on vient y regarder. Ils sont donc attendus, mais uniquement sous la
+ *    forme autorisée par la décision DA : des LOGOS, jamais des packshots.
+ */
+const brandImages = images.filter((f) => !f.startsWith('favicon'));
+
+if (TARGET === 'staging') {
+  const notLogos = brandImages.filter((f) => !/(^|\/)logo\./.test(f.split('/').pop() ?? ''));
+  check(
+    'BLOCK',
+    'préproduction : seuls des logos sont publiés, aucun packshot',
+    notLogos.length === 0,
+    notLogos.join(', '),
+  );
+  check('WARN', `préproduction : ${brandImages.length} visuels de marque déposés`, true);
+} else {
+  check(
+    'BLOCK',
+    'production : aucun visuel de marque publié (aucun n’est validé)',
+    brandImages.length === 0,
+    brandImages.slice(0, 6).join(', ') + (brandImages.length > 6 ? ` … +${brandImages.length - 6}` : ''),
+  );
+}
 
 const svgs = files.filter((f) => f.endsWith('.svg'));
 check('WARN', 'SVG embarqués', true, svgs.join(', ') || 'aucun');

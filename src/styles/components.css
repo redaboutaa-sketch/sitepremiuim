@@ -311,6 +311,41 @@
 }
 
 /*
+ * LOGO DE MARQUE — normalisation optique.
+ *
+ * Les dimensions viennent de `src/lib/optical.ts`, calculées par logo à partir
+ * de son ratio et de sa couverture réelles : elles égalisent la SURFACE
+ * perçue, pas une largeur. Un logo au ratio 4,65 et un au ratio 0,50 pèsent
+ * ainsi visuellement pareil sans être déformés.
+ *
+ * `object-fit: contain` garantit qu'aucun logo n'est étiré ni recadré : la
+ * boîte est imposée, l'image s'y inscrit en conservant son ratio.
+ *
+ * Pas d'ombre portée : elle ancre un OBJET dans l'espace. Un logo est une
+ * marque plate posée sur la surface, pas une bouteille posée sur un sol —
+ * lui donner du relief le ferait passer pour un produit.
+ */
+.product-object__img--logo {
+  inline-size: var(--logo-w, 60%);
+  block-size: var(--logo-h, 45%);
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  object-fit: contain;
+  filter: none;
+  /* Centré dans le plateau : sans cela le logo se colle au filet de sol,
+     hérité de l'alignement des packshots. */
+  margin-block: auto;
+}
+
+/*
+ * Le filet de sol ancre un objet posé. Un logo ne se pose pas : le filet
+ * donnerait l'impression d'une image collée par-dessus le plateau.
+ */
+.product-object:has(.product-object__img--logo)::after {
+  content: none;
+}
+
+/*
  * REPLI TYPOGRAPHIQUE — affiché quand aucun visuel validé n'est disponible.
  * Composé pour être présentable : ce n'est jamais un rectangle gris.
  */

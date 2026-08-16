@@ -89,6 +89,16 @@ export interface AssetRecord {
    */
   checksum: string | null;
 
+  /**
+   * Part de pixels opaques dans la boîte englobante, 0 a 1.
+   *
+   * Sert la NORMALISATION OPTIQUE du catalogue : deux logos de meme surface
+   * geometrique n'ont pas le meme poids visuel si l'un est un aplat plein et
+   * l'autre un lettrage aere. Sans cette mesure, un rectangle plein ecrase
+   * ses voisins a taille CSS egale.
+   */
+  opticalCoverage: number | null;
+
   legalNote: string | null;
 }
 
@@ -142,6 +152,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 81734,
     checksum: '2be2614fe74c848a82688573140c61d8422fb8ba08a0464f5563a1c388d15f4c',
+    opticalCoverage: 0.222,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (20%).",
   },
   '7up:logo': {
@@ -154,6 +165,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 23430,
     checksum: 'de0d54a69d4c5b7a7bedc4bba1ae163b15119e5c24ebfd165332b150ca6651aa',
+    opticalCoverage: 0.56,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (37%).",
   },
   'aa-drink:logo': {
@@ -166,6 +178,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 28378,
     checksum: '160dff9b38dd5909ac8a6a91bf42f3ba3149f49bb86fdbc65209f3b81a07dbba',
+    opticalCoverage: 0.414,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (35%).",
   },
   'aquarius:logo': {
@@ -178,6 +191,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 43690,
     checksum: '5087b2033c6e51ee9515b4c498ddca74870cc6af60d98240f64b46e7d81ce958',
+    opticalCoverage: 0.231,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (25% des pixels ≥3:1).",
   },
   'bar-le-duc:logo': {
@@ -190,6 +204,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 8180,
     checksum: '36597632a813d7d3c1c6846f96591ec83397ffe652d8ccca6e5a11e0d3e2c20c',
+    opticalCoverage: 1,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (0%).",
   },
   'big-red:logo': {
@@ -202,6 +217,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 39090,
     checksum: 'dfa9b2316b40f377012a7c207b08fc86dafc95ce4a884deff2f75ae7277a7e98',
+    opticalCoverage: 0.584,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (53% des pixels ≥3:1) · peu lisible sur papier (52%).",
   },
   'bomba:logo': {
@@ -214,6 +230,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 33172,
     checksum: '5e66df85d0415d408a9b6f7705c9095c2eec5d4e11ca155695e680a4d565b924',
+    opticalCoverage: 0.783,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
   },
   'canada-dry:logo': {
@@ -226,6 +243,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 36012,
     checksum: '6313e299cd18639af4c4ce7caf92ace190537690a32d8ba7e3c5ef81ba51fdea',
+    opticalCoverage: 0.689,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (33%).",
   },
   'capri-sun:logo': {
@@ -238,6 +256,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 38798,
     checksum: '1d887bdf07acd51b9c242e9e2a8ea5377380d4b97592aeb721beca28715ce787',
+    opticalCoverage: 0.452,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (39%) · très horizontal (ratio 3.03).",
   },
   'charlies:logo': {
@@ -250,6 +269,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 41990,
     checksum: '61f5f77103938afa794a8f03d14de33c71486ee017045a94d5cbe1041b5f55b1',
+    opticalCoverage: 0.437,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (43% des pixels ≥3:1) · très horizontal (ratio 2.94).",
   },
   'chaudfontaine:logo': {
@@ -262,6 +282,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 10728,
     checksum: '346b10b10ec309fa141abe4f1a9fdf4f3dfa7d86b35b5dcf549909bb4453109a',
+    opticalCoverage: 1,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur encre (22% des pixels ≥3:1) · très horizontal (ratio 4.03).",
   },
   'chupa-chups:logo': {
@@ -274,6 +295,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 38998,
     checksum: '0d3b0b24051084f6b90395126ebc599f9367972db76b78551f01c4104a7aad62',
+    opticalCoverage: 0.789,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (30%).",
   },
   'coca-cola:logo': {
@@ -286,6 +308,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 29842,
     checksum: '28d763db10bd7c5448f66860aad62e43d7f062dce637a21346c8da34a2840d78',
+    opticalCoverage: 0.416,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 3.05).",
   },
   'coco-rico:logo': {
@@ -298,6 +321,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 61186,
     checksum: '43c9231a2541e462e349b39871ab566b96b93b173b3e3a3be92054f14df2e220',
+    opticalCoverage: 0.664,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (21%).",
   },
   'dr-foots:logo': {
@@ -310,6 +334,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 51544,
     checksum: '5052fa832a5fd86271d814a23e2c533bdfd3383680bf653f68ee847cdd6311e9',
+    opticalCoverage: 0.981,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (45%).",
   },
   'dr-pepper:logo': {
@@ -322,6 +347,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 45910,
     checksum: 'a97a067f1ac8787f34cd112ea68bacf95375c063e31b5dfde2cc51bb60bbaf95',
+    opticalCoverage: 0.754,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (57%).",
   },
   'dubbelfrisss:logo': {
@@ -334,6 +360,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 25550,
     checksum: 'ac06d9c1851d9d0ca7a1233c8575bd11fea4ee982d958128edcd8a4918d031d9',
+    opticalCoverage: 0.503,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (42%).",
   },
   'evian:logo': {
@@ -346,6 +373,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 36056,
     checksum: 'a7d97bad2a19ad4786b0f04977875eee7efbf9590abce36c703828c24a63659e',
+    opticalCoverage: 0.329,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'fanta:logo': {
@@ -358,6 +386,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 35046,
     checksum: '919fead12e4bc932cf75e4f14a90fcddf9f946453dd2d096d73f835b0891daf6',
+    opticalCoverage: 0.722,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (52% des pixels ≥3:1) · peu lisible sur papier (51%).",
   },
   'feel-so-good:logo': {
@@ -370,6 +399,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 13114,
     checksum: 'd8a314f20f07db2524a0894cd5c9ef0c68d44e53633659ae3bbdea24f6cfba31',
+    opticalCoverage: 1,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur encre (43% des pixels ≥3:1) · très horizontal (ratio 3.66).",
   },
   'fernandes:logo': {
@@ -382,6 +412,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 33878,
     checksum: 'db621a4f180df391597b64d57de84a58b8eff05fdd094086d0fb9fcf35d0ff50',
+    opticalCoverage: 0.553,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (36%).",
   },
   'freego:logo': {
@@ -394,6 +425,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 118218,
     checksum: 'a4cbd506ff1412782c63201426f00ec8b18b3e7efafe272555758f6cb846dab0',
+    opticalCoverage: 0.318,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (34% des pixels ≥3:1).",
   },
   'grace:logo': {
@@ -406,6 +438,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 44778,
     checksum: '2d43d7d61f06d922ed270f71ded6342f295e4617f080e4999998707eba8beb73',
+    opticalCoverage: 0.729,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (22%).",
   },
   'guarana-antarctica:logo': {
@@ -418,6 +451,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 81104,
     checksum: '952e20f91e8b0311334ce0cd59583108d4294046ea011a5ccf07c5aa40bb62d3',
+    opticalCoverage: 0.51,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'hawai:logo': {
@@ -430,6 +464,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 10136,
     checksum: '36d578e959bd88b80bbb7258895aab2ac3af2b3911b6566865d61bbdc31c7746',
+    opticalCoverage: 1,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (0%).",
   },
   'hawaiian-punch:logo': {
@@ -442,6 +477,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 41508,
     checksum: '3435bcbfb1b8ea0548a874f18cf36640d731581dc8e26109a065f7ce2fcbb933',
+    opticalCoverage: 0.567,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (59% des pixels ≥3:1) · peu lisible sur papier (42%).",
   },
   'hero:logo': {
@@ -454,6 +490,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 38664,
     checksum: 'bff0b867044dfe55ec7f69f29e315d7f08b3cc9335009bf67f3f4a6b13e9f728',
+    opticalCoverage: 0.487,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (25% des pixels ≥3:1).",
   },
   'kizilay:logo': {
@@ -466,6 +503,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 21526,
     checksum: '4b9cc2544ecf2b3574cc06c5a11b2befec13283ddc3708e3d78e74037d70cecc',
+    opticalCoverage: 0.346,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très vertical (ratio 0.64).",
   },
   'krombacher-spezi:logo': {
@@ -478,6 +516,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 36146,
     checksum: 'cd115f232c92b5999fcff10c97d5f59d26dde236afdfd2271b29a8de67c28eaf',
+    opticalCoverage: 0.411,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (35% des pixels ≥3:1).",
   },
   'lacroix:logo': {
@@ -490,6 +529,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 64688,
     checksum: '909d550d103a27581c82047fd4e4efc7b3f94116a07a74ee65ecb1bae60186dd',
+    opticalCoverage: 0.274,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (49% des pixels ≥3:1).",
   },
   'maaza:logo': {
@@ -502,6 +542,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 35292,
     checksum: '76c6764f7d386caa069f96030578fae32d5e505957d2d7a91d1d02f12a0c7b95',
+    opticalCoverage: 0.568,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 3.12).",
   },
   'mentos:logo': {
@@ -514,6 +555,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 29942,
     checksum: '02a801aa8d462d6004602e2d575571d066938f7c85eb4957a63350b4b6c25375',
+    opticalCoverage: 0.617,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (47% des pixels ≥3:1) · très horizontal (ratio 4.65).",
   },
   'mirinda:logo': {
@@ -526,6 +568,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 49050,
     checksum: '207391ed28979176b25d98b30fa30ddf9bf5a7ebc24a82a115f8348b35cd623d',
+    opticalCoverage: 0.615,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (27%).",
   },
   'monster-energy:logo': {
@@ -538,6 +581,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 43910,
     checksum: '549796e4180c1a0271195911e29a79e45502d7a94cf96482c64b0615f20193a8',
+    opticalCoverage: 0.294,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (58% des pixels ≥3:1) · peu lisible sur papier (47%) · très horizontal (ratio 2.79).",
   },
   'mountain-dew:logo': {
@@ -550,6 +594,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 47780,
     checksum: '11ae51239dc3691c628f96d3391671b970c733de7d4b27f80e773f5e618a869a',
+    opticalCoverage: 0.35,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (55%).",
   },
   'o2life:logo': {
@@ -562,6 +607,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 10270,
     checksum: '00312d771659abc0ae70b15fa7dcccc933585afccd83ff8a512fa09c4600e981',
+    opticalCoverage: 1,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée.",
   },
   'oasis:logo': {
@@ -574,6 +620,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 29994,
     checksum: '2037c9d524a4ed3fa522645cc39bb8e9cfe1f3a964aaa90e470fdf0e039ad63e',
+    opticalCoverage: 0.591,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (59%).",
   },
   'okf:logo': {
@@ -586,6 +633,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 29596,
     checksum: 'aa925e2c1f83b14c05458bd32a736f164cdcf502acd0b8a771b3cb32caa2cedd',
+    opticalCoverage: 0.801,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 2.68).",
   },
   'orangina:logo': {
@@ -598,6 +646,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 33970,
     checksum: '62e59943034233ea41ee90038b821eb78202dc3cc42a7f8288001e1ad43bf377',
+    opticalCoverage: 0.708,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (39%).",
   },
   'pariba:logo': {
@@ -610,6 +659,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 59390,
     checksum: 'e9089b6b1a2d62f214b4985dc9cb3411d934273e5d9bfda9216296be9943e61c',
+    opticalCoverage: 0.383,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (33% des pixels ≥3:1).",
   },
   'pepsi:logo': {
@@ -622,6 +672,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 34568,
     checksum: '9a54571ba35c1e3c08341b39c4bdb9011ee8f4f8336e19fec187e3d115f06633',
+    opticalCoverage: 0.784,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'poms:logo': {
@@ -634,6 +685,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 25800,
     checksum: 'ca0ce19445f279cacdaf2bfec1cd92075f37b0b26537c9afaf4e5f3304a59f7a',
+    opticalCoverage: 0.789,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (21% des pixels ≥3:1).",
   },
   'powerade:logo': {
@@ -646,6 +698,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 16448,
     checksum: '8b2b6c70c18dff69179386aca42f19079232ab603c51ec9cdf1222550c8159e6',
+    opticalCoverage: 0.533,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (18% des pixels ≥3:1) · très horizontal (ratio 3.01).",
   },
   'rauch:logo': {
@@ -658,6 +711,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 27784,
     checksum: '43aaf0b7ac6ef26f7165b92036a0813dffe2be786552e91d97c40e98498bf671',
+    opticalCoverage: 0.789,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
   },
   'red-bull:logo': {
@@ -670,6 +724,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 37338,
     checksum: 'b96f5c6ad290e79b7e6e264247ff70997fe049ea9bbdf93e2a29602b65cfd894',
+    opticalCoverage: 0.459,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'rivella:logo': {
@@ -682,6 +737,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 19922,
     checksum: '7208279a785827a038e56edb00a3632a9d3b3d30ea6dfa72996d6ca41594294d',
+    opticalCoverage: 0.751,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'royal-club:logo': {
@@ -694,6 +750,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 42472,
     checksum: 'fc014aab59010553b35b59dabff0fb3ad9096e3c94fcb528d405a325c084dd1c',
+    opticalCoverage: 0.788,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (34% des pixels ≥3:1).",
   },
   'schweppes:logo': {
@@ -706,6 +763,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 38284,
     checksum: 'eacef33015339d1b746f0f96cb6ba7eed8ade2403d71cd7ec95a44080b771f5e',
+    opticalCoverage: 0.488,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
   },
   'sisi:logo': {
@@ -718,6 +776,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 35160,
     checksum: 'b83dd3b6c15bf0b1f18e873fca4886a16337067c456576543575b036b22014cc',
+    opticalCoverage: 0.665,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (52% des pixels ≥3:1) · peu lisible sur papier (51%).",
   },
   'slammers-energy:logo': {
@@ -730,6 +789,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 16668,
     checksum: 'ad1f748e1ca6de55481e104b96026d2eddb2264f284c24e82c59c6970451c282',
+    opticalCoverage: 0.284,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (35% des pixels ≥3:1) · très horizontal (ratio 3.04).",
   },
   'sourcy:logo': {
@@ -742,6 +802,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 35270,
     checksum: '1c89fae1de80fdd903ab1aed52609d0f22c20759296d2764d468bd2c5f5dae88',
+    opticalCoverage: 0.261,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (33% des pixels ≥3:1).",
   },
   'spa:logo': {
@@ -754,6 +815,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 54304,
     checksum: 'c1964c143bf8b9030dfdda50610142afaafc27b1bffb746722a39461821e4100',
+    opticalCoverage: 0.428,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (45% des pixels ≥3:1) · peu lisible sur papier (56%).",
   },
   'sprite:logo': {
@@ -766,6 +828,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 26788,
     checksum: '854cbe192c34294f86963f3967b45546841ca2bd41e07f3ffcab045b9ccfbdc3',
+    opticalCoverage: 0.278,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'squid-game:logo': {
@@ -778,6 +841,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 22816,
     checksum: 'eaa90402e8d1bfdbb73997e366c05b4f0401f9fc07edd7fddcab0aecd4fe6c18',
+    opticalCoverage: 0.238,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (29% des pixels ≥3:1).",
   },
   'sunkist:logo': {
@@ -790,6 +854,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 72626,
     checksum: 'b9346447239654812950d7911eb51d40581439645e195745c60e8aaf2afc25fe',
+    opticalCoverage: 0.604,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (30%).",
   },
   'taksi:logo': {
@@ -802,6 +867,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 14542,
     checksum: '269fce18368b80e1739d61d75fb01a9a20fe2676069371c992643a7689156c81',
+    opticalCoverage: 0.596,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (27%) · très vertical (ratio 0.5).",
   },
   'toxic-waste:logo': {
@@ -814,6 +880,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 79772,
     checksum: '16535834b0bc86ff19754085ceb0bdae2e3196dec1c9a82a0b20b3a93eb013c5',
+    opticalCoverage: 0.474,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (38%).",
   },
   'tropical-aloe-vera:logo': {
@@ -826,6 +893,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 32104,
     checksum: 'e19b862ab84352c311f8d5741bb0311e963282227eecf273b1e85c5b3c594e76',
+    opticalCoverage: 0.572,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (44% des pixels ≥3:1) · peu lisible sur papier (59%) · très horizontal (ratio 2.78).",
   },
   'vitamin-well:logo': {
@@ -838,6 +906,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 25684,
     checksum: 'b96ef19fee7140f7b4e16b1f2ec421f2e19d6fec6bd8e4cecb20a2a7c95cb463',
+    opticalCoverage: 0.444,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
   'yummy-miami-soda:logo': {
@@ -850,6 +919,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     format: 'webp',
     bytes: 30742,
     checksum: '3177c2f48061ce33506b1197abb6326bbe6a9ad26f2e20dfad7b0ea10729c597',
+    opticalCoverage: 0.784,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (5%).",
   },
 };
@@ -903,6 +973,7 @@ function identityAssets(): AssetRecord[] {
     format: null,
     bytes: null,
     checksum: null,
+    opticalCoverage: null,
     legalNote: `${note} Vectoriel SVG exigé — une version matricielle serait inutilisable.`,
   }));
 }
@@ -927,6 +998,7 @@ export const STANDALONE_ASSETS: AssetRecord[] = [
     format: 'svg',
     bytes: null,
     checksum: null,
+    opticalCoverage: null,
     legalNote:
       'Placeholder interne, à ne pas confondre avec le monogramme officiel. ' +
       'À remplacer dès réception du vectoriel (décision D8).',

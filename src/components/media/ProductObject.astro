@@ -20,6 +20,7 @@ import { Image } from 'astro:assets';
 import type { Brand } from '@/lib/catalog';
 import { categoryBySlug } from '@/lib/catalog';
 import { resolve, type AssetMode, type AssetUsage } from '@/lib/assets';
+import { opticalSize } from '@/lib/optical';
 
 interface Props {
   brand: Brand;
@@ -39,6 +40,16 @@ interface Props {
    *   apparaît deux fois tant qu'il manque, puis une seule fois ensuite.
    */
   variant?: 'labelled' | 'plain';
+  /**
+   * Autorise le repli sur le LOGO de marque quand aucun packshot n'est
+   * disponible.
+   *
+   * Réservé au catalogue `/drinks/`, sur surface claire. Sur encre, 23 des 60
+   * logos livrés tombent sous le seuil de lisibilité — un logo sombre sur
+   * fond quasi noir n'est pas un visuel, c'est une tache. Le hero, Featured
+   * et S4 n'activent donc jamais cette option (décision DA du 2026-08-16).
+   */
+  allowLogo?: boolean;
 }
 
 const {
@@ -49,9 +60,26 @@ const {
   widths = [200, 400, 800],
   loading = 'lazy',
   variant = 'labelled',
+  allowLogo = false,
 } = Astro.props;
 
-const asset = resolve(brand.slug, usage, mode);
+/*
+ * Le packshot prime toujours. Le logo n'est qu'un second choix, et seulement
+ * là où il a été explicitement autorisé : c'est un visuel de MARQUE, pas une
+ * photographie de produit, et il ne doit jamais se faire passer pour telle.
+ */
+const packshot = resolve(brand.slug, usage, mode);
+const logo = !packshot && allowLogo ? resolve(brand.slug, 'logo', mode) : null;
+const asset = packshot ?? logo;
+const isLogo = asset !== null && asset === logo;
+const optical = isLogo ? opticalSize(asset) : null;
+
+/*
+ * Le texte alternatif dit ce que l'image EST. Un logo n'est pas un packshot,
+ * et l'annoncer comme tel tromperait un lecteur d'écran sur la nature de ce
+ * qu'il décrit.
+ */
+const altText = isLogo ? `${brand.brand} — logo` : `${brand.brand} — packshot`;
 
 /**
  * Les fichiers vivent sous src/assets pour bénéficier de l'optimisation
@@ -73,13 +101,16 @@ const familyLabel = category?.name.en ?? '';
   {
     file ? (
       <Image
-        class="product-object__img"
+        class:list={['product-object__img', isLogo && 'product-object__img--logo']}
         src={file}
         widths={widths}
         sizes="(min-width: 1024px) 25vw, 45vw"
-        alt={`${brand.brand} — packshot`}
+        alt={altText}
         loading={loading}
         decoding="async"
+        style={optical
+          ? `--logo-w:${optical.width}%;--logo-h:${optical.height}%`
+          : undefined}
       />
     ) : (
       <div class="product-object__fallback">

@@ -90,6 +90,7 @@ function blank(brand: Brand, usage: AssetUsage): AssetRecord {
     format: null,
     bytes: null,
     checksum: null,
+    opticalCoverage: null,
     legalNote: brand.skuPolicy === 'brand-level-only' ? brand.scopeNote : null,
   };
 }

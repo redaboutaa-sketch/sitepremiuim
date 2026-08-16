@@ -95,6 +95,7 @@ const base: AssetRecord = {
   format: 'svg',
   bytes: 4096,
   checksum: 'a'.repeat(64),
+  opticalCoverage: null,
   legalNote: null,
 };
 
