@@ -67,7 +67,7 @@ const brands = allBrands().map((brand, i) => ({
                 <p class="t-index catalog__tag">{t.drinks.internationalTag}</p>
               )
             }
-            {brand.scopeNote && <p class="visually-hidden">{brand.scopeNote}</p>}
+            {brand.scopeNote && <p class="visually-hidden">{brand.scopeNote[locale]}</p>}
           </div>
 
           <EnquiryButton brand={brand} locale={locale} class="catalog__action" />

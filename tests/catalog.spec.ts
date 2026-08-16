@@ -97,6 +97,10 @@ test('les 4 marques brand-level-only ne portent aucun SKU', () => {
   for (const b of restricted) {
     expect(b.productName, `${b.brand} ne doit porter aucun SKU`).toBeNull();
     expect(b.scopeNote, `${b.brand} doit documenter sa restriction`).not.toBeNull();
+    // La note est PUBLIÉE : les deux langues sont exigées, non vides.
+    expect(b.scopeNote!.en.length, `${b.brand} — note EN`).toBeGreaterThan(0);
+    expect(b.scopeNote!.de.length, `${b.brand} — note DE`).toBeGreaterThan(0);
+    expect(b.scopeNote!.de, `${b.brand} — DE identique à EN`).not.toBe(b.scopeNote!.en);
   }
 });
 
@@ -153,7 +157,7 @@ test('CONTRÔLE 3 — un productName sur une marque brand-level-only est rejeté
       slug: 'a-and-w',
       brand: 'A&W',
       skuPolicy: 'brand-level-only',
-      scopeNote: 'Root Beer uniquement.',
+      scopeNote: { en: 'Root beer only.', de: 'Nur Root Beer.' },
       productName: 'A&W Root Beer 355ml',
     },
   ]);

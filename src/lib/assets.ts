@@ -91,7 +91,8 @@ function blank(brand: Brand, usage: AssetUsage): AssetRecord {
     bytes: null,
     checksum: null,
     opticalCoverage: null,
-    legalNote: brand.skuPolicy === 'brand-level-only' ? brand.scopeNote : null,
+    // EN : langue source éditoriale du projet, forme de référence du registre.
+    legalNote: brand.skuPolicy === 'brand-level-only' ? (brand.scopeNote?.en ?? null) : null,
   };
 }
 

@@ -56,7 +56,15 @@ export const brandSchema = z
     assetStatus: z.enum(['validated', 'requires_validation', 'missing']),
     skuPolicy: z.enum(['full', 'brand-level-only']),
     searchTerms: z.array(z.string().min(1)),
-    scopeNote: z.string().min(1).nullable(),
+    /*
+     * Les DEUX langues sont exigées, non vides. Une note de périmètre publiée
+     * dans une seule langue laisserait la moitié des visiteurs sans
+     * l'information la plus sensible du catalogue — ce que la marque couvre
+     * et ce qu'elle ne couvre pas.
+     */
+    scopeNote: z
+      .object({ en: z.string().min(1), de: z.string().min(1) })
+      .nullable(),
   })
   .superRefine((entry, ctx) => {
     // CONTRÔLE 1 — marque exclue.

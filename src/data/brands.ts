@@ -43,15 +43,24 @@ export interface BrandRecord {
   assetStatus: AssetStatus;
   skuPolicy: SkuPolicy;
   searchTerms: string[];
-  /** Restriction de périmètre. Obligatoire si `skuPolicy` vaut `brand-level-only`. */
-  scopeNote: string | null;
+  /**
+   * Restriction de périmètre. Obligatoire si `skuPolicy` vaut
+   * `brand-level-only`.
+   *
+   * LOCALISÉE — cette note est PUBLIÉE : le catalogue la rend dans un élément
+   * réservé aux lecteurs d'écran. Une note rédigée dans une seule langue
+   * s'adresserait donc en français à un visiteur anglophone ou germanophone,
+   * précisément sur le point le plus sensible du catalogue — ce que la marque
+   * couvre et ce qu'elle ne couvre pas.
+   */
+  scopeNote: { en: string; de: string } | null;
 }
 
 interface Options {
   featured?: boolean;
   intl?: boolean;
   special?: boolean;
-  brandLevelOnly?: string;
+  brandLevelOnly?: { en: string; de: string };
   searchTerms?: string[];
 }
 
@@ -91,15 +100,20 @@ export const BRANDS: BrandRecord[] = [
   // ── A · CARBONATED SOFT DRINKS — 26 ──────────────────────────────────
   b('7up', '7UP', 'carbonated', { featured: true, searchTerms: ['seven up', '7 up'] }),
   b('a-and-w', 'A&W', 'carbonated', {
-    brandLevelOnly:
-      'Root Beer = soft drink non alcoolisée, à ne pas confondre avec une bière. SKU précis non confirmés.',
+    brandLevelOnly: {
+      en: 'Root beer is a non-alcoholic soft drink, not a beer. Specific SKUs not confirmed.',
+      de: 'Root Beer ist ein alkoholfreies Erfrischungsgetränk, kein Bier. Konkrete Artikel nicht bestätigt.',
+    },
     searchTerms: ['a and w', 'aw', 'root beer'],
   }),
   b('big-red', 'Big Red', 'carbonated'),
   b('bundaberg', 'Bundaberg', 'carbonated', {
     featured: true,
     intl: true,
-    brandLevelOnly: 'Références non alcoolisées uniquement. SKU précis non confirmés.',
+    brandLevelOnly: {
+      en: 'Non-alcoholic references only. Specific SKUs not confirmed.',
+      de: 'Ausschließlich alkoholfreie Artikel. Konkrete Artikel nicht bestätigt.',
+    },
   }),
   b('canada-dry', 'Canada Dry', 'carbonated'),
   b('coca-cola', 'Coca-Cola', 'carbonated', {
@@ -115,8 +129,10 @@ export const BRANDS: BrandRecord[] = [
     searchTerms: ['guarana'],
   }),
   b('krombacher-spezi', 'Krombacher Spezi', 'carbonated', {
-    brandLevelOnly:
-      'Spezi et soft drinks uniquement — jamais les bières Krombacher. SKU précis non confirmés.',
+    brandLevelOnly: {
+      en: 'Spezi and soft drinks only — never Krombacher beers. Specific SKUs not confirmed.',
+      de: 'Nur Spezi und Erfrischungsgetränke — keine Krombacher Biere. Konkrete Artikel nicht bestätigt.',
+    },
     searchTerms: ['spezi'],
   }),
   b('mirinda', 'Mirinda', 'carbonated'),
@@ -177,8 +193,10 @@ export const BRANDS: BrandRecord[] = [
   b('hawai', 'Hawai', 'juice-fruit', { intl: true }),
   b('hawaiian-punch', 'Hawaiian Punch', 'juice-fruit'),
   b('hero', 'Hero', 'juice-fruit', {
-    brandLevelOnly:
-      'Boissons et jus uniquement — pas les confitures ni l’alimentaire. SKU précis non confirmés.',
+    brandLevelOnly: {
+      en: 'Drinks and juices only — not the jams or food range. Specific SKUs not confirmed.',
+      de: 'Nur Getränke und Säfte — keine Konfitüren oder Lebensmittel. Konkrete Artikel nicht bestätigt.',
+    },
   }),
   b('maaza', 'Maaza', 'juice-fruit'),
   b('okf', 'OKF', 'juice-fruit'),
@@ -191,21 +209,33 @@ export const BRANDS: BrandRecord[] = [
   b('chupa-chups', 'Chupa Chups', 'international', {
     intl: true,
     special: true,
-    brandLevelOnly: 'Boissons sous licence uniquement — pas les confiseries.',
+    brandLevelOnly: {
+      en: 'Licensed drinks only — not the confectionery.',
+      de: 'Nur Lizenzgetränke — keine Süßwaren.',
+    },
   }),
   b('mentos', 'Mentos', 'international', {
     intl: true,
     special: true,
-    brandLevelOnly: 'Sodas et boissons uniquement — pas les bonbons.',
+    brandLevelOnly: {
+      en: 'Sodas and drinks only — not the sweets.',
+      de: 'Nur Limonaden und Getränke — keine Bonbons.',
+    },
   }),
   b('squid-game', 'Squid Game', 'international', {
     intl: true,
     special: true,
-    brandLevelOnly: 'Boissons sous licence uniquement.',
+    brandLevelOnly: {
+      en: 'Licensed drinks only.',
+      de: 'Nur Lizenzgetränke.',
+    },
   }),
   b('toxic-waste', 'Toxic Waste', 'international', {
     intl: true,
     special: true,
-    brandLevelOnly: 'Boissons sous licence uniquement — pas les bonbons.',
+    brandLevelOnly: {
+      en: 'Licensed drinks only — not the sweets.',
+      de: 'Nur Lizenzgetränke — keine Bonbons.',
+    },
   }),
 ];

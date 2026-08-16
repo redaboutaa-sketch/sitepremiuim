@@ -280,7 +280,7 @@ Champs par référence (marque et produit). **Aucun champ n'est inventé.**
 | `assetStatus` | enum | ✅ | `validated` · `requires_validation` · `missing` |
 | `skuPolicy` | enum | ✅ | `full` · `brand-level-only` (A&W, Bundaberg, Krombacher Spezi, Hero) |
 | `searchTerms` | string[] | | Alias et graphies alternatives |
-| `scopeNote` | string \| null | | Restriction de périmètre (ex. « non-alcoholic SKUs only ») |
+| `scopeNote` | `{ en, de }` \| null | | Restriction de périmètre, **dans les deux langues** — la note est publiée, lue par les lecteurs d'écran |
 
 ### Règles de validation
 
