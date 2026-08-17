@@ -8,14 +8,14 @@
 | | Total | Publiables en production |
 |---|---|---|
 | **Hero** — conditionne la direction artistique | 6 | 0 |
-| **Identité** | 4 | 0 |
+| **Identité** | 4 | 4 |
 | **Featured** | 32 | 0 |
 | **Catalogue** | 46 | 0 |
-| **Total** | 88 | 0 |
+| **Total** | 88 | 4 |
 
-Statuts — validated 0 · requires_validation 61 · missing 27
+Statuts — validated 4 · requires_validation 60 · missing 24
 
-**88 asset(s) sont substitués par le repli typographique en production.**
+**84 asset(s) sont substitués par le repli typographique en production.**
 Aucune marque n'est retirée du site pour autant : seul le visuel est remplacé.
 
 ## Règles appliquées
@@ -47,10 +47,10 @@ Aucune image générée ou substituée n'est présentée comme un vrai produit.
 
 | Marque | Usage | Chemin | Statut | Provenance | Autorisation | Dimensions | Format | Poids | Checksum | Production | Note juridique |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Ivan Arsenov — monogramme IA | `monogram` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Monogramme seul. Sert le filigrane du hero et dérive le favicon. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
-| Ivan Arsenov — lock-up complet | `lockup` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Monogramme + wordmark + filet. Sert le footer et les métadonnées sociales. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
-| Ivan Arsenov — wordmark | `wordmark` | — | missing | Client — visuel présenté en conversation le 2026-08-15, fichier non transmis | granted — Identité propre du client | — | — | — | — | ❌ repli | Wordmark seul. Sert la marque du header, où la hauteur est contrainte. Vectoriel SVG exigé — une version matricielle serait inutilisable. |
-| Ivan Arsenov — favicon | `favicon` | `public/favicon.svg` | requires_validation | Placeholder composé en interne — TR-001 | granted — Composition interne, aucune marque tierce | 32×32 | svg | — | — | ❌ repli | Placeholder interne, à ne pas confondre avec le monogramme officiel. À remplacer dès réception du vectoriel (décision D8). |
+| Ivan Arsenov — monogramme IA | `monogram` | `src/assets/identity/monogram-light.webp` | validated | Client — archive « ivanarsenov brand assets.zip », 2026-08-17 | granted — Identité propre du client | 600×491 | webp | 44.7 Ko | `10bc1b1b6e25…` | ✅ | Monogramme seul. Marque du header en dessous de 1024px, où la largeur manque. |
+| Ivan Arsenov — lock-up complet | `lockup` | `src/assets/identity/lockup-light.webp` | validated | Client — archive « ivanarsenov brand assets.zip », 2026-08-17 | granted — Identité propre du client | 1200×726 | webp | 94.0 Ko | `1a91b040fb7d…` | ✅ | Monogramme + wordmark + filet, composition d’origine. Sert le footer. |
+| Ivan Arsenov — wordmark | `wordmark` | `src/assets/identity/wordmark-light.webp` | validated | Client — archive « ivanarsenov brand assets.zip », 2026-08-17 | granted — Identité propre du client | 900×68 | webp | 26.9 Ko | `3316f596783b…` | ✅ | Recadrage strict du lock-up. Accompagne le monogramme dans le header à partir de 1024px. |
+| Ivan Arsenov — favicon | `favicon` | `public/favicon.ico` | validated | Client — archive « ivanarsenov brand assets.zip », 2026-08-17 | granted — Identité propre du client | 48×48 | ico | 2.6 Ko | `cb158947acad…` | ✅ | Monogramme officiel. 16/32/48px embarqués, plus 512px et 180px Apple. |
 
 ### Featured
 

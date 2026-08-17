@@ -371,7 +371,27 @@ const images = files.filter((f) => /\.(png|jpe?g|webp|avif|gif)$/i.test(f));
  *    qu'on vient y regarder. Ils sont donc attendus, mais uniquement sous la
  *    forme autorisée par la décision DA : des LOGOS, jamais des packshots.
  */
-const brandImages = images.filter((f) => !f.startsWith('favicon'));
+/*
+ * L'IDENTITÉ DU CLIENT N'EST PAS UNE MARQUE TIERCE.
+ *
+ * Le logo Ivan Arsenov est fourni par le client pour son propre site : aucun
+ * titulaire extérieur n'a de droit à confirmer, il est donc `validated` et
+ * DOIT être publié en production. Les 60 logos du catalogue appartiennent à
+ * des tiers, ne sont pas validés, et ne doivent jamais l'être.
+ *
+ * Confondre les deux ferait échouer le build sur la présence de l'identité
+ * légitime — ou, pire, laisserait passer une marque tierce en la prenant pour
+ * de l'identité.
+ */
+const IDENTITY = /(^|\/)(lockup|monogram|wordmark|favicon|apple-touch-icon)[-.]/;
+const brandImages = images.filter((f) => !IDENTITY.test(f));
+
+check(
+  'BLOCK',
+  'identité officielle publiée dans les deux cibles',
+  images.some((f) => /(^|\/)(lockup|monogram)[-.]/.test(f)),
+  'le logo du client doit être présent en production comme en préproduction',
+);
 
 if (TARGET === 'staging') {
   const notLogos = brandImages.filter((f) => !/(^|\/)logo\./.test(f.split('/').pop() ?? ''));

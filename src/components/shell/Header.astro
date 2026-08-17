@@ -36,8 +36,19 @@ const NAV: Array<{ key: PageKey; label: string }> = [
 
 <header class="header" data-header>
   <div class="header__inner container">
-    <a class="header__mark" href={i18n.path('home')} aria-label={t.meta.siteName}>
-      <SiteMark variant="wordmark" />
+    {/*
+      Composition horizontale : monogramme + wordmark, tous deux issus du
+      fichier officiel. Le lock-up d'origine est empilé, ratio 1,65 — à la
+      hauteur disponible dans ce header (20 à 30px), son wordmark tomberait à
+      deux pixels de haut, illisible. L'agrandir reviendrait à transformer le
+      header en zone de marque, ce qu'il n'est pas.
+
+      Sous 1024px, le wordmark est retiré : la largeur manque face au bouton de
+      menu. Le monogramme seul reste identifiable.
+    */}
+    <a class="header__mark" href={i18n.path('home')} aria-label={t.nav.homeLabel}>
+      <SiteMark variant="monogram" tone="light" height={30} class="header__monogram" />
+      <SiteMark variant="wordmark" tone="light" height={13} class="header__wordmark" />
     </a>
 
     <nav class="header__nav" aria-label={t.nav.primary}>
@@ -102,6 +113,29 @@ const NAV: Array<{ key: PageKey; label: string }> = [
   :global(html[data-js]) .header[data-scrolled] {
     background: var(--ink-900);
     border-block-end-color: var(--rule);
+  }
+
+  .header__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  /*
+   * Le nom n'apparaît qu'à partir du desktop, faute de largeur en dessous.
+   *
+   * `:global()` est indispensable : l'élément est rendu par SiteMark, donc il
+   * porte l'identifiant de scope de CE composant-là. Une règle scopée à
+   * Header ne l'atteindrait jamais — le wordmark restait visible à 320px.
+   */
+  .header__mark :global(.header__wordmark) {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .header__mark :global(.header__wordmark) {
+      display: block;
+    }
   }
 
   .header__inner {

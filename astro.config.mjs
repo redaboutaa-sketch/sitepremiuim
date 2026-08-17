@@ -1,5 +1,5 @@
 // @ts-check
-import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
@@ -173,6 +173,60 @@ function pruneUnvalidatedAssets() {
 }
 
 /**
+ * Retire les images ORIGINALES qu'aucune page ne référence.
+ *
+ * `<Image>` émet ses dérivés redimensionnés ET le fichier source. Le
+ * navigateur ne demande que les dérivés — le monogramme du header pèse 850
+ * octets servis — mais l'original de 96 Ko part quand même chez l'hébergeur.
+ * Additionné sur les deux tracés de trois usages, cela fait 277 Ko déposés
+ * que personne ne télécharge jamais.
+ *
+ * La référence est cherchée dans le HTML, le CSS ET le JS : une police ou une
+ * image appelée depuis une feuille de style n'apparaît dans aucune page, et la
+ * supprimer casserait le rendu. Ce qui n'est cité nulle part est mort.
+ */
+function pruneUnreferencedImages() {
+  return {
+    name: 'ivan-arsenov:prune-unreferenced',
+    hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const assets = join(root, '_astro');
+
+        const texts = [];
+        const walk = async (d) => {
+          for (const entry of await readdir(d, { withFileTypes: true })) {
+            const full = join(d, entry.name);
+            if (entry.isDirectory()) await walk(full);
+            else if (/\.(html|css|js|xml|txt)$/.test(entry.name)) {
+              texts.push(await readFile(full, 'utf8'));
+            }
+          }
+        };
+        await walk(root);
+        const haystack = texts.join('\n');
+
+        const candidates = (await readdir(assets).catch(() => [])).filter((f) =>
+          /\.(webp|png|avif|jpe?g)$/.test(f),
+        );
+        const orphans = candidates.filter((f) => !haystack.includes(f));
+        if (orphans.length === 0) return;
+
+        let freed = 0;
+        for (const f of orphans) {
+          const path = join(assets, f);
+          freed += (await stat(path)).size;
+          await rm(path);
+        }
+        logger.info(
+          `${orphans.length} images non référencées retirées (${(freed / 1024).toFixed(0)} Ko)`,
+        );
+      },
+    },
+  };
+}
+
+/**
  * Sortie 100 % statique : `dist/` est uploadable tel quel dans `public_html`
  * chez Hostinger, sans runtime Node.
  *
@@ -207,6 +261,7 @@ export default defineConfig({
     styleguideRoute(),
     htaccess(),
     pruneUnvalidatedAssets(),
+    pruneUnreferencedImages(),
     sitemap({
       filter: (page) => !page.includes('/styleguide') && !page.includes('/404'),
       /*

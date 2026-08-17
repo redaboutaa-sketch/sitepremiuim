@@ -92,9 +92,15 @@ const jsonLd = graph(nodes);
 />
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-{/* Placeholder — à remplacer par le monogramme IA officiel (D8). */}
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="mask-icon" href="/favicon.svg" color="#0A0A0B" />
+{/*
+  Monogramme IA officiel, fourni par le client. L'ICO embarque 16, 32 et 48px
+  — le tracé n'est pas simplifié aux petites tailles, il est rendu à la taille
+  exacte, ce qui préserve les empattements mieux qu'un seul fichier redimensionné
+  par le navigateur.
+*/}
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+<link rel="icon" href="/favicon-512.png" type="image/png" sizes="512x512" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
 <meta name="theme-color" content="#0A0A0B" />
 <script type="application/ld+json" set:html={jsonLd} />

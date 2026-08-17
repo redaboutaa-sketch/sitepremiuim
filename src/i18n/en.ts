@@ -22,6 +22,9 @@ export const en = {
     closeMenu: 'Close menu',
     primary: 'Main navigation',
     mobile: 'Site navigation',
+    /* Nom accessible du lien de marque. L'image porte alt="" : le nom
+       serait sinon annoncé deux fois, par l'image puis par le lien. */
+    homeLabel: 'Ivan Arsenov — Home',
     language: 'Language',
   },
 

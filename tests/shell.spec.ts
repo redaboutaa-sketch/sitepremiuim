@@ -17,7 +17,9 @@ test('le header porte la marque, la navigation et le CTA', async ({ page }, info
   await page.goto('/');
 
   await expect(page.locator('header')).toBeVisible();
-  await expect(page.locator('header a[aria-label="Ivan Arsenov"]')).toBeVisible();
+  // Le lien de marque porte désormais le logo officiel, et son nom accessible
+  // est explicite sur la destination.
+  await expect(page.locator('header a[aria-label="Ivan Arsenov — Home"]')).toBeVisible();
 
   if (info.project.name === 'desktop') {
     const nav = page.locator('header nav[aria-label="Main navigation"]');
@@ -249,17 +251,26 @@ test('les liens légaux mènent aux bonnes pages', async ({ page }) => {
  * Identité provisoire
  * ================================================================== */
 
-test('la marque provisoire est signalée comme telle', async ({ page }) => {
+test('la marque du site n’est plus provisoire', async ({ page }) => {
   await page.goto('/');
-  const provisional = page.locator('[data-mark-provisional]');
-  // Tant que les vectoriels ne sont pas fournis, le repli typographique est
-  // affiché — et il se déclare, pour qu'une mise en production avec
-  // l'identité provisoire soit détectable.
-  await expect(provisional.first()).toBeVisible();
-  await expect(provisional.first()).toHaveAttribute(
-    'data-mark-provisional',
-    /identité provisoire/,
-  );
+
+  /*
+   * L'identité officielle a été livrée le 2026-08-17 : le header et le footer
+   * ne doivent plus porter AUCUN marqueur provisoire. Le garde-fou reste en
+   * place — il détecterait une régression où un asset cesserait de se résoudre
+   * et repasserait au repli typographique sans que personne ne le voie.
+   */
+  await expect(page.locator('.header__mark [data-mark-provisional]')).toHaveCount(0);
+  await expect(page.locator('footer [data-mark-provisional]')).toHaveCount(0);
+
+  /*
+   * Reste le filigrane « IA » du hero, encore composé en typographie. Le hero
+   * est gelé par décision : ce test l'ATTEND explicitement, pour qu'il soit
+   * remplacé sciemment et non oublié.
+   */
+  const watermark = page.locator('[data-hero] [data-mark-provisional]');
+  await expect(watermark).toHaveCount(1);
+  await expect(watermark).toHaveAttribute('data-mark-provisional', /filigrane/);
 });
 
 /* ================================================================== *

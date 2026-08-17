@@ -80,7 +80,7 @@ export interface AssetRecord {
   /** Mesures du fichier réel — renseignées par `npm run assets:scan`. */
   width: number | null;
   height: number | null;
-  format: 'svg' | 'webp' | 'avif' | 'png' | 'jpg' | null;
+  format: 'svg' | 'webp' | 'avif' | 'png' | 'jpg' | 'ico' | null;
   bytes: number | null;
 
   /**
@@ -939,44 +939,92 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
  * un tracé approximatif présenté comme l'identité serait une contrefaçon de
  * la marque du client lui-même. Ils restent `missing` jusqu'à réception.
  */
-const IDENTITY_FILES: Array<{ usage: AssetUsage; label: string; note: string }> = [
+/**
+ * Identité Ivan Arsenov — LIVRÉE le 2026-08-17.
+ *
+ * Trois usages, deux tracés chacun. Le tracé sombre sert les surfaces claires,
+ * le tracé clair les surfaces encre : ce sont DEUX dessins distincts fournis
+ * par le client, pas une inversion calculée.
+ *
+ * Rien n'a été redessiné. Le monogramme et le lock-up sont les fichiers
+ * fournis, ré-encodés pour le web. Le wordmark est un RECADRAGE STRICT du
+ * lock-up (bande 1123-1304 du fichier 2400x1452), isolé pour permettre la
+ * composition horizontale du header — la seule disposition qui garde le nom
+ * lisible sans agrandir le header.
+ *
+ * Format matriciel assumé : le tracé est un sérif à empattements fins avec une
+ * courbe traversant le monogramme. Une vectorisation automatique en abîmerait
+ * les déliés, et une approximation présentée comme le logo officiel serait une
+ * contrefaçon de la marque du client. WebP haute résolution à transparence
+ * réelle, tant que le vectoriel source n'est pas fourni.
+ */
+const IDENTITY_FILES: Array<{
+  usage: AssetUsage;
+  label: string;
+  note: string;
+  files: { dark: string; light: string };
+  size: { w: number; h: number };
+  bytes: { dark: number; light: number };
+  checksum: { dark: string; light: string };
+}> = [
   {
     usage: 'monogram',
     label: 'Ivan Arsenov — monogramme IA',
-    note: 'Monogramme seul. Sert le filigrane du hero et dérive le favicon.',
+    note: 'Monogramme seul. Marque du header en dessous de 1024px, où la largeur manque.',
+    files: { dark: 'src/assets/identity/monogram-dark.webp', light: 'src/assets/identity/monogram-light.webp' },
+    size: { w: 600, h: 491 },
+    bytes: { dark: 30776, light: 45774 },
+    checksum: { dark: '6fd8ec5ce998ae9877b07ae8f201645d648de92ccc09c14dfd1d03deed94a59c', light: '10bc1b1b6e258081c638b40c31a22a8471a2efd65f1530901cc6a4c343974469' },
   },
   {
     usage: 'lockup',
     label: 'Ivan Arsenov — lock-up complet',
-    note: 'Monogramme + wordmark + filet. Sert le footer et les métadonnées sociales.',
+    note: 'Monogramme + wordmark + filet, composition d’origine. Sert le footer.',
+    files: { dark: 'src/assets/identity/lockup-dark.webp', light: 'src/assets/identity/lockup-light.webp' },
+    size: { w: 1200, h: 726 },
+    bytes: { dark: 60106, light: 96290 },
+    checksum: { dark: '39442714f617339b922f09044b1011021aa9163413b697eb9a44c803115a113b', light: '1a91b040fb7d6ad353cc7748a7efa1c1bb3833bcb795e0e555cc819ff74ab17d' },
   },
   {
     usage: 'wordmark',
     label: 'Ivan Arsenov — wordmark',
-    note: 'Wordmark seul. Sert la marque du header, où la hauteur est contrainte.',
+    note: 'Recadrage strict du lock-up. Accompagne le monogramme dans le header à partir de 1024px.',
+    files: { dark: 'src/assets/identity/wordmark-dark.webp', light: 'src/assets/identity/wordmark-light.webp' },
+    size: { w: 900, h: 68 },
+    bytes: { dark: 16498, light: 27524 },
+    checksum: { dark: '1c97351d13e6b7636feab20e6e7c9e7afb30f732b33fe5970f6667340800730f', light: '3316f596783b2c79d8ce1c7bdc218feccab55298dd04d661155bb209bcf5b25c' },
   },
 ];
 
 function identityAssets(): AssetRecord[] {
-  return IDENTITY_FILES.map(({ usage, label, note }) => ({
+  return IDENTITY_FILES.map(({ usage, label, note, files, size, bytes, checksum }) => ({
     id: `ivan-arsenov:${usage}`,
     brandSlug: 'ivan-arsenov',
     brandLabel: label,
     usage,
     priority: 'identity' as const,
-    path: null,
-    status: 'missing' as const,
-    source: 'Client — visuel présenté en conversation le 2026-08-15, fichier non transmis',
+    /* Le tracé clair est la référence du registre : le site est majoritairement
+       sur encre. Le tracé sombre est résolu par le composant. */
+    path: files.light,
+    /* `validated` : c'est l'identité PROPRE du client, fournie par lui pour ce
+       site. Contrairement aux marques tierces du catalogue, aucun titulaire
+       extérieur n'a de droit à confirmer. */
+    status: 'validated' as const,
+    source: 'Client — archive « ivanarsenov brand assets.zip », 2026-08-17',
     authorization: { status: 'granted' as const, evidence: 'Identité propre du client' },
-    width: null,
-    height: null,
-    format: null,
-    bytes: null,
-    checksum: null,
+    width: size.w,
+    height: size.h,
+    format: 'webp' as const,
+    bytes: bytes.light,
+    checksum: checksum.light,
     opticalCoverage: null,
-    legalNote: `${note} Vectoriel SVG exigé — une version matricielle serait inutilisable.`,
+    legalNote: note,
   }));
 }
+
+/** Chemins des deux tracés, pour le composant qui choisit selon la surface. */
+export const IDENTITY_TONES: Record<string, { dark: string; light: string }> =
+  Object.fromEntries(IDENTITY_FILES.map((f) => [f.usage, f.files]));
 
 export const STANDALONE_ASSETS: AssetRecord[] = [
   ...identityAssets(),
@@ -986,21 +1034,26 @@ export const STANDALONE_ASSETS: AssetRecord[] = [
     brandLabel: 'Ivan Arsenov — favicon',
     usage: 'favicon',
     priority: 'identity',
-    path: 'public/favicon.svg',
-    // PLACEHOLDER assumé : lettres « IA » composées dans une sérif système.
-    // Ce n'est PAS le monogramme officiel et il ne doit jamais être présenté
-    // comme tel. À dériver du monogramme dès réception du vectoriel.
-    status: 'requires_validation',
-    source: 'Placeholder composé en interne — TR-001',
-    authorization: { status: 'granted', evidence: 'Composition interne, aucune marque tierce' },
-    width: 32,
-    height: 32,
-    format: 'svg',
-    bytes: null,
-    checksum: null,
+    path: 'public/favicon.ico',
+    /*
+     * Monogramme IA OFFICIEL. Le placeholder composé en interne au TR-001 est
+     * supprimé du dépôt — le laisser en place, même inutilisé, exposerait un
+     * jour une identité qui n'est pas celle du client.
+     *
+     * L'ICO embarque trois rendus distincts (16, 32, 48px) issus des fichiers
+     * fournis, chacun matricé à sa taille propre : les empattements du sérif
+     * survivent mieux ainsi qu'en laissant le navigateur réduire une seule
+     * image. Aucune simplification graphique n'a été appliquée.
+     */
+    status: 'validated',
+    source: 'Client — archive « ivanarsenov brand assets.zip », 2026-08-17',
+    authorization: { status: 'granted', evidence: 'Identité propre du client' },
+    width: 48,
+    height: 48,
+    format: 'ico',
+    bytes: 2654,
+    checksum: 'cb158947acad151a244443d7f309e813590d33f2670f2c6f80939df7b68ea3c2',
     opticalCoverage: null,
-    legalNote:
-      'Placeholder interne, à ne pas confondre avec le monogramme officiel. ' +
-      'À remplacer dès réception du vectoriel (décision D8).',
+    legalNote: 'Monogramme officiel. 16/32/48px embarqués, plus 512px et 180px Apple.',
   },
 ];

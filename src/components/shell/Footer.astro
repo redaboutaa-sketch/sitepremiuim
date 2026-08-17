@@ -42,8 +42,10 @@ const year = 2026;
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <a href={i18n.path('home')} aria-label={t.meta.siteName}>
-          <SiteMark variant="lockup" height={28} />
+        {/* Le footer a la place : le lock-up d'origine y tient entier, avec
+            son filet. Tracé clair — la surface est encre. */}
+        <a href={i18n.path('home')} aria-label={t.nav.homeLabel}>
+          <SiteMark variant="lockup" tone="light" height={88} />
         </a>
         <p class="t-label footer__tagline">{t.meta.tagline}</p>
       </div>

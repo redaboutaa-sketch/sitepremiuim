@@ -26,6 +26,9 @@ export const de: Dictionary = {
     closeMenu: 'Menü schließen',
     primary: 'Hauptnavigation',
     mobile: 'Seitennavigation',
+    /* Nom accessible du lien de marque. L'image porte alt="" : le nom
+       serait sinon annoncé deux fois, par l'image puis par le lien. */
+    homeLabel: 'Ivan Arsenov — Startseite',
     language: 'Sprache',
   },
 
