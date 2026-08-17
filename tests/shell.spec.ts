@@ -264,13 +264,13 @@ test('la marque du site n’est plus provisoire', async ({ page }) => {
   await expect(page.locator('footer [data-mark-provisional]')).toHaveCount(0);
 
   /*
-   * Reste le filigrane « IA » du hero, encore composé en typographie. Le hero
-   * est gelé par décision : ce test l'ATTEND explicitement, pour qu'il soit
-   * remplacé sciemment et non oublié.
+   * Le filigrane du hero était la dernière pièce provisoire (B15). TR-024C l'a
+   * remplacé par le monogramme officiel après comparaison à résolution native
+   * et à opacité identique. Plus aucun marqueur provisoire ne doit subsister
+   * NULLE PART : le garde-fou change de sens, il ne disparaît pas.
    */
-  const watermark = page.locator('[data-hero] [data-mark-provisional]');
-  await expect(watermark).toHaveCount(1);
-  await expect(watermark).toHaveAttribute('data-mark-provisional', /filigrane/);
+  await expect(page.locator('[data-mark-provisional]')).toHaveCount(0);
+  await expect(page.locator('.hero__monogram')).toHaveAttribute('src', /monogram/);
 });
 
 /* ================================================================== *

@@ -279,7 +279,16 @@
   aspect-ratio: var(--po-aspect, 3 / 4);
   /* Le padding suit la largeur disponible : à 2 colonnes sur mobile, un
      padding fixe de 24px étranglait le texte et provoquait un débordement. */
-  padding: clamp(var(--sp-2), 2.5vw, var(--sp-5));
+  --po-pad: clamp(var(--sp-2), 2.5vw, var(--sp-5));
+  padding: var(--po-pad);
+  /*
+   * Le padding BAS est séparément pilotable. Une scène où les objets sont
+   * POSÉS sur un sol commun doit pouvoir le ramener à zéro : sinon le
+   * plateau touche le sol mais l'objet reste suspendu au-dessus, d'une
+   * hauteur multipliée par l'échelle de son plan — donc différente d'un plan
+   * à l'autre. Voir `Hero.astro`.
+   */
+  padding-block-end: var(--po-pad-floor, var(--po-pad));
   /* Empêche la piste de grille d'être poussée par le min-content du contenu. */
   min-inline-size: 0;
 }
@@ -288,7 +297,13 @@
   content: '';
   position: absolute;
   inset-inline: 12%;
-  inset-block-end: var(--sp-5);
+  /*
+   * Le filet de signal marque LA BASE DE L'OBJET, pas une hauteur arbitraire.
+   * Il était figé à `--sp-5` alors que le padding, lui, suit la largeur : sous
+   * 960 px le filet passait au-dessus de la base et l'objet débordait par le
+   * bas de son propre ancrage.
+   */
+  inset-block-end: var(--po-pad-floor, var(--po-pad));
   block-size: var(--hairline);
   background: var(--signal);
   opacity: 0.55;

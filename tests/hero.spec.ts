@@ -150,12 +150,26 @@ test('aucun néon, aucune lueur, aucun halo dans le hero', async ({ page }) => {
 
 test('le filigrane du monogramme reste extrêmement discret', async ({ page }) => {
   await page.goto('/');
-  const alpha = await page.locator('.hero__monogram').evaluate((el) => {
-    const m = getComputedStyle(el).color.match(/[\d.]+/g);
-    return m ? Number(m[3] ?? 1) : 1;
-  });
-  expect(alpha, 'opacité du filigrane').toBeLessThanOrEqual(0.06);
-  await expect(page.locator('.hero__monogram')).toHaveAttribute('aria-hidden', 'true');
+
+  /*
+   * Depuis TR-024C le filigrane est le monogramme OFFICIEL, donc une image :
+   * la discrétion se mesure sur `opacity`, plus sur l'alpha d'une couleur de
+   * texte. Le plafond, lui, n'a pas bougé — c'est lui qui empêche la dérive
+   * du filigrane vers une signature.
+   */
+  const mark = page.locator('.hero__monogram');
+  const state = await mark.evaluate((el) => ({
+    opacity: Number(getComputedStyle(el).opacity),
+    tag: el.tagName.toLowerCase(),
+    alt: el.getAttribute('alt'),
+  }));
+
+  expect(state.opacity, 'opacité du filigrane').toBeLessThanOrEqual(0.06);
+  expect(state.opacity).toBeGreaterThan(0);
+  expect(state.tag).toBe('img');
+  // Une image au texte alternatif vide est déjà hors de l'arbre
+  // d'accessibilité : c'est la forme canonique pour un décor.
+  expect(state.alt).toBe('');
 });
 
 test('aucun packshot fictif : les emplacements rendent le repli typographique', async ({ page }) => {

@@ -27,6 +27,17 @@ interface Props {
    * filtre CSS : teinter un logo est une altération de l'identité.
    */
   tone?: 'light' | 'dark';
+  /**
+   * Densités servies. `[1, 2]` par défaut — la marque doit rester nette là où
+   * on la lit.
+   *
+   * Un usage la lit pourtant à peine : le filigrane du Hero, à 3,5 %
+   * d'opacité. Son amplitude maximale y est de 8/255 ; servir une variante
+   * deux fois plus définie n'y change RIEN de perceptible (mesure : écart
+   * maximal 3/255 entre une source de 320 px et la source native de 600 px)
+   * et coûte 23 Ko sur la page d'accueil. La densité est donc réglable.
+   */
+  densities?: number[];
   class?: string;
 }
 
@@ -35,6 +46,7 @@ const {
   mode,
   height = 20,
   tone = 'light',
+  densities = [1, 2],
   class: className,
 } = Astro.props;
 
@@ -60,7 +72,7 @@ const file = path ? files[`/${path}`]?.default : undefined;
       src={file}
       height={height}
       width={Math.round((file.width / file.height) * height)}
-      densities={[1, 2]}
+      densities={densities}
       alt=""
       loading="eager"
       decoding="async"

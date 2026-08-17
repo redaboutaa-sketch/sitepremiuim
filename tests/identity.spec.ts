@@ -216,11 +216,75 @@ test('aucune ressource distante pour l’identité', async ({ page }) => {
   expect(external, external.join('\n')).toEqual([]);
 });
 
-test('le Hero et les packshots restent inchangés', async ({ page }) => {
+/* ================================================================== *
+ * 7 · Filigrane du Hero — monogramme officiel (TR-024C, clôture B15)
+ * ================================================================== */
+
+test('le filigrane du Hero est le monogramme officiel, pas un repli', async ({ page }) => {
   await page.goto('/');
-  // Aucun asset d'identité ne s'est invité dans la scène.
-  await expect(page.locator('[data-hero] img[src*="identity"]')).toHaveCount(0);
-  await expect(page.locator('[data-hero] img[src*="monogram"]')).toHaveCount(0);
-  // Les six emplacements gardent leur repli typographique.
-  await expect(page.locator('[data-hero] .product-object__fallback')).toHaveCount(6);
+  const mark = page.locator('.hero__monogram');
+  await expect(mark).toHaveCount(1);
+  await expect(mark).toHaveAttribute('src', /monogram/);
+  // Le repli typographique signalerait un asset non résolu.
+  await expect(page.locator('[data-hero] [data-mark-provisional]')).toHaveCount(0);
+});
+
+test('le filigrane reste un filigrane : muet, discret, inerte', async ({ page }) => {
+  await page.goto('/');
+  const state = await page.locator('.hero__monogram').evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      alt: el.getAttribute('alt'),
+      opacity: Number(cs.opacity),
+      pointerEvents: cs.pointerEvents,
+      hasDims: Boolean(el.getAttribute('width') && el.getAttribute('height')),
+      inFlow: cs.position,
+    };
+  });
+
+  // Décoratif : le nom de l'entreprise est déjà porté par le header.
+  expect(state.alt).toBe('');
+  // Plafond de la DA : un filigrane, jamais une signature. La borne haute est
+  // ce qui empêche la dérive vers un logo posé en fond d'écran.
+  expect(state.opacity).toBeLessThanOrEqual(0.05);
+  expect(state.opacity).toBeGreaterThan(0);
+  expect(state.pointerEvents).toBe('none');
+  // Dimensions déclarées : le ratio est connu avant décodage, donc aucun
+  // décalage de mise en page quand l'image arrive.
+  expect(state.hasDims).toBe(true);
+  expect(state.inFlow).toBe('absolute');
+});
+
+test('le filigrane n’introduit aucun décalage de mise en page', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'commit' });
+  const shift = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        let total = 0;
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries() as (PerformanceEntry & {
+            value: number;
+            hadRecentInput: boolean;
+          })[]) {
+            if (!entry.hadRecentInput) total += entry.value;
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+        setTimeout(() => resolve(total), 2500);
+      }),
+  );
+  // Seuil « bon » de Core Web Vitals.
+  expect(shift, `CLS ${shift.toFixed(4)}`).toBeLessThan(0.1);
+});
+
+test('les packshots ne sont pas publiés en production', async ({ page }) => {
+  await page.goto('/');
+  const generated = await page.locator('[data-hero] [data-generated]').count();
+  const fallbacks = await page.locator('[data-hero] .product-object__fallback').count();
+  // L'artefact décide : en production, six replis et aucun visuel généré ;
+  // en préproduction, l'inverse. Ce test vaut pour les deux.
+  if (generated === 0) expect(fallbacks).toBe(6);
+  else {
+    expect(generated).toBe(6);
+    expect(fallbacks).toBe(0);
+  }
 });

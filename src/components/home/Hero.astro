@@ -19,6 +19,7 @@
  * vrais détourages sans refonte : seul le contenu des emplacements change.
  */
 import ProductObject from '@/components/media/ProductObject.astro';
+import SiteMark from '@/components/shell/SiteMark.astro';
 import { brandBySlug } from '@/lib/catalog';
 import { useI18n, type Locale } from '@/i18n';
 
@@ -82,11 +83,34 @@ const words = t.hero.h1.split(' ');
 ---
 
 <section class="hero" data-hero data-surface="ink">
-  {/* Filigrane — les deux lettres composées en typographie, jamais un tracé
-      approximatif du monogramme officiel, qui n'a pas été fourni. */}
-  <span class="hero__monogram" aria-hidden="true" data-mark-provisional="filigrane typographique">
-    IA
-  </span>
+  {/*
+    Filigrane — MONOGRAMME OFFICIEL (TR-024C, clôture B15).
+
+    Il portait jusqu'ici les deux lettres composées en Instrument Serif, faute
+    d'asset : deux capitales séparées, là où la marque réelle est une ligature
+    dessinée, avec le délié qui passe sous le A. Comparé à résolution native et
+    à opacité identique (planches H1/H2b), le tracé officiel est le seul des
+    deux qui soit reconnaissable comme LA marque.
+
+    Ce n'est pas une signature : opacité 3,5 %, hors de l'arbre d'accessibilité,
+    sans interaction. Il reste derrière les produits et derrière le H1.
+
+    `SiteMark` passe par le registre d'assets : si le fichier disparaissait, le
+    repli typographique reprendrait sa place plutôt qu'un vide.
+  */}
+  {/*
+    240 px de source, densité simple. À 3,5 % d'opacité l'amplitude maximale du
+    filigrane est de 8/255 : entre cette source et la source native de 600 px,
+    l'écart mesuré est de 3/255 au pire pixel. Personne ne peut le voir, et la
+    page d'accueil économise 23 Ko.
+  */}
+  <SiteMark
+    variant="monogram"
+    tone="light"
+    height={240}
+    densities={[1]}
+    class="hero__monogram"
+  />
 
   <div class="hero__stage" aria-hidden="true" data-stage>
     <div class="hero__floor"></div>
@@ -156,18 +180,26 @@ const words = t.hero.h1.split(' ');
 
   /* ── Filigrane ─────────────────────────────────────────────────────── */
 
-  .hero__monogram {
+  /*
+   * `:global()` : le monogramme est rendu par SiteMark, donc porte un autre
+   * identifiant de portée. Sans cela, aucune de ces règles ne l'atteindrait.
+   *
+   * La HAUTEUR est souveraine et la largeur suit : les attributs `width` et
+   * `height` posés par <Image> donnent au navigateur le ratio avant décodage,
+   * donc aucun décalage de mise en page.
+   */
+  .hero :global(.hero__monogram) {
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: 4%;
     transform: translateY(-50%);
-    font-family: var(--font-display);
-    /* Environ 45 % de la hauteur d'écran — présent comme un filigrane de
-       papier, pas comme un logo posé. */
-    font-size: clamp(14rem, 45vh, 30rem);
-    line-height: 0.8;
-    letter-spacing: -0.06em;
-    color: rgb(242 240 236 / 0.035);
+    /* Un peu plus de 35 % de la hauteur d'écran : à surface d'encre égale
+       avec l'ancien filigrane typographique, dont seule la hauteur de
+       capitale comptait. */
+    block-size: clamp(11rem, 36vh, 24rem);
+    inline-size: auto;
+    /* Filigrane de papier, jamais un logo posé. */
+    opacity: 0.035;
     user-select: none;
     pointer-events: none;
   }
@@ -264,6 +296,25 @@ const words = t.hero.h1.split(' ');
     /* Volontairement débordant à droite : le cadrage donne l'impression
        d'un plan plus large que l'écran. */
     inline-size: clamp(150px, 19vw, 280px);
+  }
+
+  /*
+   * ANCRAGE AU SOL — correction TR-024C.
+   *
+   * Le plateau touche déjà le filet de sol (`inset-block-end: 26%`), mais son
+   * padding bas laissait l'objet suspendu 24 px au-dessus — et cette hauteur
+   * est multipliée par l'échelle du plan : 23 px pour le plan médian, 31 px
+   * pour le plan avant. La scène affichait donc TROIS lignes de sol là où la
+   * direction artistique en décrit une, et l'ombre portée tombait dans le vide
+   * avant de rencontrer un second filet plus bas.
+   *
+   * Une seule déclaration, aucune valeur par produit. Le `:has()` la limite
+   * aux plateaux qui contiennent réellement un objet : en production, les six
+   * emplacements rendent leur repli typographique et gardent exactement la
+   * composition validée.
+   */
+  .hero__slot :global(.product-object:has(.product-object__img)) {
+    --po-pad-floor: 0px;
   }
 
   /*
@@ -365,12 +416,12 @@ const words = t.hero.h1.split(' ');
       max-inline-size: 11ch;
     }
 
-    .hero__monogram {
+    .hero :global(.hero__monogram) {
       inset-block-start: auto;
       inset-block-end: 4%;
       inset-inline-end: -8%;
       transform: none;
-      font-size: clamp(10rem, 55vw, 18rem);
+      block-size: clamp(7rem, 38vw, 13rem);
     }
 
     /*
