@@ -98,3 +98,91 @@ export function opticalSize(asset: Pick<AssetRecord, 'width' | 'height' | 'optic
     height: +((fitHeight * scale) / boxHeight * 100).toFixed(1),
   };
 }
+
+/* ====================================================================== *
+ * LARGEUR D'AFFICHAGE RÉELLE D'UN PACKSHOT DANS « THE STAGE »
+ *
+ * Un packshot n'est pas dimensionné comme un logo : `.product-object__img`
+ * pose `inline-size: auto; max-block-size: 100%`. L'image est donc ajustée
+ * PAR LA HAUTEUR, et sa largeur rendue dépend de son propre ratio source.
+ *
+ * Conséquence mesurée : à 1920 px, l'emplacement fait 220 px de large, mais
+ * la canette Sprite qu'il contient n'en occupe que 71. Annoncer 220 px dans
+ * `sizes` faisait télécharger au navigateur une variante trois fois trop
+ * définie — 490 Ko de packshots sur la page d'accueil.
+ *
+ * Les valeurs ci-dessous ne sont PAS des réglages : elles transcrivent le CSS.
+ *
+ *   hauteurPlateau = largeurEmplacement × 4/3      (aspect-ratio: 3 / 4)
+ *   hauteurImage   = hauteurPlateau − 2 × padding  (padding du plateau)
+ *   largeurImage   = hauteurImage × ratioSource
+ *   largeurVue     = largeurImage × échelleDuPlan  (transform: scale())
+ *
+ * `transform` n'est pas pris en compte par le navigateur pour choisir une
+ * source : l'échelle du plan doit donc être appliquée ici, à la main.
+ *
+ * Vérification : le modèle a été confronté aux géométries relevées sur les
+ * neuf largeurs de `qa/screenshots/stage/geometry.json`. Écart maximal 1 px.
+ * ====================================================================== */
+
+/** `padding: clamp(var(--sp-2), 2.5vw, var(--sp-5))` — 8 px … 24 px. */
+const PLATE_PAD_MAX = 24;
+
+/** Géométrie de chaque plan, transcrite de `Hero.astro`. */
+const PLANE = {
+  back: { slot: 'clamp(120px, 15vw, 220px)', max: 220, vw: 0.15, scale: 0.64 },
+  mid: { slot: 'clamp(120px, 15vw, 220px)', max: 220, vw: 0.15, scale: 1 },
+  front: { slot: 'clamp(150px, 19vw, 280px)', max: 280, vw: 0.19, scale: 1.32 },
+} as const;
+
+export type StagePlane = keyof typeof PLANE;
+
+/**
+ * Coefficients de la RANGÉE MOBILE (< 768 px), en vw par unité de ratio.
+ *
+ * La recomposition mobile dispose les emplacements en flexbox : leur largeur
+ * dépend de `--margin`, des gouttières et des facteurs de flex, et n'a donc
+ * pas de forme fermée exprimable dans `sizes`. Ces deux coefficients sont
+ * MESURÉS sur 320, 375, 390 et 430 px, puis MAJORÉS de 6 % — un `sizes`
+ * sous-évalué servirait une image floue, ce qui est bien pire que quelques
+ * kilo-octets de trop.
+ *
+ * Le plan arrière est en `display: none` sous 768 px. Le navigateur télécharge
+ * malgré tout l'image : on lui demande donc explicitement la plus petite
+ * variante disponible plutôt que de la laisser choisir.
+ */
+const MOBILE_VW = { back: 0, mid: 30, front: 42 } as const;
+
+const px = (v: number) => `${Math.ceil(v)}px`;
+
+/**
+ * Attribut `sizes` d'un packshot de la scène.
+ *
+ * Découpé en régimes parce que `sizes` n'accepte pas `clamp()` de façon
+ * fiable : chaque média-requête correspond à un intervalle où la largeur de
+ * l'emplacement suit une seule loi. Dans les intervalles où la largeur croît
+ * moins vite que la fenêtre, la valeur retenue est celle du HAUT de
+ * l'intervalle — donc une borne supérieure, jamais une sous-estimation.
+ */
+export function stageSizes(plane: StagePlane, sourceRatio: number): string {
+  const { max, vw, scale } = PLANE[plane];
+  const k = sourceRatio * scale;
+
+  /** Largeur vue pour une largeur d'emplacement donnée, padding au maximum. */
+  const seen = (slot: number) => (slot * (4 / 3) - 2 * PLATE_PAD_MAX) * k;
+
+  /** Fenêtre à partir de laquelle `clamp()` plafonne l'emplacement. */
+  const capAt = Math.ceil(max / vw);
+
+  const mobile =
+    MOBILE_VW[plane] === 0 ? '1px' : `${(MOBILE_VW[plane] * sourceRatio).toFixed(2)}vw`;
+
+  return [
+    `(min-width: ${capAt}px) ${px(seen(max))}`,
+    // 960 px : la fenêtre où `padding` atteint son plafond de 24 px.
+    `(min-width: 960px) calc((${((vw * 400) / 3).toFixed(3)}vw - ${2 * PLATE_PAD_MAX}px) * ${k.toFixed(4)})`,
+    // 768–960 px : borne supérieure de l'intervalle, prise à 960 px.
+    `(min-width: 768px) ${px(seen(960 * vw))}`,
+    mobile,
+  ].join(', ');
+}

@@ -13,7 +13,7 @@
 | **Catalogue** | 46 | 0 |
 | **Total** | 88 | 4 |
 
-Statuts — validated 4 · requires_validation 60 · missing 24
+Statuts — validated 4 · requires_validation 66 · missing 18
 
 **84 asset(s) sont substitués par le repli typographique en production.**
 Aucune marque n'est retirée du site pour autant : seul le visuel est remplacé.
@@ -36,12 +36,12 @@ Aucune image générée ou substituée n'est présentée comme un vrai produit.
 
 | Marque | Usage | Chemin | Statut | Provenance | Autorisation | Dimensions | Format | Poids | Checksum | Production | Note juridique |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Coca-Cola | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
-| Fanta | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
-| Pepsi | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
-| Sprite | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
-| Monster Energy | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
-| Red Bull | `hero` | — | missing | — | unknown | — | — | — | — | ❌ repli | — |
+| Coca-Cola | `hero` | `src/assets/brands/coca-cola/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 443×1517 | png | 1780.1 Ko | `bb899aaffac4…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
+| Fanta | `hero` | `src/assets/brands/fanta/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 272×900 | png | 648.4 Ko | `bb1d98895e25…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
+| Pepsi | `hero` | `src/assets/brands/pepsi/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 227×505 | png | 340.1 Ko | `809ac64a5d00…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
+| Sprite | `hero` | `src/assets/brands/sprite/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 229×505 | png | 349.2 Ko | `c6b023cdea0a…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
+| Monster Energy | `hero` | `src/assets/brands/monster-energy/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 227×595 | png | 356.4 Ko | `7af5ab88498d…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
+| Red Bull | `hero` | `src/assets/brands/red-bull/hero.png` | requires_validation | Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 ») | unknown | 214×594 | png | 388.9 Ko | `57dd7fb06d9d…` | ❌ repli | Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger la composition de THE STAGE en préproduction. Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. |
 
 ### Identité
 

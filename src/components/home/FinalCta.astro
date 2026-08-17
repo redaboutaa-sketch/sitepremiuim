@@ -34,7 +34,23 @@ const feature = brandBySlug('coca-cola')!;
     </div>
 
     <div class="final__object" data-family={feature.category} aria-hidden="true">
-      <ProductObject brand={feature} usage="hero" variant="plain" />
+      {/*
+        Même modèle géométrique que la scène, appliqué à la main parce que ce
+        conteneur a sa propre largeur : plateau de 320 px, donc 320 × 4/3 − 48
+        = 379 px de hauteur d'image, × le ratio du fichier (0,292), × l'échelle
+        de 1,15 → 128 px d'affichage.
+
+        En dessous de 1024 px, `.final__object` est en `display: none` — mais
+        l'image serait tout de même téléchargée. On demande donc explicitement
+        le plus petit candidat.
+      */}
+      <ProductObject
+        brand={feature}
+        usage="hero"
+        variant="plain"
+        widths={[128, 192, 288, 384]}
+        sizes="(min-width: 1024px) 128px, 1px"
+      />
     </div>
   </div>
 </section>

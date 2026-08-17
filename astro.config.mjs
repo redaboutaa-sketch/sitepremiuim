@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+import { isBrandVisual } from './asset-governance.mjs';
 import { SITE_HOST, SITE_ORIGIN, STAGING_HOST } from './site.config.mjs';
 
 /**
@@ -133,6 +134,16 @@ function htaccess() {
  * réellement référencé par une page, le build échoue. Cela voudrait dire
  * qu'un asset non validé est affiché en production, et il faut alors le
  * savoir bruyamment plutôt que supprimer un fichier utilisé.
+ *
+ * La sélection est une LISTE BLANCHE d'identité (voir `asset-governance.mjs`),
+ * pas un motif de nom de fichier. Le motif précédent ne connaissait que
+ * `logo.*` : l'arrivée des packshots `hero.*` en préproduction serait passée
+ * au travers sans qu'aucun contrôle ne bronche. Une règle qui doit être
+ * étendue à chaque nouveau type d'asset finit par ne plus l'être.
+ *
+ * La recherche de référence couvre HTML, CSS ET JS : une image appelée depuis
+ * une feuille de style n'apparaît dans aucune page, et la supprimer serait
+ * aussi grave que de publier ce qu'on cherchait à retirer.
  */
 function pruneUnvalidatedAssets() {
   return {
@@ -143,30 +154,31 @@ function pruneUnvalidatedAssets() {
 
         const root = fileURLToPath(dir);
         const emitted = await readdir(join(root, '_astro')).catch(() => []);
-        const suspects = emitted.filter((f) => /^logo\.[^.]+\.(webp|png|avif|jpg)$/.test(f));
+        const suspects = emitted.filter(isBrandVisual);
         if (suspects.length === 0) return;
 
-        // Concaténation de tout le HTML produit : une référence, où qu'elle soit.
-        const html = [];
+        const texts = [];
         const walk = async (d) => {
           for (const entry of await readdir(d, { withFileTypes: true })) {
             const full = join(d, entry.name);
             if (entry.isDirectory()) await walk(full);
-            else if (entry.name.endsWith('.html')) html.push(await readFile(full, 'utf8'));
+            else if (/\.(html|css|js|xml|txt)$/.test(entry.name)) {
+              texts.push(await readFile(full, 'utf8'));
+            }
           }
         };
         await walk(root);
-        const haystack = html.join('\n');
+        const haystack = texts.join('\n');
 
         const referenced = suspects.filter((f) => haystack.includes(f));
         if (referenced.length > 0) {
           throw new Error(
-            `Assets non validés RÉFÉRENCÉS dans une page de production : ${referenced.join(', ')}`,
+            `Visuels de marque non validés RÉFÉRENCÉS en production : ${referenced.join(', ')}`,
           );
         }
 
         for (const f of suspects) await rm(join(root, '_astro', f));
-        logger.info(`${suspects.length} assets non validés retirés du build de production`);
+        logger.info(`${suspects.length} visuels de marque non validés retirés de la production`);
       },
     },
   };

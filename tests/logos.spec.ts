@@ -33,13 +33,30 @@ for (const route of ['/', '/brands/', '/about/', '/contact/', '/de/', '/de/marke
   });
 }
 
-test('le hero et Featured Brands restent en repli typographique', async ({ page }) => {
+test('aucun logo de marque dans le hero ni dans Featured Brands', async ({ page }) => {
+  const staging = await stagingArtifact(page);
   await page.goto('/');
-  // Le hero porte six emplacements, tous en repli.
-  await expect(page.locator('[data-hero] .product-object__fallback')).not.toHaveCount(0);
+
+  /*
+   * La règle porte sur les LOGOS, pas sur l'occupation des emplacements.
+   * Depuis TR-024B, le hero rend six packshots en préproduction : exiger un
+   * repli partout ferait échouer ce test sur le comportement voulu, alors que
+   * la décision DA du 2026-08-16 — un logo n'a droit qu'au catalogue, sur
+   * papier — n'a pas changé d'un iota.
+   */
   await expect(page.locator('[data-hero]').locator(LOGO)).toHaveCount(0);
-  // La piste Featured également.
   await expect(page.locator('[data-track]').locator(LOGO)).toHaveCount(0);
+
+  const fallbacks = page.locator('[data-hero] .product-object__fallback');
+  if (staging) {
+    // Préproduction : les six emplacements sont servis par un packshot.
+    await expect(fallbacks).toHaveCount(0);
+    await expect(page.locator('[data-hero] [data-generated]')).toHaveCount(6);
+  } else {
+    // Production : aucun asset validé, donc six replis typographiques.
+    await expect(fallbacks).toHaveCount(6);
+    await expect(page.locator('[data-hero] [data-generated]')).toHaveCount(0);
+  }
 });
 
 /* ================================================================== *

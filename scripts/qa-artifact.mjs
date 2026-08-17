@@ -13,7 +13,20 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
+import {
+  emittedBasename,
+  isBrandVisual,
+  isGeneratedPackshot,
+  isImageFile,
+} from '../asset-governance.mjs';
 import { CONTACT_EMAIL, SITE_HOST, SITE_ORIGIN, STAGING_HOST } from '../site.config.mjs';
+
+/**
+ * Les six marques de la scène d'accueil, dans l'ordre du catalogue.
+ * Doit rester alignée sur `HERO_BRANDS` (src/data/assets.ts) — `tests/assets.spec.ts`
+ * vérifie la correspondance, elle n'est pas supposée ici.
+ */
+const HERO_SLUGS = ['coca-cola', 'fanta', 'red-bull', 'monster-energy', 'pepsi', 'sprite'];
 
 const DIST = resolve(process.cwd(), 'dist');
 const SITE = SITE_ORIGIN;
@@ -383,31 +396,139 @@ const images = files.filter((f) => /\.(png|jpe?g|webp|avif|gif)$/i.test(f));
  * légitime — ou, pire, laisserait passer une marque tierce en la prenant pour
  * de l'identité.
  */
-const IDENTITY = /(^|\/)(lockup|monogram|wordmark|favicon|apple-touch-icon)[-.]/;
-const brandImages = images.filter((f) => !IDENTITY.test(f));
+const brandImages = images.filter(isBrandVisual);
 
 check(
   'BLOCK',
   'identité officielle publiée dans les deux cibles',
-  images.some((f) => /(^|\/)(lockup|monogram)[-.]/.test(f)),
+  images.some((f) => /(^|\/)(lockup|monogram)-/.test(f)),
   'le logo du client doit être présent en production comme en préproduction',
 );
 
+/*
+ * Occurrences d'objets produit dans TOUT le HTML, lues depuis les `data-*`
+ * posés par ProductObject. On ne devine pas le contenu d'un emplacement à
+ * partir d'un nom de fichier haché : l'artefact le déclare lui-même.
+ */
+const OBJECT = /data-object="([a-z0-9-]+)" data-usage="([a-z-]+)" data-asset="([a-z-]+)"/g;
+const objects = [];
+for (const [name, file] of ROUTES) {
+  const doc = html.get(file);
+  if (!doc) continue;
+  for (const m of doc.matchAll(OBJECT)) {
+    objects.push({ page: name, brand: m[1], usage: m[2], asset: m[3] });
+  }
+}
+
+const heroRendered = objects.filter((o) => o.usage === 'hero' && o.asset === 'hero');
+const generatedFiles = images.filter(isGeneratedPackshot);
+
 if (TARGET === 'staging') {
-  const notLogos = brandImages.filter((f) => !/(^|\/)logo\./.test(f.split('/').pop() ?? ''));
+  /*
+   * PRÉPRODUCTION — les six packshots GÉNÉRÉS sont précisément ce qu'on vient
+   * y regarder (TR-024B). On vérifie qu'il y a exactement ceux-là, sur les
+   * bonnes marques : un septième produit, ou un slug inattendu, signalerait
+   * qu'un fichier a été rangé sous la mauvaise marque.
+   */
+  const heroSlugs = [...new Set(heroRendered.map((o) => o.brand))].sort();
   check(
     'BLOCK',
-    'préproduction : seuls des logos sont publiés, aucun packshot',
-    notLogos.length === 0,
-    notLogos.join(', '),
+    'préproduction : les six packshots hero sont rendus, sur les bonnes marques',
+    heroSlugs.length === 6 && heroSlugs.join(',') === [...HERO_SLUGS].sort().join(','),
+    `attendu ${[...HERO_SLUGS].sort().join(', ')} — obtenu ${heroSlugs.join(', ') || 'aucun'}`,
+  );
+
+  const stage = objects.filter((o) => o.page === 'home' && o.usage === 'hero');
+  check(
+    'BLOCK',
+    'préproduction : la scène d’accueil compte six emplacements + le CTA final',
+    stage.length === 7 && stage.every((o) => o.asset === 'hero'),
+    `${stage.length} emplacements « hero » sur la page d’accueil`,
+  );
+
+  const otherBrandFiles = brandImages.filter(
+    (f) => !isGeneratedPackshot(f) && emittedBasename(f) !== 'logo',
+  );
+  check(
+    'BLOCK',
+    'préproduction : hors packshots hero, seuls des logos sont publiés',
+    otherBrandFiles.length === 0,
+    otherBrandFiles.join(', '),
+  );
+
+  check(
+    'WARN',
+    `préproduction : ${generatedFiles.length} dérivés de packshots GÉNÉRÉS déposés`,
+    true,
+    'assets fabriqués — ne ferment pas le blocage B2',
   );
   check('WARN', `préproduction : ${brandImages.length} visuels de marque déposés`, true);
 } else {
+  /*
+   * PRODUCTION — séparation stricte (TR-024B §3). Les quatre conditions sont
+   * contrôlées séparément parce qu'elles échouent séparément : un fichier peut
+   * être déposé sans être rendu, et rendu sans être déposé (référence morte).
+   */
   check(
     'BLOCK',
     'production : aucun visuel de marque publié (aucun n’est validé)',
     brandImages.length === 0,
-    brandImages.slice(0, 6).join(', ') + (brandImages.length > 6 ? ` … +${brandImages.length - 6}` : ''),
+    brandImages.slice(0, 6).join(', ') +
+      (brandImages.length > 6 ? ` … +${brandImages.length - 6}` : ''),
+  );
+
+  check(
+    'BLOCK',
+    'production : aucun packshot GÉNÉRÉ déposé dans l’artefact',
+    generatedFiles.length === 0,
+    generatedFiles.join(', '),
+  );
+
+  check(
+    'BLOCK',
+    'production : aucun packshot GÉNÉRÉ rendu dans une page',
+    heroRendered.length === 0,
+    heroRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
+  );
+
+  check(
+    'BLOCK',
+    'production : aucun attribut data-generated dans le HTML',
+    ![...html.values()].some((doc) => doc.includes('data-generated')),
+  );
+
+  /*
+   * Référence morte : un `src` ou un `srcset` pointant vers un fichier retiré
+   * du build produirait une image cassée. Le contrôle vaut aussi bien pour ce
+   * que le nettoyage a supprimé que pour ce qu'il aurait dû supprimer.
+   */
+  const emitted = new Set(files.filter(isImageFile).map((f) => f.split('/').pop()));
+  const missing = new Set();
+  for (const doc of html.values()) {
+    for (const m of doc.matchAll(/\/_astro\/([\w.-]+\.(?:png|jpe?g|webp|avif|gif))/g)) {
+      if (!emitted.has(m[1])) missing.add(m[1]);
+    }
+  }
+  check(
+    'BLOCK',
+    'production : aucune référence d’image vers un fichier absent',
+    missing.size === 0,
+    [...missing].join(', '),
+  );
+
+  /*
+   * Les six emplacements de la scène doivent conserver leur repli
+   * typographique : la production ne montre pas moins que prévu, elle montre
+   * autre chose. Un emplacement vide serait une régression silencieuse.
+   */
+  const fallbacks = objects.filter(
+    (o) => o.page === 'home' && o.usage === 'hero' && o.asset === 'fallback',
+  );
+  check(
+    'BLOCK',
+    'production : les emplacements hero gardent leur repli typographique',
+    fallbacks.length === 7,
+    `${fallbacks.length} replis (6 scène + 1 CTA final attendus)`,
   );
 }
 

@@ -302,10 +302,23 @@
   content: none;
 }
 
+/*
+ * Le packshot est ajusté PAR LA HAUTEUR : il occupe toute la hauteur utile du
+ * plateau, sa largeur suit son propre ratio.
+ *
+ * `block-size: 100%` et non `max-block-size` seul : avec la seule borne haute,
+ * une variante de srcset plus petite que le plateau se posait à sa taille
+ * INTRINSÈQUE, et l'objet rétrécissait. La composition dépendait donc de la
+ * variante choisie par le navigateur — c'est-à-dire de la densité d'écran du
+ * visiteur. Ici, la géométrie est fixe et seule la NETTETÉ dépend de la
+ * variante, ce qui est le contrat normal d'un srcset.
+ */
 .product-object__img {
   inline-size: auto;
-  max-block-size: 100%;
+  block-size: 100%;
+  max-inline-size: 100%;
   object-fit: contain;
+  object-position: bottom center;
   /* Ombre portée serrée et directionnelle — un ancrage, pas un halo. */
   filter: drop-shadow(0 12px 18px rgb(0 0 0 / 0.55));
 }

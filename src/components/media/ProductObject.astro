@@ -20,7 +20,7 @@ import { Image } from 'astro:assets';
 import type { Brand } from '@/lib/catalog';
 import { categoryBySlug } from '@/lib/catalog';
 import { resolve, type AssetMode, type AssetUsage } from '@/lib/assets';
-import { opticalSize } from '@/lib/optical';
+import { opticalSize, stageSizes, type StagePlane } from '@/lib/optical';
 
 interface Props {
   brand: Brand;
@@ -50,6 +50,23 @@ interface Props {
    * et S4 n'activent donc jamais cette option (décision DA du 2026-08-16).
    */
   allowLogo?: boolean;
+  /**
+   * Attribut `sizes` du rendu responsive.
+   *
+   * Le défaut décrit la grille du catalogue. La scène du hero pose des
+   * emplacements bien plus étroits : lui laisser cette valeur ferait
+   * télécharger au navigateur le plus grand candidat disponible pour un objet
+   * rendu à 220 px. `sizes` n'a aucun effet sur la composition — il ne décrit
+   * que la largeur d'affichage au sélecteur de source.
+   */
+  sizes?: string;
+  /**
+   * Plan de « THE STAGE ». Renseigné, il fait CALCULER `sizes` par
+   * `stageSizes()`, depuis la géométrie du plan et le ratio du fichier :
+   * l'image d'un packshot est ajustée par la HAUTEUR, sa largeur rendue n'a
+   * donc rien à voir avec la largeur de son emplacement.
+   */
+  plane?: StagePlane;
 }
 
 const {
@@ -61,6 +78,8 @@ const {
   loading = 'lazy',
   variant = 'labelled',
   allowLogo = false,
+  sizes,
+  plane,
 } = Astro.props;
 
 /*
@@ -75,11 +94,43 @@ const isLogo = asset !== null && asset === logo;
 const optical = isLogo ? opticalSize(asset) : null;
 
 /*
+ * Ordre de préséance : un `sizes` explicite gagne, sinon la géométrie du plan
+ * si elle est connue, sinon la grille du catalogue. Le calcul exige les
+ * mesures du fichier — sans elles on ne devine pas, on retombe sur le défaut.
+ */
+const resolvedSizes =
+  sizes ??
+  (plane && !isLogo && asset?.width && asset.height
+    ? stageSizes(plane, asset.width / asset.height)
+    : '(min-width: 1024px) 25vw, 45vw');
+
+/*
  * Le texte alternatif dit ce que l'image EST. Un logo n'est pas un packshot,
  * et l'annoncer comme tel tromperait un lecteur d'écran sur la nature de ce
  * qu'il décrit.
+ *
+ * ── ASSET GÉNÉRÉ → DÉCORATIF, PAS DESCRIPTIF ───────────────────────────────
+ *
+ * Un visuel fabriqué par un modèle n'atteste RIEN sur un produit réel :
+ * ni son conditionnement, ni son étiquette, ni son existence au catalogue du
+ * titulaire. Annoncer « Coca-Cola — packshot » à un lecteur d'écran affirmerait
+ * quelque chose que le fichier n'établit pas — et le ferait auprès des seuls
+ * utilisateurs qui ne peuvent pas juger l'image par eux-mêmes.
+ *
+ * Ces objets sont donc marqués décoratifs. Rien n'est perdu : les six
+ * emplacements de la scène et le spécimen du CTA final vivent déjà dans des
+ * conteneurs `aria-hidden`, et le nom des marques est porté par le catalogue,
+ * qui est du texte.
  */
-const altText = isLogo ? `${brand.brand} — logo` : `${brand.brand} — packshot`;
+const isGenerated = asset?.sourceType === 'generated';
+
+/** Cet objet porte-t-il les attributs d'audit ? Voir le commentaire du <figure>. */
+const audit = usage === 'hero' || isGenerated;
+const altText = isGenerated
+  ? ''
+  : isLogo
+    ? `${brand.brand} — logo`
+    : `${brand.brand} — packshot`;
 
 /**
  * Les fichiers vivent sous src/assets pour bénéficier de l'optimisation
@@ -97,14 +148,43 @@ const category = categoryBySlug(brand.category);
 const familyLabel = category?.name.en ?? '';
 ---
 
-<figure class="product-object" data-family={brand.category}>
+{/*
+  Les attributs `data-*` ci-dessous rendent l'objet AUDITABLE depuis l'artefact
+  seul : `scripts/qa-artifact.mjs` n'a alors pas à deviner quel visuel occupe
+  quel emplacement en relisant des noms de fichiers hachés.
+    · data-object — la marque. NOMMÉ AINSI, ET PAS `data-brand` : le script du
+                    catalogue collecte ses cellules par `[data-brand]`, et un
+                    second porteur imbriqué lui ferait compter chaque marque
+                    deux fois — le filtrage cassait en silence.
+    · data-asset  — ce qui est réellement rendu (`hero`, `packshot`, `logo`
+                    ou `fallback`), qui n'est PAS toujours l'usage demandé ;
+    · data-generated — présent si et seulement si le fichier est fabriqué.
+
+  Ils ne sont posés que là où ils APPRENNENT quelque chose : sur les objets du
+  hero et sur tout asset généré. Les répéter sur les 62 cellules du catalogue
+  coûtait 4 Ko de HTML par page de catalogue — assez pour dépasser le budget de
+  poids — alors que la cellule y porte déjà `data-brand` et que la gouvernance
+  des logos est couverte par `tests/logos.spec.ts`.
+
+  La condition inclut `isGenerated` et pas seulement `usage === 'hero'` : un
+  visuel fabriqué doit rester repérable où qu'il apparaisse, même si un futur
+  emplacement en accueille un ailleurs.
+*/}
+<figure
+  class="product-object"
+  data-family={brand.category}
+  data-object={audit ? brand.slug : undefined}
+  data-usage={audit ? usage : undefined}
+  data-asset={audit ? (asset ? (isLogo ? 'logo' : usage) : 'fallback') : undefined}
+  data-generated={isGenerated ? '' : undefined}
+>
   {
     file ? (
       <Image
         class:list={['product-object__img', isLogo && 'product-object__img--logo']}
         src={file}
         widths={widths}
-        sizes="(min-width: 1024px) 25vw, 45vw"
+        sizes={resolvedSizes}
         alt={altText}
         loading={loading}
         decoding="async"

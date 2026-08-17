@@ -4,6 +4,11 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, extname, resolve } from 'node:path';
 
+import {
+  BRAND_ASSET_BASENAMES,
+  GENERATED_PACKSHOT_BASENAMES,
+  IDENTITY_BASENAMES,
+} from '../asset-governance.mjs';
 import { HERO_BRANDS } from '../src/data/assets';
 import { catalog } from '../src/lib/catalog';
 import {
@@ -95,6 +100,7 @@ const base: AssetRecord = {
   format: 'svg',
   bytes: 4096,
   checksum: 'a'.repeat(64),
+  sourceType: null,
   opticalCoverage: null,
   legalNote: null,
 };
@@ -202,6 +208,77 @@ test('tout fichier existant déclare sa provenance', () => {
   for (const a of registry()) {
     if (a.path === null) continue;
     expect(a.source, `${a.id} doit déclarer d’où vient le fichier`).toBeTruthy();
+  }
+});
+
+/* ================================================================== *
+ * Cohérence registre ↔ gouvernance de l'artefact
+ *
+ * `asset-governance.mjs` décide ce qui est RETIRÉ de `dist/` ; le registre
+ * décide ce qui est AFFICHÉ. Les deux vivent dans des fichiers différents
+ * parce qu'ils sont lus par des outils différents — et c'est exactement pour
+ * cela qu'ils peuvent diverger sans bruit.
+ *
+ * Les trois tests ci-dessous font échouer la divergence des DEUX côtés : un
+ * asset publiable que la liste blanche retirerait, et un asset non publiable
+ * que la liste blanche laisserait passer.
+ * ================================================================== */
+
+/** Base de nom telle qu'elle apparaîtra dans `dist/_astro/`. */
+const basenameOf = (path: string) => (path.split('/').pop() ?? '').split('.')[0] ?? '';
+
+test('tout asset publiable en production figure dans la liste blanche d’identité', () => {
+  const wrong = registry()
+    .filter((a) => productionEligible(a) && a.path !== null)
+    .filter((a) => !IDENTITY_BASENAMES.includes(basenameOf(a.path!)))
+    .map((a) => `${a.id} → ${a.path}`);
+
+  // Un asset validé absent de la liste blanche serait supprimé du build de
+  // production par `pruneUnvalidatedAssets`, laissant une image cassée.
+  expect(wrong, 'assets publiables que la liste blanche retirerait').toEqual([]);
+});
+
+test('aucun visuel de marque ne se glisse dans la liste blanche d’identité', () => {
+  const leaks = registry()
+    .filter((a) => a.path !== null && a.path.startsWith('src/assets/brands/'))
+    .filter((a) => IDENTITY_BASENAMES.includes(basenameOf(a.path!)))
+    .map((a) => `${a.id} → ${a.path}`);
+
+  expect(leaks, 'visuels tiers que la liste blanche laisserait publier').toEqual([]);
+});
+
+test('les visuels de marque n’utilisent que les bases de nom déclarées', () => {
+  const unknown = registry()
+    .filter((a) => a.path !== null && a.path.startsWith('src/assets/brands/'))
+    .filter((a) => !BRAND_ASSET_BASENAMES.includes(basenameOf(a.path!)))
+    .map((a) => `${a.id} → ${a.path}`);
+
+  expect(unknown, 'bases de nom inconnues de asset-governance.mjs').toEqual([]);
+});
+
+test('les packshots générés sont ceux, et seulement ceux, du hero', () => {
+  const generated = registry().filter((a) => a.sourceType === 'generated');
+
+  // Aucun asset généré ne doit exister ailleurs que sur les six emplacements
+  // de la scène : c'est le seul endroit où la décision a été prise.
+  expect(generated.map((a) => a.usage).sort()).toEqual(Array(generated.length).fill('hero'));
+  expect(generated.map((a) => a.brandSlug).sort()).toEqual([...HERO_BRANDS].sort());
+  for (const a of generated) {
+    expect(GENERATED_PACKSHOT_BASENAMES, `${a.id}`).toContain(basenameOf(a.path!));
+  }
+});
+
+test('un asset généré n’est jamais publiable en production', () => {
+  /*
+   * Règle de fond, pas contrôle de saisie : la qualité visuelle d'un fichier
+   * fabriqué ne vaut pas droit d'usage. Le passer en `validated` ne doit pas
+   * suffire — il faut aussi une autorisation du titulaire, qui n'existe pas.
+   */
+  for (const a of registry().filter((x) => x.sourceType === 'generated')) {
+    expect(productionEligible(a), `${a.id} ne doit pas être publiable`).toBe(false);
+    expect(a.status, `${a.id}`).toBe('requires_validation');
+    expect(a.authorization.status, `${a.id}`).toBe('unknown');
+    expect(a.legalNote, `${a.id} doit porter sa note juridique`).toBeTruthy();
   }
 });
 

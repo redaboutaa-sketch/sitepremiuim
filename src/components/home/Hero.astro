@@ -41,7 +41,21 @@ const t = i18n.t;
 const STAGE = [
   { slug: 'sprite', plane: 'back', x: 1, y: 24, index: '05' },
   { slug: 'monster-energy', plane: 'back', x: 33, y: 30, index: '03' },
-  { slug: 'pepsi', plane: 'back', x: 70, y: 20, index: '04' },
+  /*
+   * UNIQUE CORRECTION OPTIQUE DE TR-024B — x : 70 → 52.
+   *
+   * Motif, relevé sur les planches A et C : avec de vrais volumes, Pepsi
+   * disparaissait ENTIÈREMENT derrière la bouteille Coca-Cola. Le défaut
+   * n'existait pas avec les replis typographiques, qui occupaient toute la
+   * largeur de leur plateau (220 px) ; un packshot ajusté par la hauteur n'en
+   * occupe que 71, et l'objet du plan avant le recouvrait complètement.
+   *
+   * Aucune autre coordonnée n'est touchée : la scène reste celle qui a été
+   * validée. Le contrôle d'occultation de `tests/visual/stage.spec.ts` vérifie
+   * désormais qu'aucun objet ne peut redevenir invisible sans que rien ne le
+   * signale.
+   */
+  { slug: 'pepsi', plane: 'back', x: 52, y: 20, index: '04' },
   { slug: 'fanta', plane: 'mid', x: 9, y: 0, index: '02' },
   { slug: 'red-bull', plane: 'mid', x: 37, y: 0, index: '06' },
   // Tous les objets sont posés sur le MÊME filet de sol (y = 0). Le plan
@@ -49,6 +63,17 @@ const STAGE = [
   // que l'écran, pas un objet qui tombe de l'étagère.
   { slug: 'coca-cola', plane: 'front', x: 66, y: 0, index: '01' },
 ] as const;
+
+/**
+ * Échelle des variantes servies.
+ *
+ * Les largeurs d'affichage RELEVÉES sur les neuf points de mesure vont de
+ * 26 px (Fanta à 320 px de fenêtre) à 125 px (Coca-Cola à 1920). En comptant
+ * jusqu'à trois pixels d'écran par pixel CSS, il ne faut donc jamais plus de
+ * 384 px de source. L'échelle précédente — 200/400/800 — servait des variantes
+ * que rien ne pouvait afficher.
+ */
+const STAGE_WIDTHS = [128, 192, 288, 384];
 
 const slots = STAGE.map((s) => ({ ...s, brand: brandBySlug(s.slug)! }));
 
@@ -73,7 +98,14 @@ const words = t.hero.h1.split(' ');
           data-family={s.brand.category}
           style={`--x:${s.x}%; --y:${s.y}%`}
         >
-          <ProductObject brand={s.brand} usage="hero" index={s.index} loading="eager" />
+          <ProductObject
+            brand={s.brand}
+            usage="hero"
+            index={s.index}
+            loading="eager"
+            plane={s.plane}
+            widths={STAGE_WIDTHS}
+          />
         </div>
       ))
     }
@@ -354,6 +386,14 @@ const words = t.hero.h1.split(' ');
       order: 2;
       position: relative;
       inset: auto;
+      /*
+       * `.hero` est en `align-items: center` : sans largeur explicite, la
+       * rangée se dimensionnait sur le CONTENU de ses emplacements. Sa largeur
+       * dépendait donc de la taille intrinsèque des images servies — la scène
+       * changeait de dimensions selon la variante choisie par le navigateur,
+       * et ne s'alignait plus sur le filet de sol, lui posé sur `--margin`.
+       */
+      inline-size: 100%;
       display: flex;
       align-items: flex-end;
       justify-content: flex-start;
