@@ -446,6 +446,40 @@ if (TARGET === 'staging') {
     `${stage.length} emplacements « hero » sur la page d’accueil`,
   );
 
+  /*
+   * TR-025 — la piste Featured. Seize marques, seize visuels produits, aucun
+   * repli et surtout AUCUN LOGO : la décision DA du 2026-08-16 réserve les
+   * logos au catalogue, sur papier.
+   */
+  /*
+   * Découpe sur la PISTE, pas sur la page : S4 Discovery demande aussi
+   * `usage="packshot"` et deux de ses spécimens sont désormais servis. Compter
+   * sur toute la page donnait dix-huit objets et faisait échouer un contrôle
+   * qui, lui, était juste.
+   */
+  const home = html.get('index.html') ?? '';
+  const trackStart = home.indexOf('data-track');
+  const trackHtml =
+    trackStart >= 0 ? home.slice(trackStart, home.indexOf('</section>', trackStart)) : '';
+  const featured = [...trackHtml.matchAll(OBJECT)].map((m) => ({
+    brand: m[1],
+    usage: m[2],
+    asset: m[3],
+  }));
+  check(
+    'BLOCK',
+    'préproduction : les seize Featured sont servis par un visuel produit',
+    featured.length === 16 && featured.every((o) => o.asset === 'packshot' || o.asset === 'hero'),
+    `${featured.length} objets · ${[...new Set(featured.map((o) => o.asset))].join(', ')}`,
+  );
+  const reused = featured.filter((o) => o.asset === 'hero').map((o) => o.brand).sort();
+  check(
+    'BLOCK',
+    'préproduction : les six marques du hero réemploient leur master',
+    reused.join(',') === [...HERO_SLUGS].sort().join(','),
+    `réemployés : ${reused.join(', ') || 'aucun'}`,
+  );
+
   const otherBrandFiles = brandImages.filter(
     (f) => !isGeneratedPackshot(f) && emittedBasename(f) !== 'logo',
   );
@@ -489,6 +523,20 @@ if (TARGET === 'staging') {
     'production : aucun packshot GÉNÉRÉ rendu dans une page',
     heroRendered.length === 0,
     heroRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
+  );
+
+  /*
+   * TR-025 — même exigence pour les dix packshots Featured. Contrôlée à part
+   * de l'exigence hero : un usage peut fuir sans l'autre.
+   */
+  const packshotRendered = objects.filter(
+    (o) => o.usage === 'packshot' && (o.asset === 'packshot' || o.asset === 'hero'),
+  );
+  check(
+    'BLOCK',
+    'production : aucun packshot Featured rendu dans une page',
+    packshotRendered.length === 0,
+    packshotRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
   );
 
   check(

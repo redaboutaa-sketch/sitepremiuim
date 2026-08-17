@@ -19,6 +19,7 @@
  * Les libellés « best-selling » et assimilés sont proscrits (doc/catalog.md §3).
  */
 import ProductObject from '@/components/media/ProductObject.astro';
+import { resolve } from '@/lib/assets';
 import { CATEGORIES, featuredBrands } from '@/lib/catalog';
 import { useI18n, type Locale } from '@/i18n';
 
@@ -46,15 +47,55 @@ const featured = featuredBrands();
 const familyLabel = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug)?.name[locale] ?? '';
 
+/**
+ * Les quatre hauteurs de plateau de la piste, de la plus haute à la plus
+ * basse. La ligne de TÊTE ondule, la ligne de SOL ne bouge pas : on fait
+ * varier la HAUTEUR du plateau, jamais son décalage vertical. Décaler l'objet
+ * le décollerait du sol — exactement ce qu'on interdit depuis le hero.
+ */
+const PLATE_ASPECTS = ['3 / 4', '3 / 3.75', '3 / 3.3', '3 / 3'] as const;
+
+/**
+ * NORMALISATION OPTIQUE (TR-025 §9).
+ *
+ * Le plateau était attribué par POSITION (`i % 4`). Le produit remplit la
+ * hauteur de son plateau et sa largeur suit son ratio : un objet étroit posé
+ * sur un plateau court est donc doublement pénalisé, étroit ET bas. La mesure
+ * l'a confirmé — à 1440 px, Evian sortait à 58 × 168 contre 120 × 240 pour
+ * Pepsi, soit trois fois moins de surface d'encre pour deux produits du même
+ * rang. Le hasard de l'ordre alphabétique avait posé les trois bouteilles les
+ * plus fines sur les trois plateaux les plus courts.
+ *
+ * Le plateau est désormais attribué par RATIO : les objets les plus étroits
+ * reçoivent les plateaux les plus hauts, les plus larges les plus courts. Une
+ * seule règle, aucune valeur par marque, et l'ondulation subsiste — elle cesse
+ * d'être une décoration arbitraire pour devenir une conséquence des produits.
+ *
+ * Le ratio vient du fichier réellement résolu, jamais d'une constante saisie :
+ * sans asset (production), on retombe sur la rotation par position, qui est le
+ * comportement validé pour les replis typographiques.
+ */
+const ratioOf = (slug: string) => {
+  const a = resolve(slug, 'packshot') ?? resolve(slug, 'hero');
+  return a?.width && a.height ? a.width / a.height : null;
+};
+
+const ranked = [...ORDER]
+  .map((slug) => ({ slug, ratio: ratioOf(slug) }))
+  .filter((r): r is { slug: string; ratio: number } => r.ratio !== null)
+  .sort((a, b) => a.ratio - b.ratio)
+  .map((r) => r.slug);
+
 const items = ORDER.map((slug, i) => {
   const brand = featured.find((b) => b.slug === slug)!;
+  const rank = ranked.indexOf(slug);
   return {
     brand,
     index: String(i + 1).padStart(2, '0'),
-    // La ligne de TÊTE ondule, la ligne de SOL ne bouge pas : on fait varier
-    // la HAUTEUR du plateau, jamais son décalage vertical. Décaler l'objet le
-    // décollerait du sol — exactement ce qu'on interdit depuis le hero.
-    aspect: ['3 / 4', '3 / 3.3', '3 / 3.75', '3 / 3'][i % 4]!,
+    aspect:
+      rank >= 0
+        ? PLATE_ASPECTS[Math.floor((rank * PLATE_ASPECTS.length) / ranked.length)]!
+        : PLATE_ASPECTS[i % PLATE_ASPECTS.length]!,
   };
 });
 ---
@@ -78,7 +119,20 @@ const items = ORDER.map((slug, i) => {
         items.map(({ brand, index, aspect }) => (
           <li class="featured__item" style={`--po-aspect:${aspect}`} data-family={brand.category}>
             <a class="featured__link" href={`${i18n.path('drinks')}?brand=${brand.slug}`}>
-              <ProductObject brand={brand} usage="packshot" index={index} variant="plain" />
+              {/*
+              `fallbackUsage="hero"` : les six marques de la scène d'accueil
+              n'ont pas de fichier `packshot`, et n'ont pas à en avoir un — leur
+              master `hero` est le même produit, au même cadrage. On le réemploie
+              plutôt que de dupliquer dix fois le même fichier sous deux noms.
+            */}
+            <ProductObject
+              brand={brand}
+              usage="packshot"
+              fallbackUsage="hero"
+              index={index}
+              variant="plain"
+              track="featured"
+            />
               <span class="featured__caption">
                 <span class="featured__name t-h3">{brand.brand}</span>
                 <span class="t-label featured__family">{familyLabel(brand.category)}</span>

@@ -290,8 +290,22 @@ for (const [label, width, height] of [
     await settled(page);
     await page.waitForTimeout(500);
 
+    /*
+     * Périmètre : les fichiers que la SCÈNE demande réellement, relevés sur
+     * ses propres `<img>`. Filtrer par préfixe `hero.` comptait aussi les
+     * dérivés que la piste Featured tire des mêmes masters depuis TR-025 —
+     * une variante plus définie, pour un autre emplacement. La scène s'en
+     * trouvait accusée d'un poids qu'elle ne demande pas.
+     */
+    const stageFiles = new Set(
+      await page
+        .locator('[data-hero] [data-stage] img')
+        .evaluateAll((imgs) =>
+          imgs.map((el) => (el as HTMLImageElement).currentSrc.split('/').pop()!),
+        ),
+    );
     const rows = [...seen.entries()].map(([file, bytes]) => ({ file, bytes }));
-    const hero = rows.filter((r) => r.file.startsWith('hero.'));
+    const hero = rows.filter((r) => stageFiles.has(r.file));
     const total = hero.reduce((s, r) => s + r.bytes, 0);
 
     const dir = await outDir(page);
@@ -344,12 +358,21 @@ test('poids réellement téléchargé · 1440 à 2 pixels par point', async ({ b
   await settled(page);
   await page.waitForTimeout(500);
   const dir = await outDir(page);
-  await ctx.close();
 
+  // Même périmètre que ci-dessus : ce que la scène demande, pas ce que la page
+  // télécharge.
+  const stageFiles = new Set(
+    await page
+      .locator('[data-hero] [data-stage] img')
+      .evaluateAll((imgs) =>
+        imgs.map((el) => (el as HTMLImageElement).currentSrc.split('/').pop()!),
+      ),
+  );
   const hero = [...seen.entries()]
-    .filter(([f]) => f.startsWith('hero.'))
+    .filter(([f]) => stageFiles.has(f))
     .map(([file, bytes]) => ({ file, bytes }));
   const total = hero.reduce((s, r) => s + r.bytes, 0);
+  await ctx.close();
 
   await mkdir(dir, { recursive: true });
   await writeFile(

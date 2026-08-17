@@ -1,233 +1,293 @@
 # TR-025 — Packshots Featured (10 marques)
 
-**État : BLOQUÉ — la planche n'est pas exploitable.**
-Base : `b14968e`. Aucune modification du dépôt, aucun packshot intégré.
+**État : INTÉGRÉ en préproduction.** Base : `58fa401`.
+Production inchangée, zéro packshot généré. Aucun déploiement.
+
+> La **première** planche livrée a été refusée : fond peint, halos et ombres
+> incrustés, aucune séparation transparente, quatre produits translucides à
+> travers lesquels le fond se lisait. Le détail de ce refus est conservé au §1
+> — c'est lui qui a défini ce qu'il fallait fournir.
 
 ---
 
-## 1 · Audit de la planche
+## 1 · Planche refusée, puis planche retenue
 
-Un seul fichier fourni : `ChatGPT Image 17 août 2026, 20_01_43.png`.
-
-| | |
-|---|---|
-| Dimensions | **1536 × 1024** |
-| Format | PNG, canal alpha présent |
-| Profil ICC | absent |
-| Produits détectés | **10**, grille 5 × 2 |
-| Couture des rangées | y = 558 (détectée par minimum d'énergie de gradient) |
-| Chevauchements | **aucun** — les produits ne se touchent pas |
-
-### L'alpha ne sépare rien
-
-| Mesure | Valeur |
-|---|---|
-| Pixels transparents (α ≤ 16) | **8,6 %** — uniquement le vignettage des bords extérieurs |
-| Pixels opaques | **91,4 %** |
-| Pixels en alpha partiel | **40,6 %** — un fondu global, pas des contours |
-| Colonnes entièrement transparentes | **AUCUNE** |
-| Rangées entièrement transparentes | **AUCUNE** |
-
-Échantillons du fond, **entre** deux produits :
-
-| Position | Alpha | RGB |
+| | Planche 1 (20:01) | Planche 2 (20:25) |
 |---|---|---|
-| entre evian et orangina | **171** | 85, 89, 109 |
-| entre powerade et capri-sun | 66 | 34, 79, 121 |
-| entre 7up et bundaberg | 49 | 43, 81, 18 |
-| haut de planche | **250** | 94, 99, 102 |
-| couture des rangées | **248** | 0, 90, 167 |
+| Dimensions | 1536 × 1024 | 1536 × 1024 |
+| Pixels transparents | **8,6 %** (vignettage des bords) | **50,0 %** |
+| Alpha partiel | 40,6 % (fondu global) | **2,0 %** (antialiasing des contours) |
+| Colonnes transparentes | **aucune** | **6** — 0-70, 255-347, 567-641, 847-896, 1169-1244, 1467-1535 |
+| Rangées transparentes | **aucune** | **3** — 0-4, 537-540, 1006-1023 |
+| Fond entre deux produits | alpha 171 sur rgb 85,89,109 | alpha 0 |
+| Halo / ombre / reflet | incrustés | **aucun** |
+| Verdict extraction | **REJECT** | **PASS** |
 
-Il n'y a **aucune séparation transparente entre les produits**. Ce qui les
-entoure n'est pas du vide : c'est un fond peint, coloré différemment derrière
-chaque produit (gris-bleu derrière evian, orangé derrière orangina, vert
-derrière mountain dew…), avec un halo et une ombre portée incrustés.
+La seconde planche sépare réellement ses dix produits : cinq colonnes, deux
+rangées, marges transparentes nulles sur les quatre bords de chaque objet.
 
-### Résolution disponible par produit
-
-Étendue estimée par énergie de gradient à l'intérieur de chaque cellule — les
-produits portent des arêtes nettes, le halo est lisse. C'est le seul signal
-disponible, l'alpha n'en donnant aucun.
-
-| Marque | Cellule | Étendue | Ratio | Pixels disponibles |
-|---|---|---|---|---|
-| evian | 0–306 | 79–269 | 0,382 | **191 × 500** |
-| orangina | 307–613 | 348–565 | 0,492 | **218 × 443** |
-| powerade | 614–921 | 640–921 | 0,600 | **282 × 470** |
-| capri-sun | 922–1228 | 922–1228 | 0,773 | **307 × 397** |
-| dr-pepper | 1229–1535 | 1229–1458 | 0,528 | **230 × 436** |
-| spa | 0–306 | 75–246 | 0,388 | **172 × 443** |
-| mountain-dew | 307–613 | 365–562 | 0,489 | **198 × 405** |
-| schweppes | 614–921 | 657–854 | 0,474 | **198 × 418** |
-| 7up | 922–1228 | 949–1155 | 0,534 | **207 × 388** |
-| bundaberg | 1229–1535 | 1247–1448 | 0,465 | **202 × 434** |
-
-### Provenance
-
-Manifeste C2PA signé, embarqué dans le fichier :
-
-```
-c2pa.created · softwareAgent { name: gpt-image, version: 2.0 }
-digitalSourceType: …/newscodes/digitalsourcetype/trainedAlgorithmicMedia
-```
-
-Image **générée**, comme les six du Hero. Cohérent avec le régime demandé au §5.
+**Provenance, identique pour les deux** — manifeste C2PA signé, lu dans le
+fichier : `c2pa.created · gpt-image 2.0 · digitalSourceType =
+trainedAlgorithmicMedia`. Images **générées**, comme les six du Hero.
 
 ---
 
-## 2 · Mapping — conforme, sans ambiguïté
+## 2 · Mapping
 
-Les dix marques attendues sont présentes, identifiées par leur propre
-wordmark, et **aucune autre**. Ordre de lecture :
+Les dix marques attendues, chacune identifiée par son propre wordmark, aucune
+autre. **Aucun `REQUIRES_MAPPING_CONFIRMATION`.**
 
 | Rangée 1 | evian · orangina · powerade · capri-sun · dr-pepper |
 |---|---|
 | **Rangée 2** | spa · mountain-dew · schweppes · 7up · bundaberg |
 
-Aucun `REQUIRES_MAPPING_CONFIRMATION`.
+**Les mentions de SKU de la planche 1 ont disparu.** Celle-ci ne porte plus
+« ORANGE » (capri-sun), « MOUNTAIN BLAST » (powerade), « INDIAN TONIC »
+(schweppes), « INTENSE » (spa) ni « 375 mL » (bundaberg). Ne subsistent que des
+descripteurs de type appartenant aux marques elles-mêmes — « NATURAL MINERAL
+WATER », « GINGER BEER », « LEMON-LIME ». Aucun volume, aucune saveur, aucune
+variante n'est affirmée.
 
-### Réserve : des mentions de SKU sont peintes sur les emballages
-
-Ce point est indépendant de l'extraction et survivrait à une nouvelle planche.
-
-| Marque | Texte visible sur l'emballage généré |
-|---|---|
-| capri-sun | « ORANGE » |
-| powerade | « MOUNTAIN BLAST » |
-| schweppes | « INDIAN TONIC · Tonic Water » |
-| spa | « INTENSE » |
-| **bundaberg** | « GINGER BEER · **375 mL** » |
-
-Le catalogue ne confirme ni saveur, ni variante, ni volume — c'est une règle
-posée au départ (« Aucun enrichissement de SKU non confirmé »). Un packshot
-qui affiche « 375 mL » énonce un format que rien n'établit, et le fait à
-l'écran, en clair. Une planche de remplacement devrait être demandée **sans
-mention de saveur ni de volume**, ou ces mentions devront être confirmées par
-le client avant publication.
+Mountain Dew apparaît sous son wordmark abrégé « mtn DEW », qui est une livrée
+réelle de la marque.
 
 ---
 
-## 3 · Extraction — **REJECT**
+## 3 · Extraction
 
-L'extraction demandée au §3 n'est pas réalisable sans reconstruction. Trois
-obstacles, cumulatifs.
+Recadrage **strict sur la boîte alpha**, produit par produit. Aucun
+redimensionnement, aucune retouche, aucun pixel reconstruit.
 
-**a) Il n'y a pas d'alpha à découper.** Alpha 245–252 sur le produit comme sur
-le fond. Le seul alpha faible est le vignettage des bords de planche. Un
-remplissage par diffusion depuis les bords — la méthode employée pour les 60
-logos du catalogue — ne peut pas fonctionner : le fond n'est ni uniforme, ni
-d'une seule couleur, et il change derrière chaque produit.
+| Marque | Fichier | Ratio | Couverture | Marges | Octets |
+|---|---|---|---|---|---|
+| evian | 184 × 529 | 0,3478 | 0,847 | 0,0,0,0 | 266 105 |
+| orangina | 219 × 455 | 0,4813 | 0,658 | 0,0,0,0 | 266 927 |
+| powerade | 179 × 530 | 0,3377 | 0,825 | 0,0,0,0 | 240 852 |
+| capri-sun | 272 × 437 | 0,6224 | 0,751 | 0,0,0,0 | 336 558 |
+| dr-pepper | 219 × 406 | 0,5394 | 0,953 | 0,0,0,0 | 257 639 |
+| spa | 179 × 465 | 0,3849 | 0,804 | 0,0,0,0 | 225 536 |
+| mountain-dew | 198 × 401 | 0,4938 | 0,963 | 0,0,0,0 | 245 850 |
+| schweppes | 191 × 431 | 0,4432 | 0,963 | 0,0,0,0 | 225 214 |
+| 7up | 209 × 409 | 0,5110 | 0,953 | 0,0,0,0 | 249 226 |
+| bundaberg | 206 × 464 | 0,4440 | 0,866 | 0,0,0,0 | 282 017 |
 
-**b) Halo et ombres sont incrustés.** Chaque produit est cerné d'un halo peint
-qui épouse sa silhouette, posé sur une surface réfléchissante avec ombre et
-reflet. Découper au ras du produit conserve le halo sur son pourtour — c'est
-exactement le « glow » que le §3 interdit d'ajouter.
-
-**c) Quatre produits sur dix sont translucides.** Evian et Spa sont des PET
-transparents remplis d'eau, Orangina est du verre, Capri-Sun une poche
-métallisée. **Le fond se lit à travers** : le bord gauche du verre d'Orangina
-mesure 122, 90, 92 (teinté par le fond chaud à sa gauche) et son bord droit
-4, 6, 71 (teinté par le fond bleu à sa droite). Isoler ces produits laisse le
-halo coloré *à l'intérieur* de la silhouette — ou impose d'inventer ce qui
-devrait s'y trouver.
-
-Les deux issues sont interdites : conserver le halo, c'est ajouter un effet ;
-le remplacer, c'est inventer des pixels. Le §3 tranche : **REJECT**.
-
-Preuve : `qa/review/featured-plate-preuve.png` — le damier de transparence
-n'apparaît nulle part sur les produits ni autour d'eux.
+Les couvertures basses (orangina 0,658, capri-sun 0,751) correspondent à des
+silhouettes creuses — col de bouteille, paille en diagonale — pas à une ombre
+incrustée, qui aurait laissé une auréole dans la boîte.
 
 ---
 
-## 4 · Résolution — **REJECT** pour les dix, indépendamment
+## 4 · Résolution — `PASS_WITH_RESOLUTION_WARNING` pour les dix
 
-Besoins **mesurés dans le navigateur**, pas estimés :
+Besoins **mesurés dans le navigateur**, pas repris d'une estimation :
 
 | Emplacement | Plateau à 1920 | Padding | Hauteur d'image |
 |---|---|---|---|
 | Featured | 235 × 313 | 24 px | **265 px CSS** |
 | S4 Discovery | 329 × 439 | 24 px | **391 px CSS** |
 
-Le packshot est ajusté par la hauteur : c'est elle qui commande.
-
-| Cible | Hauteur source requise |
-|---|---|
-| Featured · DPR 2 | 530 px |
-| Featured · DPR 3 | **795 px** |
-| S4 · DPR 2 (mountain-dew, bundaberg) | 782 px |
-| S4 · DPR 3 (mountain-dew, bundaberg) | **1173 px** |
-
-Hauteurs disponibles : **388 à 500 px**.
-
-| Marque | Dispo | / Featured DPR2 | / Featured DPR3 | Verdict |
+| Marque | Hauteur | Featured DPR 2 | Featured DPR 3 | S4 DPR 3 |
 |---|---|---|---|---|
-| evian | 500 | 94 % | 63 % | REJECT |
-| powerade | 470 | 89 % | 59 % | REJECT |
-| orangina | 443 | 84 % | 56 % | REJECT |
-| spa | 443 | 84 % | 56 % | REJECT |
-| dr-pepper | 436 | 82 % | 55 % | REJECT |
-| bundaberg | 434 | 82 % | 55 % · **37 % du besoin S4** | REJECT |
-| schweppes | 418 | 79 % | 53 % | REJECT |
-| mountain-dew | 405 | 76 % | 51 % · **35 % du besoin S4** | REJECT |
-| capri-sun | 397 | 75 % | 50 % | REJECT |
-| 7up | 388 | 73 % | 49 % | REJECT |
+| powerade | 530 | **100 %** | 67 % | — |
+| evian | 529 | 100 % | 67 % | — |
+| bundaberg | 464 | 88 % | 58 % | **40 %** |
+| spa | 465 | 88 % | 58 % | — |
+| orangina | 455 | 86 % | 57 % | — |
+| capri-sun | 437 | 82 % | 55 % | — |
+| schweppes | 431 | 81 % | 54 % | — |
+| dr-pepper | 406 | 77 % | 51 % | — |
+| 7up | 409 | 77 % | 51 % | — |
+| mountain-dew | 401 | 76 % | 50 % | **34 %** |
 
-**Aucun des dix n'atteint le besoin DPR 2**, et aucun n'atteint la moitié du
-besoin DPR 3 pour Mountain Dew et Bundaberg. Conformément au §4, aucun
-agrandissement n'a été appliqué pour faire passer le contrôle.
-
----
-
-## 5 à 13 · Non exécutés
-
-Intégration, gouvernance, Featured à 16, gates production/préproduction,
-normalisation optique, responsive et revue visuelle **n'ont pas été
-exécutés** : le §3 impose l'arrêt avant intégration, et l'audit du §1 est
-justement l'étape qui devait précéder toute intégration.
-
-Le Hero, le CTA final, S4, `/drinks/`, `/brands/`, le header, le footer, B15,
-`SITE_HOST`, les canonicals, les hreflang, le DNS et le formulaire n'ont pas
-été touchés. `FEATURED_COUNT` reste à 16 marques, servies par leur repli
-typographique sauf les six du Hero en préproduction.
+Aucun n'atteint DPR 3 ; deux atteignent DPR 2 ; tous couvrent DPR 1. Ils
+remplissent donc leur rôle — juger la composition en préproduction — sans
+prétendre à la définition d'un fichier presse. **Aucun agrandissement n'a été
+appliqué.** Mountain Dew et Bundaberg, qui alimentent aussi S4, y sont les plus
+justes : 34 % et 40 % du besoin DPR 3.
 
 ---
 
-## 6 · Ce qu'il faut fournir pour débloquer
+## 5 · Gouvernance
 
-Une planche composite ne convient pas : le fond peint et les halos rendent la
-segmentation impossible sans reconstruction. Il faut **dix fichiers séparés**.
+Les dix entrées portent, sans exception :
 
-Pour chacun :
+```
+sourceType:    'generated'
+status:        'requires_validation'    → préproduction uniquement
+authorization: { status: 'unknown', evidence: null }
+```
 
-- **un produit par fichier**, PNG RGBA ;
-- **fond réellement transparent** (α = 0), pas un blanc ni un dégradé ;
-- **aucun halo, aucune ombre portée, aucun reflet de sol, aucune éclaboussure,
-  aucune lueur** — rien d'autre que le produit ;
-- produit de face, entier, vertical, sans inclinaison ;
-- marge transparente ≤ 0,5 % sur les quatre bords ;
-- **hauteur minimale 800 px** — et **1200 px pour mountain-dew et bundaberg**,
-  qui apparaissent aussi en S4 ;
-- **aucune mention de saveur ni de volume** sur l'emballage, sauf confirmation
-  écrite du client (voir §2).
+Aucun n'est qualifié d'officiel, de fourni par le titulaire, de fichier presse
+ni de droits validés. **Aucun ne ferme B2.**
 
-Contrôle d'acceptation, sur chaque fichier : hauteur ≥ 800 px (1200 pour les
-deux cités), couverture opaque ≥ 0,93 dans la boîte englobante — au-delà d'une
-ombre incrustée la valeur s'effondre —, marges transparentes nulles, et alpha
-strictement à 0 hors du produit.
-
-À réception, l'intégration suit le chemin déjà éprouvé en TR-024B/D : recadrage
-strict sur la boîte alpha, entrée de registre par marque en
-`sourceType: generated` / `requires_validation` / `unknown`, préproduction
-uniquement, production à zéro packshot généré.
+`asset-governance.mjs` connaît désormais deux bases de nom générées, `hero` et
+`packshot`, et `tests/assets.spec.ts` vérifie la correspondance **dans les deux
+sens** : tout asset généré est un visuel produit sous l'une de ces bases, et
+toute entrée sous ces bases est bien générée.
 
 ---
 
-## 7 · État
+## 6 · Featured — `FEATURED_COUNT = 16`
 
 | | |
 |---|---|
-| Arbre de travail | propre, hors ce document |
-| Commit | `b14968e`, inchangé |
-| Packshots intégrés | **0** |
-| Production | 0 packshot généré, inchangé |
-| B2 | ouvert |
+| Objets rendus dans la piste | **16** |
+| Replis typographiques | **0** |
+| Logos de marque | **0** |
+| Nouveaux packshots | **10** |
+| Masters Hero réemployés | **6** — coca-cola, fanta, red-bull, monster-energy, pepsi, sprite |
+| Fichiers dupliqués | **0** |
+
+Le réemploi passe par une propriété explicite, `fallbackUsage="hero"` : les six
+marques de la scène n'ont pas de fichier `packshot`, et n'ont pas à en avoir un.
+
+### Deux effets de bord, dont un corrigé
+
+**`/drinks/` — corrigé.** Le catalogue demandait `usage="packshot"` avec repli
+sur logo. Tant qu'aucun packshot n'existait, les deux formulations rendaient la
+même chose ; l'arrivée des dix a fait basculer **dix cellules sur 62** de logo à
+packshot, sans que personne ne le décide. Le catalogue demande désormais
+`usage="logo"` — ce qu'il a toujours voulu. **Vérifié sur l'artefact : 60 logos,
+0 packshot, 2 replis, exactement comme avant TR-025.**
+
+**S4 Discovery — assumé, signalé.** Sa séquence contient mountain-dew et
+bundaberg, qui ont maintenant un packshot : deux de ses huit spécimens sont
+désormais des visuels produits. C'est ce que le §4 anticipait en leur fixant un
+besoin de résolution supérieur. Aucune ligne de S4 n'a été touchée.
+
+---
+
+## 7 · Production
+
+| Contrôle `qa:artifact` | Résultat |
+|---|---|
+| Aucun visuel de marque publié | ✅ |
+| Aucun packshot généré déposé dans `dist/` | ✅ **0** |
+| Aucun packshot hero rendu dans une page | ✅ |
+| **Aucun packshot Featured rendu dans une page** | ✅ *(contrôle ajouté)* |
+| Aucun `data-generated` dans le HTML | ✅ |
+| Aucune référence d'image vers un fichier absent | ✅ |
+
+En préproduction, deux contrôles nouveaux : les seize Featured sont servis par
+un visuel produit, et les six marques du Hero y réemploient bien leur master.
+
+---
+
+## 8 · Préproduction
+
+16 Featured résolus, bons slugs, bons produits, aucune image cassée, **aucune
+requête externe**, aucun logo à la place d'un packshot. Vérifié sur l'artefact
+et dans le navigateur.
+
+---
+
+## 9 · Normalisation optique — un défaut trouvé et corrigé
+
+La piste attribuait la hauteur de plateau par **position** (`i % 4`). L'objet
+remplit la hauteur de son plateau et sa largeur suit son ratio : un objet
+étroit posé sur un plateau court est donc doublement pénalisé.
+
+Le hasard de l'ordre avait posé les trois bouteilles les plus fines sur les
+trois plateaux les plus courts. Mesure à 1440 px :
+
+| | Avant | Après |
+|---|---|---|
+| evian | 58 × 168 | **83 × 240** |
+| powerade | 57 × 168 | **81 × 240** |
+| spa | 65 × 168 | **85 × 222** |
+| pepsi | 120 × 240 | 84 × 168 |
+| **Écart d'aire optique** | **3,01 ×** | **1,54 ×** |
+
+Le plateau est désormais attribué par **ratio** : les objets les plus étroits
+reçoivent les plateaux les plus hauts. Une seule règle, **aucune valeur par
+marque**, et l'ondulation de la ligne de tête subsiste — elle cesse d'être
+arbitraire pour devenir une conséquence des produits. Le sol reste commun, les
+proportions restent réelles : les largeurs vont de 70 à 105 px, personne n'est
+déformé.
+
+Un test verrouille l'écart sous 1,9 × : c'est une alarme de régression, pas une
+cible à frôler.
+
+---
+
+## 10 · Responsive — neuf largeurs
+
+| Largeur | Débordement de page | Piste défilable | Écart d'aire | Produit hors plateau | Libellé coupé |
+|---|---|---|---|---|---|
+| 320 | 0 | ✅ | 1,46 × | 0 | non |
+| 375 | 0 | ✅ | 1,47 × | 0 | non |
+| 390 | 0 | ✅ | 1,46 × | 0 | non |
+| 430 | 0 | ✅ | 1,49 × | 0 | non |
+| 768 | 0 | ✅ | 1,57 × | 0 | non |
+| 1024 | 0 | ✅ | 1,58 × | 0 | non |
+| 1280 | 0 | ✅ | 1,57 × | 0 | non |
+| 1440 | 0 | ✅ | 1,54 × | 0 | non |
+| 1920 | 0 | ✅ | 1,53 × | 0 | non |
+
+L'interaction n'a pas été touchée : le défilement de la piste reste piloté par
+`src/scripts/track.ts`, inchangé.
+
+---
+
+## 11 · Poids
+
+| Contexte | Avant le correctif `sizes` | Après |
+|---|---|---|
+| 1440 @1x — total | 1 008 Ko | **715 Ko** |
+| 1440 @2x — total | 1 247 Ko | **992 Ko** |
+
+`sizes` annonçait 25 vw — 360 px à 1440 — pour des objets rendus entre 70 et
+105 px. `featuredSizes()` transcrit la géométrie réelle de la piste, sur le même
+modèle documenté que `stageSizes()`.
+
+**Deux chiffres, pas un.** Les seize images sont en `loading="lazy"`, mais
+Chrome anticipe : à 1440 × 900 la piste entre dans sa fenêtre de préchargement
+et huit visuels partent avant tout défilement. Le poids avant défilement est
+donc de **462 Ko (1x)** et **715 Ko (2x)**, pour 14 fichiers. C'est un
+comportement du navigateur, pas un réglage — et **cela ne concerne que la
+préproduction** : la production ne publie aucun de ces fichiers.
+
+Les six masters Hero sont servis **deux fois**, dans deux définitions
+différentes, parce que la scène et la piste ne les affichent pas à la même
+taille. C'est le prix du réemploi, et il reste inférieur à celui d'un doublon
+de master.
+
+---
+
+## 12 · Portes de qualité
+
+| Gate | Résultat |
+|---|---|
+| `npx astro check` | 0 erreur, 0 avertissement |
+| `npm run qa` | **EXIT 0** — 565/565 · 826 + 233 tests |
+| `npm run qa:staging` | **EXIT 0** — 565/565 · 62 tests |
+| Packshots générés dans `dist/` production | **0** |
+| Featured résolus en préproduction | **16 / 16** |
+
+---
+
+## 13 · Livrables
+
+`qa/screenshots/featured/` :
+
+- `planche-16-produits.png` — les seize masters à hauteur optique comparable
+- `desktop-1440x900-section.png`, `mobile-pixel7-section.png`
+- `viewport-{320,375,390,430,768,1024,1280,1440,1920}.png`
+- `geometry.json` — plateau, image, débordement, libellé, par marque et par largeur
+- `weight-1440x900@{1x,2x}.json`
+
+Pas de capture « début / milieu / fin » : `src/scripts/track.ts` pilote
+`scrollLeft` depuis la progression **verticale** de la page, si bien que la
+piste ne se positionne pas par script — trois captures à trois offsets
+sortaient rigoureusement identiques, et une capture d'élément ne rattrape pas
+le hors-champ. La vue d'ensemble est fournie par la planche des seize.
+
+---
+
+## 14 · Ce qui reste ouvert
+
+- **B2 — packshots officiels.** Ouvert pour les seize. Aucun fichier presse,
+  aucune autorisation.
+- **B11 — droits des logos de marque.** Inchangé.
+- **Résolution.** Aucun des dix n'atteint DPR 3 ; Mountain Dew et Bundaberg
+  sont à un tiers du besoin S4. Suffisant pour juger, insuffisant pour publier.

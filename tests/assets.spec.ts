@@ -256,16 +256,39 @@ test('les visuels de marque n’utilisent que les bases de nom déclarées', () 
   expect(unknown, 'bases de nom inconnues de asset-governance.mjs').toEqual([]);
 });
 
-test('les packshots générés sont ceux, et seulement ceux, du hero', () => {
+test('un asset généré est toujours un visuel produit, jamais de l’identité', () => {
   const generated = registry().filter((a) => a.sourceType === 'generated');
+  expect(generated.length, 'le registre doit porter des assets générés').toBeGreaterThan(0);
 
-  // Aucun asset généré ne doit exister ailleurs que sur les six emplacements
-  // de la scène : c'est le seul endroit où la décision a été prise.
-  expect(generated.map((a) => a.usage).sort()).toEqual(Array(generated.length).fill('hero'));
-  expect(generated.map((a) => a.brandSlug).sort()).toEqual([...HERO_BRANDS].sort());
+  /*
+   * La règle n'est plus « uniquement le hero » : TR-025 a ajouté dix packshots
+   * Featured sous le même régime. Ce qui reste vrai, et qui compte, c'est
+   * qu'un fichier fabriqué ne s'invite jamais ailleurs que sur un emplacement
+   * PRODUIT — jamais sur l'identité Ivan Arsenov, jamais sur un logo de marque.
+   */
   for (const a of generated) {
+    expect(['hero', 'packshot'], `${a.id}`).toContain(a.usage);
+    expect(a.path, `${a.id}`).toMatch(/^src\/assets\/brands\//);
     expect(GENERATED_PACKSHOT_BASENAMES, `${a.id}`).toContain(basenameOf(a.path!));
   }
+
+  // Les six emplacements de la scène restent tous servis par un asset généré.
+  const heroes = generated.filter((a) => a.usage === 'hero');
+  expect(heroes.map((a) => a.brandSlug).sort()).toEqual([...HERO_BRANDS].sort());
+});
+
+test('les bases de nom générées ne recouvrent que des assets générés', () => {
+  /*
+   * Réciproque du test précédent. Sans elle, `GENERATED_PACKSHOT_BASENAMES`
+   * pourrait un jour désigner une base sous laquelle vit aussi un fichier
+   * fourni par un titulaire — et `qa:artifact` le retirerait de la production
+   * en le prenant pour une image fabriquée.
+   */
+  const wrong = registry()
+    .filter((a) => a.path !== null && GENERATED_PACKSHOT_BASENAMES.includes(basenameOf(a.path)))
+    .filter((a) => a.sourceType !== 'generated')
+    .map((a) => `${a.id} → sourceType ${a.sourceType}`);
+  expect(wrong).toEqual([]);
 });
 
 test('un asset généré n’est jamais publiable en production', () => {

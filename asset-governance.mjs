@@ -60,14 +60,20 @@ export const IDENTITY_BASENAMES = [
 export const BRAND_ASSET_BASENAMES = ['logo', 'packshot', 'packshot-alt', 'hero'];
 
 /**
- * Bases de nom des six packshots GÉNÉRÉS de la scène d'accueil (TR-024A/B).
+ * Bases de nom des packshots GÉNÉRÉS — scène d'accueil (TR-024A/B/D) et
+ * Featured (TR-025).
  *
  * Isolées parce que leur régime est plus strict que « non validé » : ce ne
  * sont pas des fichiers officiels en attente d'accord, ce sont des images
  * FABRIQUÉES. Elles ne ferment pas le blocage B2 et ne deviendront jamais
  * publiables par simple changement de statut.
+ *
+ * Un nom de fichier ne prouve évidemment aucune provenance. Cette liste ne
+ * la déduit pas : elle énumère les bases sous lesquelles des fichiers générés
+ * ont été rangés, et `tests/assets.spec.ts` vérifie que le registre et cette
+ * liste disent la même chose — dans les deux sens.
  */
-export const GENERATED_PACKSHOT_BASENAMES = ['hero'];
+export const GENERATED_PACKSHOT_BASENAMES = ['hero', 'packshot'];
 
 const IMAGE_EXT = /\.(png|jpe?g|webp|avif|gif)$/i;
 

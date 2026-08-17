@@ -186,3 +186,38 @@ export function stageSizes(plane: StagePlane, sourceRatio: number): string {
     mobile,
   ].join(', ');
 }
+
+/* ---------------------------------------------------------------------- *
+ * PISTE FEATURED
+ *
+ * Même modèle, autres bornes — transcrites de `FeaturedBrands.astro` :
+ *   ≥ 1024 px : `inline-size: clamp(180px, 15vw, 235px)`
+ *   < 1024 px : `inline-size: clamp(150px, 15vw, 210px)`
+ * Aucune transformation d'échelle : ce que le navigateur calcule est ce qui
+ * est vu.
+ *
+ * Sans cela, `sizes` annonçait 25 vw — 360 px à 1440 — pour des objets rendus
+ * entre 90 et 165 px. Le navigateur prenait la plus grande variante de chaque
+ * srcset, y compris pour les six masters de scène déjà chargés par le hero
+ * dans une définition bien plus petite : 1 008 Ko de packshots sur l'accueil.
+ * ---------------------------------------------------------------------- */
+
+const FEATURED_MAX = 235;
+const FEATURED_VW = 0.15;
+/** Plateau le plus large sous 1024 px, padding au plus étroit (fenêtre 320 px). */
+const FEATURED_SMALL_SLOT = 150;
+const PLATE_PAD_MIN = 8;
+
+export function featuredSizes(sourceRatio: number): string {
+  const seen = (slot: number, pad: number) => (slot * (4 / 3) - 2 * pad) * sourceRatio;
+  const capAt = Math.ceil(FEATURED_MAX / FEATURED_VW);
+
+  return [
+    `(min-width: ${capAt}px) ${px(seen(FEATURED_MAX, PLATE_PAD_MAX))}`,
+    `(min-width: 1024px) calc((${((FEATURED_VW * 400) / 3).toFixed(3)}vw - ${2 * PLATE_PAD_MAX}px) * ${sourceRatio.toFixed(4)})`,
+    // Sous 1024 px, le plateau est plafonné par sa borne basse et le padding
+    // rétrécit avec la fenêtre : la valeur retenue est le maximum de
+    // l'intervalle, atteint à 320 px. Une borne supérieure, jamais l'inverse.
+    px(seen(FEATURED_SMALL_SLOT, PLATE_PAD_MIN)),
+  ].join(', ');
+}

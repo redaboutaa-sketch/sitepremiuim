@@ -55,7 +55,15 @@ const brands = allBrands().map((brand, i) => ({
           data-search={search}
           data-family={brand.category}
         >
-          <ProductObject brand={brand} usage="packshot" index={index} variant="plain" allowLogo />
+          {/*
+            Le catalogue demande un LOGO, pas un packshot avec repli sur logo.
+            Tant qu'aucun packshot n'existait, les deux formulations rendaient la
+            même chose ; depuis TR-025 dix marques en ont un, et l'ancienne
+            formulation aurait fait basculer dix cellules sur 62 sans que personne
+            ne le décide. La décision DA du 2026-08-16 tient : au catalogue, sur
+            papier, on montre le logo.
+          */}
+          <ProductObject brand={brand} usage="logo" index={index} variant="plain" />
 
           <div class="catalog__meta">
             <p class="t-h3 catalog__name" data-brand-slug={brand.slug} data-brand-name={brand.brand}>

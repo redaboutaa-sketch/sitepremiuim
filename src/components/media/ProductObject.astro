@@ -20,11 +20,24 @@ import { Image } from 'astro:assets';
 import type { Brand } from '@/lib/catalog';
 import { categoryBySlug } from '@/lib/catalog';
 import { resolve, type AssetMode, type AssetUsage } from '@/lib/assets';
-import { opticalSize, stageSizes, type StagePlane } from '@/lib/optical';
+import { featuredSizes, opticalSize, stageSizes, type StagePlane } from '@/lib/optical';
 
 interface Props {
   brand: Brand;
-  usage?: Extract<AssetUsage, 'packshot' | 'hero'>;
+  /**
+   * Ce que l'emplacement DEMANDE. `logo` est un usage à part entière, pas un
+   * repli : le catalogue veut un logo de marque, et le demander explicitement
+   * évite qu'il bascule tout seul sur des packshots le jour où il en existe.
+   */
+  usage?: Extract<AssetUsage, 'packshot' | 'hero' | 'logo'>;
+  /**
+   * Usage de repli quand l'usage demandé n'a pas d'asset.
+   *
+   * Sert à Featured : les six marques du Hero n'ont pas de fichier `packshot`,
+   * et n'ont pas à en avoir un — leur master `hero` est le même produit, au
+   * même cadrage. On le réemploie plutôt que de dupliquer un fichier.
+   */
+  fallbackUsage?: Extract<AssetUsage, 'packshot' | 'hero'>;
   /** Numéro d'index du catalogue. Affiché tel quel, non calculé. */
   index?: string;
   mode?: AssetMode;
@@ -67,11 +80,17 @@ interface Props {
    * donc rien à voir avec la largeur de son emplacement.
    */
   plane?: StagePlane;
+  /**
+   * Piste d'accueil. Comme `plane` pour la scène, fait calculer `sizes` depuis
+   * la géométrie réelle de la piste Featured et le ratio du fichier.
+   */
+  track?: 'featured';
 }
 
 const {
   brand,
   usage = 'packshot',
+  fallbackUsage,
   index,
   mode,
   widths = [200, 400, 800],
@@ -80,6 +99,7 @@ const {
   allowLogo = false,
   sizes,
   plane,
+  track,
 } = Astro.props;
 
 /*
@@ -87,10 +107,12 @@ const {
  * là où il a été explicitement autorisé : c'est un visuel de MARQUE, pas une
  * photographie de produit, et il ne doit jamais se faire passer pour telle.
  */
-const packshot = resolve(brand.slug, usage, mode);
+const requested = resolve(brand.slug, usage, mode);
+const reused = !requested && fallbackUsage ? resolve(brand.slug, fallbackUsage, mode) : null;
+const packshot = requested ?? reused;
 const logo = !packshot && allowLogo ? resolve(brand.slug, 'logo', mode) : null;
 const asset = packshot ?? logo;
-const isLogo = asset !== null && asset === logo;
+const isLogo = asset !== null && (usage === 'logo' || asset === logo);
 const optical = isLogo ? opticalSize(asset) : null;
 
 /*
@@ -98,11 +120,14 @@ const optical = isLogo ? opticalSize(asset) : null;
  * si elle est connue, sinon la grille du catalogue. Le calcul exige les
  * mesures du fichier — sans elles on ne devine pas, on retombe sur le défaut.
  */
+const ratio = !isLogo && asset?.width && asset.height ? asset.width / asset.height : null;
 const resolvedSizes =
   sizes ??
-  (plane && !isLogo && asset?.width && asset.height
-    ? stageSizes(plane, asset.width / asset.height)
-    : '(min-width: 1024px) 25vw, 45vw');
+  (ratio && plane
+    ? stageSizes(plane, ratio)
+    : ratio && track === 'featured'
+      ? featuredSizes(ratio)
+      : '(min-width: 1024px) 25vw, 45vw');
 
 /*
  * Le texte alternatif dit ce que l'image EST. Un logo n'est pas un packshot,
@@ -175,7 +200,7 @@ const familyLabel = category?.name.en ?? '';
   data-family={brand.category}
   data-object={audit ? brand.slug : undefined}
   data-usage={audit ? usage : undefined}
-  data-asset={audit ? (asset ? (isLogo ? 'logo' : usage) : 'fallback') : undefined}
+  data-asset={audit ? (asset ? (isLogo ? 'logo' : (requested ? usage : fallbackUsage)) : 'fallback') : undefined}
   data-generated={isGenerated ? '' : undefined}
 >
   {

@@ -339,6 +339,240 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'production exige un fichier presse ou une autorisation écrite.',
   },
 
+
+  /*
+   * TR-025 — PACKSHOTS FEATURED, dix marques.
+   *
+   * Extraits d'une planche composite GÉNÉRÉE, par recadrage strict sur la
+   * boîte alpha : aucun redimensionnement, aucune retouche, aucun pixel du
+   * produit reconstruit. La première planche livrée a été REFUSÉE — fond peint,
+   * halos et ombres incrustés, aucune séparation transparente (voir
+   * doc/tr-025-featured-packshots.md). Celle-ci porte une transparence réelle
+   * sur 50 % de sa surface et une marge nulle sur les quatre bords de chaque
+   * produit.
+   *
+   * Même régime que les six du Hero, sans exception : `generated`,
+   * `requires_validation`, autorisation `unknown`, préproduction UNIQUEMENT.
+   * Aucun de ces fichiers ne ferme B2.
+   *
+   * RÉSOLUTION — aucun n'atteint le besoin DPR 3. Hauteur d'image mesurée dans
+   * le navigateur : 265 px CSS en Featured (donc 795 px à DPR 3), 391 px CSS en
+   * S4 Discovery (1173 px à DPR 3). Les hauteurs livrées vont de 401 à 530 px :
+   * elles couvrent DPR 1 partout, DPR 2 de 76 à 100 % en Featured. Aucun
+   * agrandissement n'a été appliqué pour faire passer un contrôle — la note de
+   * chaque entrée porte le chiffre réel.
+   */
+
+  'evian:packshot': {
+    path: 'src/assets/brands/evian/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 184,
+    height: 529,
+    format: 'png',
+    bytes: 266105,
+    checksum: 'c7766952c2f45b3e063ec87d055d08bd71b97864930483ce84c98a8609e6d34b',
+    opticalCoverage: 0.847,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 100 % du besoin DPR 2 et 67 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'orangina:packshot': {
+    path: 'src/assets/brands/orangina/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 219,
+    height: 455,
+    format: 'png',
+    bytes: 266927,
+    checksum: '040a4da9aed6ac20e87f240c5e58bf41d5a341cd9bae29632c407a76b17a1ce3',
+    opticalCoverage: 0.658,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 86 % du besoin DPR 2 et 57 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'powerade:packshot': {
+    path: 'src/assets/brands/powerade/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 179,
+    height: 530,
+    format: 'png',
+    bytes: 240852,
+    checksum: '4fd130740dc6447b40f20c361840b7fd941cbe3a70b3c28f9f0ae71b5d480b7e',
+    opticalCoverage: 0.825,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 100 % du besoin DPR 2 et 67 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'capri-sun:packshot': {
+    path: 'src/assets/brands/capri-sun/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 272,
+    height: 437,
+    format: 'png',
+    bytes: 336558,
+    checksum: 'cf141f706ee2be8ae14b1cda245791b13fd37ce6cff07cc48f445b4ded391280',
+    opticalCoverage: 0.751,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 82 % du besoin DPR 2 et 55 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'dr-pepper:packshot': {
+    path: 'src/assets/brands/dr-pepper/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 219,
+    height: 406,
+    format: 'png',
+    bytes: 257639,
+    checksum: '54ff259dc2a9cf326c2e8ba167bdb71ce0502489dacee02b73acf10a53b36b62',
+    opticalCoverage: 0.953,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 77 % du besoin DPR 2 et 51 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'spa:packshot': {
+    path: 'src/assets/brands/spa/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 179,
+    height: 465,
+    format: 'png',
+    bytes: 225536,
+    checksum: '3954dc6393ea5b734870b0b758fe0db52cba5281244a164e8686eda867151a28',
+    opticalCoverage: 0.804,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 88 % du besoin DPR 2 et 58 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'mountain-dew:packshot': {
+    path: 'src/assets/brands/mountain-dew/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 198,
+    height: 401,
+    format: 'png',
+    bytes: 245850,
+    checksum: 'cefb8c24042dbb96afe3c5d053d6395efdff55602c7f0221f78c3fe2f004648a',
+    opticalCoverage: 0.963,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 76 % du besoin DPR 2 et 50 % du besoin DPR 3 en Featured. Aussi rendu en S4 Discovery, dont le besoin est plus élevé : 51 % de DPR 2 et 34 % de DPR 3. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'schweppes:packshot': {
+    path: 'src/assets/brands/schweppes/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 191,
+    height: 431,
+    format: 'png',
+    bytes: 225214,
+    checksum: 'd537cec9583d95f44cc9ef86d3cab01b2421b5645f9cfbfebb62781e5b5df244',
+    opticalCoverage: 0.963,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 81 % du besoin DPR 2 et 54 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  '7up:packshot': {
+    path: 'src/assets/brands/7up/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 209,
+    height: 409,
+    format: 'png',
+    bytes: 249226,
+    checksum: '497a75a256ff7aed134543289a8c654e6bbcff839cb6bc22bcf8cfb8c5b07143',
+    opticalCoverage: 0.953,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 77 % du besoin DPR 2 et 51 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'bundaberg:packshot': {
+    path: 'src/assets/brands/bundaberg/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 206,
+    height: 464,
+    format: 'png',
+    bytes: 282017,
+    checksum: 'e06d4bbd4466008083400872385e7ca74e3dfaaa175d6a980515afe58a07308c',
+    opticalCoverage: 0.866,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
+      'Résolution : 88 % du besoin DPR 2 et 58 % du besoin DPR 3 en Featured. Aussi rendu en S4 Discovery, dont le besoin est plus élevé : 59 % de DPR 2 et 40 % de DPR 3. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
   /*
    * LIVRAISON DU 2026-08-16 — archive « photos ivan.zip ».
    *
