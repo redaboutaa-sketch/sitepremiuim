@@ -268,8 +268,28 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
      * statut parallèle.
      */
     status: 'requires_validation',
+    /*
+     * TR-024D — REMPLACEMENT. L'asset précédent portait la livrée Pepsi
+     * 2008-2023, alors que le logo fourni par le client porte l'identité
+     * courante. Le fichier a donc été remplacé, et lui seul : position, plan,
+     * échelle et géométrie de la scène sont inchangés.
+     *
+     * `generated`, malgré une déclaration de provenance contraire à la
+     * livraison. Le fichier porte un manifeste C2PA signé qui dit exactement
+     * ceci :
+     *     c2pa.created · softwareAgent { name: gpt-image, version: 2.0 }
+     *     digitalSourceType: …/newscodes/digitalsourcetype/trainedAlgorithmicMedia
+     * `trainedAlgorithmicMedia` est le code IPTC des contenus intégralement
+     * produits par un modèle génératif. C'est précisément ce que ce champ
+     * existe pour enregistrer, et une déclaration orale ne l'emporte pas sur
+     * une provenance signée embarquée dans le fichier.
+     */
     sourceType: 'generated',
-    source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
+    source:
+        'Archive « ChatGPT Image 17 août 2026, 18_38_05 » (TR-024D). Recadrage ' +
+        'STRICT sur la boîte alpha (1536×1024 → 480×961), sans redimensionnement ' +
+        'ni retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+        'digitalSourceType = trainedAlgorithmicMedia.',
     /*
      * `unknown`, et cela ne bougera pas sans document. Ces visuels
      * représentent des produits de marques tierces sans provenance établie
@@ -277,16 +297,18 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
      * pas autorisation.
      */
     authorization: { status: 'unknown', evidence: null },
-    width: 227,
-    height: 505,
+    width: 480,
+    height: 961,
     format: 'png',
-    bytes: 348231,
-    checksum: '809ac64a5d00afdc1f5956e973c1d8ae6a2799746c8d19ff7b864e94078ea6e0',
-    opticalCoverage: 0.962,
+    bytes: 1220273,
+    checksum: '3ec46717ff256f5d00e0e7d76b3cb4cc89b200c98134bb0e07cc98b198910430',
+    opticalCoverage: 0.951,
     legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Sert exclusivement à juger ' +
-      'la composition de THE STAGE en préproduction. Ne ferme pas B2 : la ' +
-      'production exige un fichier presse ou une autorisation écrite.',
+      'Asset GÉNÉRÉ, non fourni par le titulaire — provenance établie par le ' +
+      'manifeste C2PA embarqué, pas par déduction. Livrée Pepsi 2023 correcte, ' +
+      'ce qui corrige l’inexactitude relevée en TR-024C, mais ne change RIEN au ' +
+      'régime : préproduction uniquement. Ne ferme pas B2 : la production exige ' +
+      'un fichier presse ou une autorisation écrite.',
   },
   'sprite:hero': {
     path: 'src/assets/brands/sprite/hero.png',

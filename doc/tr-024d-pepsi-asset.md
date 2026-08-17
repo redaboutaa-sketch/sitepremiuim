@@ -1,160 +1,159 @@
 # TR-024D — Remplacement du packshot Pepsi
 
-**État : BLOQUÉ — le fichier de remplacement n'existe pas et ne peut pas être fabriqué ici.**
-Base : `b770fba9099d9f296d99a38ba7910625e96e6ef8` (TR-024C).
-Aucune modification du dépôt. Aucun commit. Aucun déploiement.
+**État : FAIT.** Base : `b770fba` (TR-024C). Préproduction uniquement, aucun déploiement.
+Un seul fichier remplacé. Aucune modification de la composition.
 
 ---
 
-## 1 · Le défaut est confirmé, et par une source interne
+## 1 · Le défaut, confirmé par une source interne
 
-TR-024C signalait que le packshot Pepsi généré porte la livrée 2008-2023.
-La confirmation ne vient pas d'une mémoire : **le logo Pepsi fourni par le
+TR-024C signalait que le packshot Pepsi portait la livrée 2008-2023. La
+confirmation n'est pas venue d'une mémoire : **le logo Pepsi fourni par le
 client lui-même** (`src/assets/brands/pepsi/logo.webp`, archive « photos
-ivan.zip » du 2026-08-16) porte l'identité **courante**.
-
-| | Packshot généré, en préproduction | Logo fourni par le client |
-|---|---|---|
-| Wordmark | `pepsi` bas-de-casse, **sous** le globe | `PEPSI` capitales, **dans** le globe |
-| Globe | sans cerne | cerne noir épais |
-| Époque | 2008 – 2023 | 2023 → |
+ivan.zip ») porte l'identité **courante**. Deux visuels du même produit, dans
+le même dépôt, ne montraient pas la même marque.
 
 Planche : `qa/review/pepsi-identite-comparaison.png`.
 
-Les deux visuels du même produit, dans le même dépôt, ne montrent pas la même
-marque. Ce n'est pas un défaut de rendu : c'est une inexactitude factuelle sur
-un produit du catalogue, devant un lecteur — un grossiste en boissons — qui la
-repère immédiatement.
+---
+
+## 2 · Provenance — ce que dit le fichier lui-même
+
+À la question posée avant intégration, la réponse donnée était « photo
+officielle du titulaire ». **Le fichier dit autre chose.**
+
+Il embarque un manifeste **C2PA** signé, lu à l'ingestion :
+
+```
+c2pa.actions.v2
+  action            : c2pa.created
+  when              : 2026-08-17T00:00:00Z
+  softwareAgent     : { name: gpt-image, version: 2.0 }
+  digitalSourceType : http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia
+```
+
+`trainedAlgorithmicMedia` est le code IPTC des contenus **intégralement produits
+par un modèle génératif**. Le manifeste contient également l'icône de l'agent
+émetteur.
+
+Le registre enregistre donc `sourceType: 'generated'`, conformément à la
+consigne initiale de TR-024D et **contrairement à la réponse de provenance**.
+C'est exactement ce pour quoi ce champ existe : une déclaration orale ne
+l'emporte pas sur une provenance signée embarquée dans le fichier.
+
+### Conséquences
+
+- `authorization: { status: 'unknown', evidence: null }` — inchangé ;
+- `status: 'requires_validation'` — préproduction uniquement, inchangé ;
+- **B2 reste ouvert.** Cet asset corrige une inexactitude d'identité ; il ne
+  crée aucun droit d'usage ;
+- les trois garde-fous que j'avais annoncé devoir ajuster si l'asset était
+  `supplied` **n'ont pas eu à bouger** : les six packshots du hero restent tous
+  `generated`, le modèle tient tel quel.
 
 ---
 
-## 2 · Pourquoi le remplacement ne peut pas être fait ici
+## 3 · Traitement du fichier
 
-Trois voies existent. Les trois sont fermées, et aucune ne l'est par commodité.
-
-**Générer une nouvelle image.** Cette session ne dispose d'aucun outil de
-génération d'images — vérifié, pas supposé. Et quand bien même : les six
-packshots actuels ne sont tolérés que parce qu'ils sont marqués `generated`,
-`requires_validation`, autorisation `unknown`, et confinés à la préproduction.
-En produire un septième ne réglerait pas le problème d'exactitude, il le
-déplacerait : une canette fabriquée par un modèle n'atteste pas plus l'identité
-2023 qu'elle n'attestait la 2008.
-
-**Télécharger une image de presse.** Ce serait introduire un visuel tiers sans
-autorisation dans un dépôt dont toute la gouvernance d'assets existe pour
-l'interdire — la même gouvernance que ce TR demande explicitement de ne pas
-modifier. Le statut de droits resterait `unknown` : rien de gagné, une règle
-cassée.
-
-**Repeindre la canette existante.** Redessiner le globe et le wordmark revient
-à reconstruire les pixels du produit et à redessiner le logo d'un titulaire.
-Les deux ont été interdits nommément en TR-024A et TR-004.
-
-Il n'existe donc pas de chemin honnête entre l'état actuel et un packshot Pepsi
-à l'identité courante **sans un fichier venu de l'extérieur**.
-
----
-
-## 3 · Ce qu'il faut fournir
-
-Un seul fichier. Les contraintes ci-dessous sont **mesurées sur l'asset
-actuel**, pas souhaitées : elles décrivent ce qu'il faut égaler pour que la
-composition approuvée en TR-024C reste identique.
-
-### Contenu
-
-- canette Pepsi de face, **identité 2023** (`PEPSI` en capitales dans le globe,
-  cerne noir) — celle du logo déjà fourni par le client ;
-- portrait, canette entière, verticale, sans inclinaison ;
-- **fond transparent réel** (canal alpha), pas un blanc détouré ;
-- **aucune ombre incrustée**, aucun reflet de sol, aucune éclaboussure, aucune
-  lueur, aucun filigrane, aucun texte promotionnel ajouté ;
-- rien d'autre dans le cadre.
-
-### Géométrie — ce qui garde la scène intacte
-
-| Contrainte | Valeur mesurée sur l'asset actuel | Tolérance |
-|---|---|---|
-| Ratio largeur / hauteur | **0,4495** (227 × 505) | **0,45 ± 0,03** |
-| Marge transparente sur les 4 bords | 0,0 % | ≤ 0,5 % |
-| Couverture opaque dans la boîte englobante | 0,962 | ≥ 0,93 (au-delà, une ombre est incrustée) |
-| Largeur source | 227 px | **≥ 400 px** recommandé |
-
-L'emplacement impose la HAUTEUR ; la largeur suit le ratio du fichier. Donc :
-
-- dans la bande 0,45 ± 0,03, la largeur rendue bouge de moins de 5 px à 1920 —
-  la composition est visuellement inchangée ;
-- une canette 330 ml trapue (ratio ≈ 0,574) serait rendue **29 % plus large**
-  (99 px au lieu de 77) : la silhouette du plan arrière changerait, et les cinq
-  autres objets — tous élancés — perdraient leur cohérence de format.
-
-**Le format élancé n'est donc pas une préférence : c'est ce qui préserve à la
-fois la géométrie approuvée et la cohérence de la rangée.**
-
-### Baseline à reproduire après remplacement
-
-| Fenêtre | Pepsi rendu | Source servie |
-|---|---|---|
-| 1920 | 77 × 172 px | 71 × 158 |
-| 1440 | 76 × 169 px | 69 × 153 |
-| 1280 | 67 × 148 px | 59 × 133 |
-| 1024 | 52 × 116 px | 45 × 100 |
-| 768 | 40 × 90 px | 42 × 93 |
-| ≤ 430 | masqué (plan arrière) | — |
-
----
-
-## 4 · Procédure de remplacement — deux gestes
-
-1. Déposer le fichier en `src/assets/brands/pepsi/hero.png`.
-2. Mettre à jour la seule entrée `'pepsi:hero'` de `src/data/assets.ts` :
-   `width`, `height`, `bytes`, `checksum`, `opticalCoverage`, `source`.
-   `status`, `sourceType`, `authorization` et `legalNote` **ne changent pas** —
-   l'asset reste `generated` / `requires_validation` / `unknown`, réservé à la
-   préproduction.
-
-Puis `astro check`, `npm run qa`, `npm run qa:staging`.
-
-Les garde-fous nécessaires existent déjà et n'ont pas besoin d'être ajoutés :
-
-- `tests/assets.spec.ts` refuse un fichier dont le poids, les dimensions, le
-  format ou l'empreinte ne correspondent pas au registre ;
-- `tests/visual/stage.spec.ts` mesure la géométrie sur neuf largeurs et
-  l'occultation sur cinq — un ratio hors bande s'y verrait ;
-- `qa:artifact` vérifie que la production n'en dépose ni n'en rend aucun.
-
----
-
-## 5 · État actuel, inchangé
-
-| Contrôle | Résultat |
+| Étape | Détail |
 |---|---|
-| Arbre de travail | **propre** — aucune modification |
-| Composition du Hero | inchangée (TR-024C) |
-| Position, échelle, plan de Pepsi | inchangés |
-| Packshots générés dans l'artefact de production | **0** |
-| Identité Pepsi courante visible en préproduction | **non** — c'est le blocage |
+| Source | `ChatGPT Image 17 août 2026, 18_38_05.png` — 1536 × 1024, **alpha réel** |
+| Fond | **déjà transparent** — aucun détourage nécessaire (mon évaluation « fond blanc », faite sur l'aperçu de la conversation, était fausse : c'est le fond du visualiseur) |
+| Opération | **recadrage strict sur la boîte alpha** (528, 35 → 480 × 961) |
+| Non fait | aucun redimensionnement, aucune retouche, aucun pixel du produit reconstruit, aucune recompression du contenu |
 
-Aucun commit : il n'y a rien à committer.
+Contrôles du fichier retenu :
+
+| Critère | Exigé (§3 du rapport précédent) | Mesuré | Verdict |
+|---|---|---|---|
+| Identité Pepsi 2023 | requise | `PEPSI` capitales dans le globe, cerne noir | ✅ |
+| Alpha réel, fond transparent | requis | oui, alpha partiel 0,52 % | ✅ |
+| Marges transparentes | ≤ 0,5 % | **0 px sur les 4 bords** | ✅ |
+| Couverture opaque | ≥ 0,93 | **0,951** — aucune ombre incrustée | ✅ |
+| Largeur source | ≥ 400 px | **480 px** | ✅ |
+| Éclaboussure / lueur / filigrane / texte ajouté | aucun | aucun | ✅ |
+| Ratio | 0,45 ± 0,03 | **0,4995** | ⚠️ **hors bande, +0,02** |
+
+### La seule dérogation, et son effet mesuré
+
+L'emplacement impose la HAUTEUR ; la largeur suit le ratio du fichier. Un ratio
+de 0,4995 au lieu de 0,4495 élargit donc l'objet de **11 %** :
+
+| Fenêtre | Hauteur avant → après | Largeur avant → après |
+|---|---|---|
+| 1920 | 172 → **172** | 77 → **86** |
+| 1440 | 169 → **169** | 76 → **84** |
+| 1280 | 148 → **148** | 67 → **74** |
+| 1024 | 116 → **116** | 52 → **58** |
+| 768 | 90 → **90** | 40 → **45** |
+| ≤ 430 | masqué → masqué | plan arrière masqué |
+
+**Hauteur, position, plan, échelle, opacité et flou : identiques à l'unité près
+à toutes les largeurs.** Seule la silhouette s'élargit de 9 px au maximum, sur
+un objet de plan arrière rendu à 30 % d'opacité et flouté à 4 px.
+
+Ce n'est pas une décision de composition : c'est la proportion réelle de la
+canette livrée. Le contrôle d'occultation, rejoué sur cinq largeurs, reste vert
+— aucun objet n'est masqué à plus de 60 %.
 
 ---
 
-## 6 · Décision demandée
+## 4 · Performance
 
-Le packshot actuel reste en place et reste marqué
-`REPLACE_BEFORE_CLIENT_REVIEW`. Deux options, au choix du client :
+| Contexte | TR-024C | TR-024D |
+|---|---|---|
+| Packshots · 1920 @1x | 130 Ko | **127 Ko** |
+| Packshots · 390 @1x | 130 Ko | **127 Ko** |
+| Packshots · 1440 @2x | 306 Ko | **299 Ko** |
 
-**A — fournir le fichier.** La voie propre. Le remplacement prend deux gestes
-et les portes de qualité existantes le valident.
+Légère baisse : la nouvelle canette, plus uniforme, se compresse mieux que
+l'ancienne. Aucune régression.
 
-**B — montrer les planches en l'état, en le disant.** Pepsi est au plan
-arrière, flouté à 4 px, à 30 % d'opacité, rendu à 77 px de large : la livrée
-n'y est pas lisible à l'écran. Elle l'est en revanche sur les gros plans de
-`qa/review/`. Si les planches sont montrées, le point doit être signalé
-d'avance — pas découvert par le client.
+---
 
-Une troisième option existe techniquement — retirer le packshot Pepsi pour que
-l'emplacement retombe sur son repli typographique — mais elle change la
-composition que TR-024C vient d'approuver : le repli occupe toute la largeur du
-plateau (220 px au lieu de 77). Elle n'est donc pas proposée sans instruction
-explicite.
+## 5 · Portes de qualité
+
+| Gate | Résultat |
+|---|---|
+| `npx astro check` | 0 erreur, 0 avertissement |
+| `npm run qa` | **EXIT 0** — 564/564 · 824 + 227 tests |
+| `npm run qa:staging` | **EXIT 0** — 563/563 · 51 tests |
+| Packshots générés dans l'artefact de production | **0** |
+| Identité Pepsi courante visible en préproduction | **oui** |
+| Régression à 320 / 390 / 768 / 1440 / 1920 | **aucune** |
+
+Aucun test n'a eu à être modifié : `tests/assets.spec.ts` a validé le nouveau
+poids, les nouvelles dimensions et la nouvelle empreinte contre le registre
+mis à jour, et `tests/visual/stage.spec.ts` a mesuré la géométrie sur neuf
+largeurs et l'occultation sur cinq.
+
+---
+
+## 6 · Qualité du nouveau visuel
+
+Inspection à résolution native (`qa/review/pepsi-nouveau-*.png`) :
+
+- **étiquette** : globe 2023 correct — rouge / bande blanche / bleu, cerne noir,
+  `PEPSI` en capitales bien formées et correctement approchées ;
+- **haut** : jonc supérieur argenté correct, vue à hauteur d'œil sans languette
+  visible — cohérent avec les cinq autres objets ;
+- **bas** : culot plat, jonc argenté correct, découpe alpha nette — l'objet se
+  pose sans halo sur le filet de sol ;
+- **condensation** : plausible, non répétée ;
+- aucun artefact typographique, aucun détail d'emballage impossible, aucun
+  reflet aberrant relevé.
+
+Statut : `VISUALLY_ACCEPTABLE_FOR_STAGING`. **Jamais autorisé en production.**
+
+---
+
+## 7 · Ce qui reste ouvert
+
+- **B2 — packshots officiels.** Toujours ouvert, pour Pepsi comme pour les cinq
+  autres. Six visuels générés, sans autorisation, confinés à la préproduction.
+- **B11 — droits des logos de marque.** Inchangé.
+- **Point de vigilance, sans action demandée.** Le nouveau fichier est
+  identifiable comme généré uniquement parce qu'il transporte un manifeste
+  C2PA. Un fichier sans manifeste ne serait distinguable d'une photographie par
+  aucun moyen automatique. C'est la déclaration de provenance à la livraison qui
+  reste la seule garantie — et elle n'a pas concordé cette fois-ci.
