@@ -9,7 +9,7 @@ import {
   GENERATED_PACKSHOT_BASENAMES,
   IDENTITY_BASENAMES,
 } from '../asset-governance.mjs';
-import { HERO_BRANDS } from '../src/data/assets';
+import { DISCOVERY_BRANDS, HERO_BRANDS } from '../src/data/assets';
 import { catalog } from '../src/lib/catalog';
 import {
   productionEligible,
@@ -39,7 +39,21 @@ test('le registre couvre chaque marque et distingue les six assets du hero', () 
 
   expect(logos, 'un logo attendu par marque').toHaveLength(catalog.length);
   expect(heroes, 'six assets de hero').toHaveLength(6);
-  expect(packshots, 'un packshot par marque featured').toHaveLength(16);
+
+  /*
+   * Un packshot est attendu partout où une SURFACE en réclame un : la piste
+   * Featured et la séquence S4 Discovery. Le contrat est vérifié par la liste
+   * des marques, pas par un compte figé — un nombre en dur ne dit pas
+   * LESQUELLES doivent être couvertes, et c'est exactement ce qui avait laissé
+   * six produits de S4 hors du registre jusqu'à TR-026.
+   */
+  const expectedPackshots = [
+    ...new Set([
+      ...catalog.filter((b) => b.featured).map((b) => b.slug),
+      ...DISCOVERY_BRANDS,
+    ]),
+  ].sort();
+  expect(packshots.map((a) => a.brandSlug).sort()).toEqual(expectedPackshots);
 
   expect(heroes.map((a) => a.brandSlug).sort()).toEqual([...HERO_BRANDS].sort());
   for (const h of heroes) {

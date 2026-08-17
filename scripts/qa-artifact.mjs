@@ -28,6 +28,22 @@ import { CONTACT_EMAIL, SITE_HOST, SITE_ORIGIN, STAGING_HOST } from '../site.con
  */
 const HERO_SLUGS = ['coca-cola', 'fanta', 'red-bull', 'monster-energy', 'pepsi', 'sprite'];
 
+/**
+ * Les huit spécimens de S4 Discovery, dans l'ordre de la séquence.
+ * Doit rester alignée sur `DISCOVERY_BRANDS` (src/data/assets.ts) —
+ * `tests/assets.spec.ts` vérifie la correspondance, elle n'est pas supposée ici.
+ */
+const DISCOVERY_SLUGS = [
+  'chupa-chups',
+  'guarana-antarctica',
+  'mountain-dew',
+  'hawai',
+  'fernandes',
+  'mentos',
+  'bundaberg',
+  'yummy-miami-soda',
+];
+
 const DIST = resolve(process.cwd(), 'dist');
 const SITE = SITE_ORIGIN;
 
@@ -458,6 +474,35 @@ if (TARGET === 'staging') {
    * qui, lui, était juste.
    */
   const home = html.get('index.html') ?? '';
+
+  /*
+   * TR-026B — S4 Discovery. Huit spécimens, huit visuels produits, aucun repli
+   * et aucun logo : la décision DA du 2026-08-16 réserve les logos au
+   * catalogue. Deux des huit réemploient le master livré pour Featured.
+   */
+  const discStart = home.indexOf('data-discovery');
+  const discHtml =
+    discStart >= 0 ? home.slice(discStart, home.indexOf('</section>', discStart)) : '';
+  const s4 = [...discHtml.matchAll(OBJECT)].map((m) => ({ brand: m[1], asset: m[3] }));
+  check(
+    'BLOCK',
+    'préproduction : les huit spécimens de S4 sont servis par un visuel produit',
+    s4.length === 8 && s4.every((o) => o.asset === 'packshot'),
+    `${s4.length} objets · ${[...new Set(s4.map((o) => o.asset))].join(', ') || 'aucun'}`,
+  );
+  check(
+    'BLOCK',
+    'préproduction : S4 rend exactement les marques de sa séquence',
+    s4.map((o) => o.brand).join(',') === DISCOVERY_SLUGS.join(','),
+    s4.map((o) => o.brand).join(', '),
+  );
+  check(
+    'BLOCK',
+    'préproduction : aucun repli ni logo dans S4',
+    !discHtml.includes('product-object__fallback') &&
+      !discHtml.includes('product-object__img--logo'),
+  );
+
   const trackStart = home.indexOf('data-track');
   const trackHtml =
     trackStart >= 0 ? home.slice(trackStart, home.indexOf('</section>', trackStart)) : '';
@@ -534,9 +579,24 @@ if (TARGET === 'staging') {
   );
   check(
     'BLOCK',
-    'production : aucun packshot Featured rendu dans une page',
+    'production : aucun packshot Featured ni S4 rendu dans une page',
     packshotRendered.length === 0,
     packshotRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
+  );
+
+  /*
+   * Contrôle par SLUG, en plus du contrôle par usage : un jour où un
+   * emplacement oublierait ses attributs d'audit, le compte par usage
+   * tomberait à zéro et passerait — celui-ci, non.
+   */
+  const leaked = [...DISCOVERY_SLUGS, ...HERO_SLUGS].filter((slug) =>
+    [...html.values()].some((doc) => doc.includes(`data-object="${slug}" data-usage="packshot"`)),
+  );
+  check(
+    'BLOCK',
+    'production : aucune marque S4 ou hero ne rend de packshot',
+    leaked.length === 0,
+    leaked.join(', '),
   );
 
   check(

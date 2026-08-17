@@ -9,7 +9,12 @@
  * l'est, et la marque reste au catalogue avec son repli.
  */
 
-import { ASSET_OVERRIDES, HERO_BRANDS, STANDALONE_ASSETS } from '../data/assets';
+import {
+  ASSET_OVERRIDES,
+  DISCOVERY_BRANDS,
+  HERO_BRANDS,
+  STANDALONE_ASSETS,
+} from '../data/assets';
 import type {
   AssetPriority,
   AssetRecord,
@@ -19,7 +24,7 @@ import type {
 import { catalog, type Brand } from './catalog';
 
 export type { AssetRecord, AssetStatus, AssetUsage, AssetPriority };
-export { HERO_BRANDS };
+export { DISCOVERY_BRANDS, HERO_BRANDS };
 
 /**
  * Mode de rendu.
@@ -34,6 +39,7 @@ export function currentMode(): AssetMode {
 }
 
 const heroSet = new Set<string>(HERO_BRANDS);
+const discoverySet = new Set<string>(DISCOVERY_BRANDS);
 
 /** Racine de rangement d'une marque. Aucun fichier ailleurs. */
 export const assetDir = (slug: string) => `src/assets/brands/${slug}`;
@@ -55,7 +61,14 @@ export const expectedFilename = (usage: AssetUsage): string =>
 /** Usages attendus pour une marque, selon son rang. */
 function usagesFor(brand: Brand): AssetUsage[] {
   const usages: AssetUsage[] = ['logo'];
-  if (brand.featured) usages.push('packshot');
+  /*
+   * Un packshot est attendu partout où une SURFACE en réclame un — Featured
+   * ET S4 Discovery. La condition ne portait que sur `featured` : les marques
+   * qui n'apparaissent que dans S4 n'avaient donc aucune entrée `packshot`,
+   * et le registre — qui sert aussi de liste de courses — ne les réclamait
+   * pas. Six fichiers manquaient sans que rien ne le dise.
+   */
+  if (brand.featured || discoverySet.has(brand.slug)) usages.push('packshot');
   if (heroSet.has(brand.slug)) usages.push('hero');
   return usages;
 }

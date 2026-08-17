@@ -132,6 +132,29 @@ export const HERO_BRANDS = [
 ] as const;
 
 /**
+ * Les huit spécimens de S4 Discovery, dans l'ordre de la séquence.
+ *
+ * Déclarés ICI, avec `HERO_BRANDS`, et non dans le composant : le registre
+ * d'assets doit savoir quels fichiers sont ATTENDUS, y compris ceux qui
+ * n'existent pas encore. TR-026 a montré la conséquence de l'oubli —
+ * `usagesFor()` n'accordait un usage `packshot` qu'aux marques `featured`, si
+ * bien que six des huit produits de S4 n'avaient aucune entrée au registre,
+ * pas même en `missing`. Personne ne pouvait savoir qu'ils manquaient.
+ *
+ * `Discovery.astro` lit cette même liste : une séquence, une source.
+ */
+export const DISCOVERY_BRANDS = [
+  'chupa-chups',
+  'guarana-antarctica',
+  'mountain-dew',
+  'hawai',
+  'fernandes',
+  'mentos',
+  'bundaberg',
+  'yummy-miami-soda',
+] as const;
+
+/**
  * Informations non déductibles, saisies à la main.
  * Clé : `<brandSlug>:<usage>`.
  *
@@ -572,6 +595,163 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
       'Résolution : 88 % du besoin DPR 2 et 58 % du besoin DPR 3 en Featured. Aussi rendu en S4 Discovery, dont le besoin est plus élevé : 59 % de DPR 2 et 40 % de DPR 3. ' +
       'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+
+  /*
+   * TR-026B — PACKSHOTS S4 DISCOVERY, six marques.
+   *
+   * Extraits par recadrage strict sur la boîte alpha d'une planche composite
+   * GÉNÉRÉE, sans redimensionnement ni retouche. Deux planches ont été livrées,
+   * portant deux jeux de contenants différents pour les mêmes six marques ;
+   * celle-ci a été retenue sur un critère mesurable — 722 à 980 px de hauteur
+   * par produit contre 562 à 829 pour l'autre, soit 15 à 30 % de définition en
+   * plus sur un besoin S4 mesuré à 499 px CSS.
+   *
+   * Le catalogue n'établit AUCUN type de contenant pour ces six marques. Le
+   * choix de planche est donc une décision de préproduction sur la définition,
+   * pas une affirmation sur le conditionnement réel des produits.
+   *
+   * Régime identique aux seize précédents, sans exception : `generated`,
+   * `requires_validation`, autorisation `unknown`, préproduction UNIQUEMENT.
+   * Aucun ne ferme B2.
+   *
+   * RÉSOLUTION — besoin S4 mesuré dans le navigateur (TR-026) : 499 px CSS au
+   * maximum, atteint à 430 px de fenêtre, soit 998 px à DPR 2 et 1 497 px à
+   * DPR 3. Les six couvrent DPR 1 de 145 à 196 %, DPR 2 de 72 à 98 %. Aucun
+   * agrandissement n'a été appliqué ; la note de chaque entrée porte le chiffre.
+   */
+
+  'chupa-chups:packshot': {
+    path: 'src/assets/brands/chupa-chups/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 237,
+    height: 722,
+    format: 'png',
+    bytes: 521394,
+    checksum: '6f30e8348bf3811d81de6315ef63d7b1d720bbf3d26ebd04670632b93c1f6114',
+    opticalCoverage: 0.963,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 72 % de DPR 2, ' +
+      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
+  },
+  'guarana-antarctica:packshot': {
+    path: 'src/assets/brands/guarana-antarctica/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 245,
+    height: 724,
+    format: 'png',
+    bytes: 520885,
+    checksum: 'dbb35f54ad3d2b13e2f81ec10b60ab3c2f8ba150eb86787d54bccc03368df307',
+    opticalCoverage: 0.96,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 73 % de DPR 2, ' +
+      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
+  },
+  'hawai:packshot': {
+    path: 'src/assets/brands/hawai/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 242,
+    height: 980,
+    format: 'png',
+    bytes: 642883,
+    checksum: '9152120f3456ca2aa81d001a5ddfeb13e46d4d3a6ae9b0560c50a4e8128ecb54',
+    opticalCoverage: 0.841,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 196 % du besoin DPR 1, 98 % de DPR 2, ' +
+      '65 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
+  },
+  'fernandes:packshot': {
+    path: 'src/assets/brands/fernandes/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 241,
+    height: 924,
+    format: 'png',
+    bytes: 654586,
+    checksum: '704ade59d830a7d5931a1f5dd781d20847f9cf2d95db11a895f184b763b2ce28',
+    opticalCoverage: 0.815,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 185 % du besoin DPR 1, 93 % de DPR 2, ' +
+      '62 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
+  },
+  'mentos:packshot': {
+    path: 'src/assets/brands/mentos/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 240,
+    height: 849,
+    format: 'png',
+    bytes: 575180,
+    checksum: '5753f097014f47646cdeb6ad6e6b5045f65a27408b1af6c026a85ccdb408ccf5',
+    opticalCoverage: 0.859,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 170 % du besoin DPR 1, 85 % de DPR 2, ' +
+      '57 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
+  },
+  'yummy-miami-soda:packshot': {
+    path: 'src/assets/brands/yummy-miami-soda/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
+      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
+      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 239,
+    height: 722,
+    format: 'png',
+    bytes: 547104,
+    checksum: 'ac199ea423a34d4ab82f54ffd40fcd6af7cf59d2e1849351653b7f864e2edfb8',
+    opticalCoverage: 0.964,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
+      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 72 % de DPR 2, ' +
+      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
+      'ou une autorisation écrite.',
   },
   /*
    * LIVRAISON DU 2026-08-16 — archive « photos ivan.zip ».
