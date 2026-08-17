@@ -89,6 +89,66 @@ async function fetchRaw(url, method = 'GET') {
 }
 
 /* ================================================================== *
+ * 0 · PRÉVOL — l'environnement peut-il seulement atteindre la cible ?
+ *
+ * Sans ce contrôle, un blocage réseau LOCAL se déguise en panne du site.
+ * Un proxy d'entreprise qui refuse le tunnel répond lui-même en 403 ; `fetch`
+ * remonte ce 403 comme une réponse HTTP ordinaire, et l'audit conclut alors
+ * que les 16 routes sont cassées, que la CSP a disparu et que le formulaire
+ * n'existe plus. Vingt-cinq échecs parfaitement faux, énoncés avec assurance.
+ *
+ * Un outil de QA qui transforme une panne d'accès en défaut de production est
+ * pire que pas d'outil du tout : il détruit la confiance dans ses propres
+ * verdicts. On refuse donc de mesurer plutôt que de mesurer faux.
+ * ================================================================== */
+
+/** Signatures connues d'un refus par un intermédiaire, pas par l'origine. */
+function denialReason(response, body) {
+  const header = response.headers.get('x-deny-reason');
+  if (header) return `proxy : ${header}`;
+  if (/not in allowlist|egress|blocked by policy|tunnel/i.test(body.slice(0, 300))) {
+    return 'proxy : refus de politique réseau';
+  }
+  return null;
+}
+
+{
+  const target = await fetchRaw(`${BASE}/`);
+
+  const blocked =
+    target.error?.message?.includes('tunnel') ||
+    (target.response && denialReason(target.response, target.body));
+
+  if (blocked) {
+    console.error(`\n⛔ ENVIRONNEMENT BLOQUÉ — aucune mesure n'a été effectuée.\n`);
+    console.error(`   Cible   : ${BASE}`);
+    console.error(`   Cause   : ${blocked === true ? 'tunnel refusé' : blocked}`);
+    if (target.body) console.error(`   Détail  : ${target.body.trim().slice(0, 160)}`);
+    console.error(`\n   Ce n'est PAS un défaut du site : la requête n'a jamais quitté le réseau`);
+    console.error(`   local. Aucun verdict ne peut être rendu sur ${BASE}.`);
+    console.error(`\n   Débloquer, puis relancer :`);
+    console.error(`     · autoriser l'hôte dans les réglages d'egress réseau de l'environnement ;`);
+    console.error(`     · ou exécuter cette commande depuis un poste ayant un accès direct.\n`);
+    process.exit(2);
+  }
+
+  /*
+   * L'origine répond, mais pas en 2xx. Avant de le compter contre le site, on
+   * vérifie qu'un hôte tiers passe : si rien ne sort, le problème est local.
+   */
+  if (target.response && target.response.status >= 400) {
+    const control = await fetchRaw('https://example.com/');
+    const controlBlocked =
+      control.error || (control.response && denialReason(control.response, control.body));
+    if (controlBlocked) {
+      console.error(`\n⛔ ENVIRONNEMENT BLOQUÉ — le témoin externe échoue lui aussi.\n`);
+      console.error(`   Aucun verdict ne peut être rendu sur ${BASE}.\n`);
+      process.exit(2);
+    }
+  }
+}
+
+/* ================================================================== *
  * 1 · Joignabilité et HTTPS
  * ================================================================== */
 
