@@ -22,7 +22,8 @@
     "assets:report": "NO_SERVER=1 playwright test tests/assets.spec.ts --project=desktop",
     "qa:staging": "npm run build:staging && DEPLOY_TARGET=staging node scripts/qa-artifact.mjs && playwright test tests/logos.spec.ts",
     "qa:remote": "node scripts/qa-remote.mjs",
-    "qa:remote:e2e": "playwright test tests/b2b-flow.spec.ts tests/shell.spec.ts tests/responsive.spec.ts tests/a11y.spec.ts tests/i18n-de.spec.ts tests/domain.spec.ts tests/smoke.spec.ts"
+    "qa:remote:e2e": "playwright test tests/b2b-flow.spec.ts tests/shell.spec.ts tests/responsive.spec.ts tests/a11y.spec.ts tests/i18n-de.spec.ts tests/domain.spec.ts tests/smoke.spec.ts",
+    "qa:csp": "node scripts/qa-csp.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
