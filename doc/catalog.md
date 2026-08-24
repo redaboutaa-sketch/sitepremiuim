@@ -1,5 +1,28 @@
 # CATALOGUE DE RÉFÉRENCE — IVAN ARSENOV
 
+> # ⛔ DOCUMENT PARTIELLEMENT PÉRIMÉ — LIRE D'ABORD
+>
+> **Le 2026-08-24, le propriétaire du site a réduit le catalogue de 62 marques
+> à une liste FERMÉE de 14 articles.** Les inventaires, les décomptes et la
+> taxonomie ci-dessous décrivent l'état ANTÉRIEUR et ne sont plus l'état publié.
+>
+> **La liste en vigueur est celle de `src/data/brands.ts`**, et la décision est
+> documentée dans **`doc/tr-028-catalogue-reduction.md`**.
+>
+> Les 14 articles : Coca-Cola · Fanta · Sprite · Pepsi · 7UP · Schweppes ·
+> Red Bull · Monster · Dr Pepper · Mirinda · Mountain Dew · Lipton Ice Tea ·
+> Capri-Sun · Orangina.
+>
+> Ce qui reste VALIDE ici : les règles (§4 exclusions — **sauf Lipton, levée**,
+> voir TR-028 §3 —, §5 décision dairy, §6 modèle de données et validations).
+> Ce qui est PÉRIMÉ : §1 taxonomie (5 familles → 4, `water` et `international`
+> retirées, `iced-tea` créée), §2 inventaire, §3 les 16 « Featured ».
+>
+> L'état complet à 62 marques reste restaurable :
+> branche `backup/catalogue-62-brands-full`, commit `5966e32`.
+
+---
+
 > **Source de vérité du catalogue.** Toute donnée saisie dans `src/data/` doit provenir
 > de ce document. Fourni par le client le 2026-08-14, extrait de l'assortiment benchmark.
 >
@@ -16,6 +39,10 @@
 ---
 
 ## 1. Taxonomie
+
+⛔ **PÉRIMÉ** — quatre familles depuis le 2026-08-24 : `carbonated`,
+`energy-sport`, `juice-fruit`, `iced-tea`. `water` et `international` ont été
+retirées après s'être vidées. Texte d'origine conservé pour l'historique :
 
 Cinq familles principales + une famille conditionnelle.
 
@@ -204,7 +231,12 @@ Karvan Cévitam · RAAK · Slimpie — non saisies, non filtrables, non illustr�
 
 ---
 
-## 3. Marques prioritaires — 16 « Featured »
+## 3. Marques prioritaires — 16 « Featured » — ⛔ PÉRIMÉ
+
+> Depuis le 2026-08-24, les **14** articles du catalogue sont tous mis en avant :
+> à 14 références, « featured » ne sélectionne plus rien. Evian, SPA, Powerade
+> et Bundaberg ont quitté le catalogue. Section conservée pour l'historique.
+
 
 Coca-Cola · Pepsi · Red Bull · Monster Energy · Fanta · Sprite · Dr Pepper · Schweppes ·
 7UP · Mountain Dew · Capri-Sun · Evian · SPA · Powerade · Orangina · Bundaberg
@@ -229,7 +261,7 @@ Les 50 autres marques servent à démontrer la **profondeur internationale** du 
 | Banditos | Alcool |
 | Dilmah | Thé |
 | Nescafé | Café |
-| Lipton | Thé |
+| ~~Lipton~~ | ~~Thé~~ — ⚠️ **EXCLUSION LEVÉE le 2026-08-24** sur décision du propriétaire. Lipton **Ice Tea** est au catalogue ; le périmètre est désormais tenu par une `scopeNote` (thés glacés prêts à boire uniquement, jamais le thé en sachet). Voir `doc/tr-028-catalogue-reduction.md` §3. Dilmah, Nescafé, Fuze Tea et Arizona restent exclus. |
 | Fuze Tea | Thé |
 | **Arizona** | ❌ **EXCLUE** — décision D5 confirmée le 2026-08-14. Marque trop fortement associée aux iced teas. Non réintégrable en V1 |
 | **Barebells · Chocomel · Fristi · Optimel · Pınar** | ❌ **EXCLUES** — décision D3 = NON (2026-08-14). Boissons lactées / protéinées hors d'une définition stricte de « Soft Drinks » |

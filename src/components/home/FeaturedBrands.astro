@@ -19,7 +19,6 @@
  * Les libellés « best-selling » et assimilés sont proscrits (doc/catalog.md §3).
  */
 import ProductObject from '@/components/media/ProductObject.astro';
-import { resolve } from '@/lib/assets';
 import { CATEGORIES, featuredBrands } from '@/lib/catalog';
 import { useI18n, type Locale } from '@/i18n';
 
@@ -35,11 +34,15 @@ const t = i18n.t;
  * Ordre d'exposition — composé, pas alphabétique.
  * On alterne les familles pour que les teintes se répondent le long de la
  * piste au lieu de se regrouper par blocs de couleur.
+ *
+ * 2026-08-24 — les quatorze articles du catalogue, Evian, Powerade, SPA et
+ * Bundaberg ayant été retirés. La piste et le catalogue montrent désormais le
+ * même ensemble : à quatorze références, une « sélection » n'a plus d'objet.
  */
 const ORDER = [
-  'coca-cola', 'red-bull', 'fanta', 'evian', 'pepsi', 'monster-energy',
-  'orangina', 'powerade', 'sprite', 'capri-sun', 'dr-pepper', 'spa',
-  'mountain-dew', 'schweppes', '7up', 'bundaberg',
+  'coca-cola', 'red-bull', 'fanta', 'capri-sun', 'pepsi', 'monster-energy',
+  'orangina', 'lipton-ice-tea', 'sprite', 'mirinda', 'dr-pepper',
+  'mountain-dew', 'schweppes', '7up',
 ];
 
 const featured = featuredBrands();
@@ -48,55 +51,49 @@ const familyLabel = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug)?.name[locale] ?? '';
 
 /**
- * Les quatre hauteurs de plateau de la piste, de la plus haute à la plus
- * basse. La ligne de TÊTE ondule, la ligne de SOL ne bouge pas : on fait
- * varier la HAUTEUR du plateau, jamais son décalage vertical. Décaler l'objet
- * le décollerait du sol — exactement ce qu'on interdit depuis le hero.
+ * PLATEAU UNIQUE — demande explicite du propriétaire du site, 2026-08-24 :
+ * « que les photos des boissons soient toutes à la même taille ».
+ *
+ * La piste comptait quatre hauteurs de plateau, attribuées par ratio (TR-025
+ * §9) : l'ondulation de la ligne de tête était une conséquence assumée des
+ * proportions réelles des produits. Elle avait pour effet direct que deux
+ * boissons voisines ne s'affichaient PAS à la même taille — ce que le client
+ * a vu et ce qu'il demande de corriger.
+ *
+ * Un seul plateau, donc, pour les quatorze : même largeur de colonne, même
+ * hauteur, même hauteur de produit. La ligne de sol ET la ligne de tête sont
+ * maintenant droites.
+ *
+ * `3 / 4` est retenu parce que c'est le plus HAUT des quatre : un plateau plus
+ * court aurait rapetissé les produits les plus élancés (Coca-Cola sort à 443 ×
+ * 1517, ratio 0,29) sans rien gagner ailleurs.
+ *
+ * ⚠️ Ce qui reste variable, et doit le rester : la LARGEUR rendue de chaque
+ * produit. Une canette Red Bull est plus étroite qu'une poche Capri-Sun ;
+ * `object-fit: contain` les met à la même hauteur dans le même plateau sans
+ * jamais les déformer. Forcer aussi la largeur reviendrait à étirer les
+ * produits — interdit, et immédiatement visible sur une canette.
  */
-const PLATE_ASPECTS = ['3 / 4', '3 / 3.75', '3 / 3.3', '3 / 3'] as const;
+const PLATE_ASPECT = '3 / 4';
 
-/**
- * NORMALISATION OPTIQUE (TR-025 §9).
+/*
+ * HISTORIQUE — la normalisation optique par ratio (TR-025 §9) a été RETIRÉE
+ * ici avec le plateau unique.
  *
- * Le plateau était attribué par POSITION (`i % 4`). Le produit remplit la
- * hauteur de son plateau et sa largeur suit son ratio : un objet étroit posé
- * sur un plateau court est donc doublement pénalisé, étroit ET bas. La mesure
- * l'a confirmé — à 1440 px, Evian sortait à 58 × 168 contre 120 × 240 pour
- * Pepsi, soit trois fois moins de surface d'encre pour deux produits du même
- * rang. Le hasard de l'ordre alphabétique avait posé les trois bouteilles les
- * plus fines sur les trois plateaux les plus courts.
+ * Elle corrigeait un défaut réel : le plateau était alors attribué par
+ * POSITION (`i % 4`), si bien qu'à 1440 px Evian sortait à 58 × 168 contre
+ * 120 × 240 pour Pepsi — trois fois moins de surface d'encre pour deux
+ * produits du même rang. Le remède était d'attribuer le plateau par ratio.
  *
- * Le plateau est désormais attribué par RATIO : les objets les plus étroits
- * reçoivent les plateaux les plus hauts, les plus larges les plus courts. Une
- * seule règle, aucune valeur par marque, et l'ondulation subsiste — elle cesse
- * d'être une décoration arbitraire pour devenir une conséquence des produits.
- *
- * Le ratio vient du fichier réellement résolu, jamais d'une constante saisie :
- * sans asset (production), on retombe sur la rotation par position, qui est le
- * comportement validé pour les replis typographiques.
+ * Le plateau unique rend ce calcul sans objet : il n'y a plus qu'une hauteur
+ * à attribuer. L'écart de surface entre un produit fin et un produit large
+ * subsiste — il vient des proportions des produits eux-mêmes et ne peut être
+ * annulé sans les déformer. Ne pas réintroduire de correction par marque : ce
+ * serait rendre les tailles à nouveau inégales, ce que le client a refusé.
  */
-const ratioOf = (slug: string) => {
-  const a = resolve(slug, 'packshot') ?? resolve(slug, 'hero');
-  return a?.width && a.height ? a.width / a.height : null;
-};
-
-const ranked = [...ORDER]
-  .map((slug) => ({ slug, ratio: ratioOf(slug) }))
-  .filter((r): r is { slug: string; ratio: number } => r.ratio !== null)
-  .sort((a, b) => a.ratio - b.ratio)
-  .map((r) => r.slug);
-
 const items = ORDER.map((slug, i) => {
   const brand = featured.find((b) => b.slug === slug)!;
-  const rank = ranked.indexOf(slug);
-  return {
-    brand,
-    index: String(i + 1).padStart(2, '0'),
-    aspect:
-      rank >= 0
-        ? PLATE_ASPECTS[Math.floor((rank * PLATE_ASPECTS.length) / ranked.length)]!
-        : PLATE_ASPECTS[i % PLATE_ASPECTS.length]!,
-  };
+  return { brand, index: String(i + 1).padStart(2, '0'), aspect: PLATE_ASPECT };
 });
 ---
 
@@ -124,11 +121,21 @@ const items = ORDER.map((slug, i) => {
               n'ont pas de fichier `packshot`, et n'ont pas à en avoir un — leur
               master `hero` est le même produit, au même cadrage. On le réemploie
               plutôt que de dupliquer dix fois le même fichier sous deux noms.
+
+              `allowLogo` : décision du 2026-08-24. Douze des quatorze articles
+              ont une photo produit ; Mirinda n'a qu'un logo et Lipton Ice Tea
+              n'a rien du tout. Plutôt que de laisser deux trous dans une piste
+              de quatorze, on affiche le logo officiel dans un plateau de MÊME
+              taille que les autres. Ce n'est pas une photo de produit et la
+              distinction reste portée par le registre (`isLogo`), mais la
+              rangée reste régulière. Lipton, sans aucun fichier, garde le repli
+              typographique — aucun logo ne sera dessiné pour combler le vide.
             */}
             <ProductObject
               brand={brand}
               usage="packshot"
               fallbackUsage="hero"
+              allowLogo
               index={index}
               variant="plain"
               track="featured"

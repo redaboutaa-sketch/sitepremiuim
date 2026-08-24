@@ -54,7 +54,7 @@ export const de: Dictionary = {
     h2: 'Marken, die man kennt. Geschmacksrichtungen, die überraschen.',
     copy: 'Bekannte Namen neben internationalen Varianten, besonderen Geschmacksrichtungen und neuen Getränkeformaten — alles in einem fokussierten Sortiment alkoholfreier Getränke.',
     trackLabel: 'Ausgewählte Marken',
-    hint: 'Weiterscrollen — 16 von 62 Marken',
+    hint: 'Weiterscrollen — 14 Marken',
   },
 
   categories: {
@@ -62,12 +62,12 @@ export const de: Dictionary = {
     copy: 'Ivan Arsenov konzentriert sich auf alkoholfreie Getränke. Kein sortimentsfremder Katalog — sondern eine gezielte Auswahl an Erfrischungsgetränken für Fachhändler.',
   },
 
-  discovery: {
-    eyebrow: 'Jenseits des Gewohnten',
-    h2: 'Entdecken Sie etwas anderes.',
-    copy: 'Bekannte Marken sehen weltweit oft ganz anders aus. Entdecken Sie regionale Favoriten, ungewöhnliche Geschmacksrichtungen und besondere Erfrischungsgetränke, die dem Regal etwas Neues geben.',
-    cta: 'Internationale Entdeckungen ansehen',
-  },
+  /*
+   * `discovery` a été retiré avec la section S4 le 2026-08-24 (voir
+   * src/views/Home.astro). Ne pas réintroduire ces libellés sans réintroduire
+   * la section : une clé de traduction orpheline finit toujours par être
+   * réutilisée pour un autre propos que le sien.
+   */
 
   process: {
     h2: 'Bewusst einfach.',
@@ -118,7 +118,10 @@ export const de: Dictionary = {
     eyebrow: 'Das Verzeichnis',
     h1: 'Marken für jede Art von Erfrischung.',
     intro: 'Entdecken Sie Weltmarken, regionale Favoriten und besondere Getränkemarken aus unserem fokussierten Sortiment.',
-    stats: '{total} Marken · {families} Familien · {featured} ausgewählt',
+    // `{featured}` a été retiré : depuis la réduction à 14 articles, toutes
+    // les marques sont mises en avant. « 14 Marken · 14 ausgewählt »
+    // n'informe plus, il occupe seulement de la place.
+    stats: '{total} Marken · {families} Familien',
     foot: 'Jede Marke lässt sich einer Geschäftsanfrage hinzufügen. Sagen Sie uns, welche für Ihr Sortiment zählen — den Rest übernehmen wir.',
   },
 
@@ -133,7 +136,7 @@ export const de: Dictionary = {
     detailsLabel: 'Unternehmensangaben',
     factSelection: 'Sortiment',
     factFamilies: 'Familien',
-    familiesValue: 'Fünf, ausschließlich Erfrischungsgetränke',
+    familiesValue: 'Vier, ausschließlich Erfrischungsgetränke',
     factBased: 'Sitz',
   },
 

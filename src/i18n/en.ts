@@ -50,7 +50,7 @@ export const en = {
     h2: 'Brands people already know. Flavours they may not.',
     copy: 'Explore recognised names alongside international variants, distinctive flavours and emerging beverage formats — all within one focused soft-drinks portfolio.',
     trackLabel: 'Featured brands',
-    hint: 'Scroll to explore — 16 of 62 brands',
+    hint: 'Scroll to explore — 14 brands',
   },
 
   categories: {
@@ -58,12 +58,12 @@ export const en = {
     copy: 'Ivan Arsenov is focused on non-alcoholic beverages. No unrelated product catalogue — just a dedicated selection of soft drinks for professional buyers.',
   },
 
-  discovery: {
-    eyebrow: 'Beyond the usual',
-    h2: 'Discover something different.',
-    copy: 'Familiar brands can look very different around the world. Explore regional favourites, unusual flavours and distinctive soft drinks designed to bring something new to the shelf.',
-    cta: 'See international finds',
-  },
+  /*
+   * `discovery` a été retiré avec la section S4 le 2026-08-24 (voir
+   * src/views/Home.astro). Ne pas réintroduire ces libellés sans réintroduire
+   * la section : une clé de traduction orpheline finit toujours par être
+   * réutilisée pour un autre propos que le sien.
+   */
 
   process: {
     h2: 'Simple by design.',
@@ -114,7 +114,10 @@ export const en = {
     eyebrow: 'The register',
     h1: 'Brands for every kind of refreshment.',
     intro: 'Discover global names, regional favourites and distinctive beverage brands across our focused soft-drinks selection.',
-    stats: '{total} brands · {families} families · {featured} featured',
+    // `{featured}` a été retiré : depuis la réduction à 14 articles, toutes
+    // les marques sont mises en avant. « 14 brands · 14 featured » n'informe
+    // plus, il occupe seulement de la place.
+    stats: '{total} brands · {families} families',
     foot: 'Every brand here can be added to a business enquiry. Tell us which ones matter to your assortment and we will take it from there.',
   },
 
@@ -129,7 +132,7 @@ export const en = {
     detailsLabel: 'Company details',
     factSelection: 'Selection',
     factFamilies: 'Families',
-    familiesValue: 'Five, soft drinks only',
+    familiesValue: 'Four, soft drinks only',
     factBased: 'Based in',
   },
 

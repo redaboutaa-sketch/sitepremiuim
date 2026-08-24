@@ -144,7 +144,7 @@ for (const scenario of CLOSED) {
 
 test('disponible : ready → POST réel, sélection jointe et vidée', async ({ page }) => {
   await page.goto('/drinks/');
-  await page.locator('[data-brand="evian"] [data-enquiry-add]').click();
+  await page.locator('[data-brand="mirinda"] [data-enquiry-add]').click();
   await page.goto('/contact/');
 
   let posted: string | null = null;
@@ -158,7 +158,7 @@ test('disponible : ready → POST réel, sélection jointe et vidée', async ({ 
   await fillAndSubmit(page);
 
   await expect(page.locator('[data-form-status]')).toContainText('has been received');
-  expect(posted).toContain('evian');
+  expect(posted).toContain('mirinda');
   expect(posted).toContain('a.weber@example.com');
   // La sélection est repartie de zéro : elle a été transmise, elle n'a plus
   // à vivre dans la session.

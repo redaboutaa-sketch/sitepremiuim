@@ -10,10 +10,11 @@ const scrollToSection = async (page: any) => {
   await page.waitForTimeout(400);
 };
 
-test('les 16 marques featured sont présentes, dans l’ordre composé', async ({ page }) => {
+test('les 14 marques featured sont présentes, dans l’ordre composé', async ({ page }) => {
   await page.goto('/');
   const items = page.locator('[data-track] .featured__item');
-  await expect(items).toHaveCount(16);
+  // Depuis la réduction du 2026-08-24, la piste expose le catalogue entier.
+  await expect(items).toHaveCount(14);
   await expect(items.first().locator('.featured__name')).toHaveText('Coca-Cola');
 });
 

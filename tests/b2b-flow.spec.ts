@@ -40,7 +40,8 @@ test('FLOW desktop — home → drinks → filtre → recherche → sélection �
   // Filtre
   await page.locator('[data-filter="carbonated"]').click();
   await expect(page).toHaveURL(/category=carbonated/);
-  await expect(page.locator('[data-brand]:not([hidden])')).toHaveCount(26);
+  // 10 marques Carbonated depuis la réduction du 2026-08-24 (26 auparavant).
+  await expect(page.locator('[data-brand]:not([hidden])')).toHaveCount(10);
 
   // Recherche
   await page.locator('[data-search-input]').fill('fanta');
@@ -146,12 +147,12 @@ test('formulaire — six champs requis seulement', async ({ page }) => {
 
 test('la sélection survit à la navigation', async ({ page }) => {
   await page.goto('/drinks/');
-  await page.locator('[data-brand="evian"] [data-enquiry-add]').click();
+  await page.locator('[data-brand="mirinda"] [data-enquiry-add]').click();
   await page.goto('/brands/');
   await expect(page.locator('[data-enquiry-indicator]')).toContainText('1 selected');
   // Sur /brands/ il n'y a pas de cellule de catalogue : le bouton porte
   // lui-même le slug.
-  await expect(page.locator('[data-enquiry-add="evian"]').first()).toHaveAttribute(
+  await expect(page.locator('[data-enquiry-add="mirinda"]').first()).toHaveAttribute(
     'aria-pressed',
     'true',
   );
@@ -159,11 +160,11 @@ test('la sélection survit à la navigation', async ({ page }) => {
 
 test('aucun double ajout possible', async ({ page }) => {
   await page.goto('/drinks/');
-  const button = page.locator('[data-brand="evian"] [data-enquiry-add]');
+  const button = page.locator('[data-brand="mirinda"] [data-enquiry-add]');
   await button.click();
   await button.click();
   await button.click();
-  expect(await selection(page)).toEqual(['evian']);
+  expect(await selection(page)).toEqual(['mirinda']);
 });
 
 /* ================================================================== *
@@ -212,18 +213,23 @@ test('FLOW allemand — filtre, sélection, formulaire, sans fragment anglais', 
   await page.goto('/de/getraenke/');
   await expect(page.locator('h1')).toHaveText('Getränkesortiment entdecken');
 
-  await page.locator('[data-filter="water"]').click();
-  await expect(page).toHaveURL(/category=water/);
-  await expect(page.locator('[data-brand]:not([hidden])')).toHaveCount(8);
+  /*
+   * Filtre `carbonated` et non `iced-tea` : la marque sélectionnée juste
+   * après doit rester VISIBLE sous le filtre actif. `iced-tea` ne contient que
+   * Lipton Ice Tea, et Mirinda y serait masquée.
+   */
+  await page.locator('[data-filter="carbonated"]').click();
+  await expect(page).toHaveURL(/category=carbonated/);
+  await expect(page.locator('[data-brand]:not([hidden])')).toHaveCount(10);
 
-  const button = page.locator('[data-brand="evian"] [data-enquiry-add]');
+  const button = page.locator('[data-brand="mirinda"] [data-enquiry-add]');
   await button.click();
   await expect(button).toContainText('Ausgewählt');
   await expect(page.locator('[data-enquiry-indicator]')).toContainText('1 ausgewählt');
 
   await page.goto('/de/kontakt/');
   await expect(page.locator('h1')).toHaveText('Reden wir über Geschäfte.');
-  await expect(page.locator('[data-selection-chips] .chip')).toContainText('Evian');
+  await expect(page.locator('[data-selection-chips] .chip')).toContainText('Mirinda');
 
   await page.locator('[data-submit]').click();
   await expect(page.locator('.field__error:not([hidden])').first()).toHaveText(
@@ -259,13 +265,13 @@ test('le catalogue reste lisible sans JavaScript', async ({ browser }) => {
   const page = await context.newPage();
   await page.goto('/drinks/');
   // Les 62 marques sont rendues par le serveur.
-  await expect(page.locator('[data-brand]')).toHaveCount(62);
+  await expect(page.locator('[data-brand]')).toHaveCount(14);
   // Les boutons de sélection ne sont pas rendus : un bouton mort serait pire.
   await expect(page.locator('[data-enquiry-add]:not([hidden])')).toHaveCount(0);
   // Les filtres restent de vrais liens.
-  await expect(page.locator('[data-filter="water"]')).toHaveAttribute(
+  await expect(page.locator('[data-filter="iced-tea"]')).toHaveAttribute(
     'href',
-    '/drinks/?category=water',
+    '/drinks/?category=iced-tea',
   );
   await context.close();
 });
@@ -274,7 +280,7 @@ test('/brands/ ne réplique pas la grille de /drinks/', async ({ page }) => {
   await page.goto('/brands/');
   // Aucun plateau : la page marques est un registre typographique.
   await expect(page.locator('.product-object')).toHaveCount(0);
-  await expect(page.locator('.brands-group')).toHaveCount(5);
+  await expect(page.locator('.brands-group')).toHaveCount(4);
   await expect(page.locator('.brands-group__link').first()).toHaveAttribute(
     'href',
     /\/drinks\/\?brand=/,

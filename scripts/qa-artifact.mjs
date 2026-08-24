@@ -29,20 +29,33 @@ import { CONTACT_EMAIL, SITE_HOST, SITE_ORIGIN, STAGING_HOST } from '../site.con
 const HERO_SLUGS = ['coca-cola', 'fanta', 'red-bull', 'monster-energy', 'pepsi', 'sprite'];
 
 /**
- * Les huit spécimens de S4 Discovery, dans l'ordre de la séquence.
- * Doit rester alignée sur `DISCOVERY_BRANDS` (src/data/assets.ts) —
- * `tests/assets.spec.ts` vérifie la correspondance, elle n'est pas supposée ici.
+ * S4 Discovery a été SUPPRIMÉE le 2026-08-24 avec la réduction du catalogue à
+ * 14 articles : sept de ses huit spécimens ont quitté le catalogue. La liste
+ * reste ici, vide, en miroir de `DISCOVERY_BRANDS` (src/data/assets.ts) —
+ * `tests/assets.spec.ts` vérifie la correspondance.
  */
-const DISCOVERY_SLUGS = [
-  'chupa-chups',
-  'guarana-antarctica',
-  'mountain-dew',
-  'hawai',
-  'fernandes',
-  'mentos',
-  'bundaberg',
-  'yummy-miami-soda',
+const DISCOVERY_SLUGS = [];
+
+/**
+ * Les quatorze articles de la piste Featured, dans l'ordre d'exposition de
+ * `FeaturedBrands.astro`. Depuis la réduction, Featured expose le catalogue
+ * entier.
+ */
+const FEATURED_SLUGS = [
+  'coca-cola', 'red-bull', 'fanta', 'capri-sun', 'pepsi', 'monster-energy',
+  'orangina', 'lipton-ice-tea', 'sprite', 'mirinda', 'dr-pepper',
+  'mountain-dew', 'schweppes', '7up',
 ];
+
+/**
+ * Les deux articles sans photo produit au 2026-08-24.
+ *   · `mirinda`        — logo officiel livré, aucun packshot ;
+ *   · `lipton-ice-tea` — aucun fichier, la marque était exclue jusqu'ici.
+ * Ils sont ATTENDUS en repli (logo ou typographie) dans la piste Featured.
+ * Aucun visuel ne sera généré ni dessiné pour combler ces deux trous : ils se
+ * ferment par une livraison du client (blocage B2).
+ */
+const FEATURED_WITHOUT_PACKSHOT = ['mirinda', 'lipton-ice-tea'];
 
 const DIST = resolve(process.cwd(), 'dist');
 const SITE = SITE_ORIGIN;
@@ -462,47 +475,28 @@ if (TARGET === 'staging') {
     `${stage.length} emplacements « hero » sur la page d’accueil`,
   );
 
-  /*
-   * TR-025 — la piste Featured. Seize marques, seize visuels produits, aucun
-   * repli et surtout AUCUN LOGO : la décision DA du 2026-08-16 réserve les
-   * logos au catalogue, sur papier.
-   */
-  /*
-   * Découpe sur la PISTE, pas sur la page : S4 Discovery demande aussi
-   * `usage="packshot"` et deux de ses spécimens sont désormais servis. Compter
-   * sur toute la page donnait dix-huit objets et faisait échouer un contrôle
-   * qui, lui, était juste.
-   */
   const home = html.get('index.html') ?? '';
 
   /*
-   * TR-026B — S4 Discovery. Huit spécimens, huit visuels produits, aucun repli
-   * et aucun logo : la décision DA du 2026-08-16 réserve les logos au
-   * catalogue. Deux des huit réemploient le master livré pour Featured.
+   * S4 Discovery a été retirée de la page d'accueil le 2026-08-24. Le contrôle
+   * est conservé et INVERSÉ : il vérifie désormais que la section ne
+   * réapparaît pas. Supprimer le contrôle avec la section aurait laissé son
+   * retour accidentel passer inaperçu.
    */
-  const discStart = home.indexOf('data-discovery');
-  const discHtml =
-    discStart >= 0 ? home.slice(discStart, home.indexOf('</section>', discStart)) : '';
-  const s4 = [...discHtml.matchAll(OBJECT)].map((m) => ({ brand: m[1], asset: m[3] }));
   check(
     'BLOCK',
-    'préproduction : les huit spécimens de S4 sont servis par un visuel produit',
-    s4.length === 8 && s4.every((o) => o.asset === 'packshot'),
-    `${s4.length} objets · ${[...new Set(s4.map((o) => o.asset))].join(', ') || 'aucun'}`,
-  );
-  check(
-    'BLOCK',
-    'préproduction : S4 rend exactement les marques de sa séquence',
-    s4.map((o) => o.brand).join(',') === DISCOVERY_SLUGS.join(','),
-    s4.map((o) => o.brand).join(', '),
-  );
-  check(
-    'BLOCK',
-    'préproduction : aucun repli ni logo dans S4',
-    !discHtml.includes('product-object__fallback') &&
-      !discHtml.includes('product-object__img--logo'),
+    'S4 Discovery est absente de la page d’accueil',
+    !home.includes('data-discovery'),
   );
 
+  /*
+   * La piste Featured. Quatorze articles — le catalogue entier depuis la
+   * réduction du 2026-08-24.
+   *
+   * Découpe sur la PISTE, pas sur la page : le CTA final rend lui aussi des
+   * objets produit. Compter sur toute la page ferait échouer un contrôle qui,
+   * lui, serait juste.
+   */
   const trackStart = home.indexOf('data-track');
   const trackHtml =
     trackStart >= 0 ? home.slice(trackStart, home.indexOf('</section>', trackStart)) : '';
@@ -511,11 +505,62 @@ if (TARGET === 'staging') {
     usage: m[2],
     asset: m[3],
   }));
+  /*
+   * On découpe la piste PAR CELLULE, et non sur les attributs d'audit.
+   *
+   * `ProductObject` n'émet `data-object` que sur le hero et sur les assets
+   * générés (le coût en octets sur toutes les cellules avait fait sauter le
+   * budget HTML de /drinks/). Compter les `data-object` ne voyait donc que les
+   * douze cellules à photo générée, et déclarait « 12 objets » sur une piste
+   * qui en rend bien quatorze. Le marqueur de cellule, lui, est toujours là.
+   */
+  const cells = trackHtml
+    .split('<li class="featured__item"')
+    .slice(1)
+    .map((chunk) => ({
+      brand: /featured__link" href="[^"]*brand=([a-z0-9-]+)"/.exec(chunk)?.[1] ?? '?',
+      fallback: chunk.includes('product-object__fallback'),
+      logo: chunk.includes('product-object__img--logo'),
+    }));
+
   check(
     'BLOCK',
-    'préproduction : les seize Featured sont servis par un visuel produit',
-    featured.length === 16 && featured.every((o) => o.asset === 'packshot' || o.asset === 'hero'),
-    `${featured.length} objets · ${[...new Set(featured.map((o) => o.asset))].join(', ')}`,
+    'préproduction : la piste Featured rend les quatorze articles, dans l’ordre',
+    cells.map((c) => c.brand).join(',') === FEATURED_SLUGS.join(','),
+    `${cells.length} cellules — ${cells.map((c) => c.brand).join(', ') || 'aucune'}`,
+  );
+
+  /*
+   * Douze des quatorze portent une photo produit. Les deux autres sont
+   * NOMMÉMENT connus : la liste est fermée, donc un troisième trou est une
+   * régression, pas une tolérance.
+   */
+  const noPhoto = cells.filter((c) => c.fallback || c.logo).map((c) => c.brand).sort();
+  check(
+    'BLOCK',
+    'préproduction : douze des quatorze Featured sont servis par une photo produit',
+    cells.length - noPhoto.length === 12,
+    `${cells.length - noPhoto.length} photos produit sur ${cells.length} cellules`,
+  );
+  check(
+    'BLOCK',
+    'préproduction : seuls Mirinda et Lipton Ice Tea sont sans photo produit',
+    noPhoto.join(',') === [...FEATURED_WITHOUT_PACKSHOT].sort().join(','),
+    `sans photo : ${noPhoto.join(', ') || 'aucun'}`,
+  );
+  /*
+   * Et le repli de chacun est celui qu'on a décidé, pas celui qui reste :
+   * Mirinda a un logo officiel livré, Lipton Ice Tea n'a aucun fichier. Si
+   * Lipton passait un jour au logo sans livraison du client, c'est qu'un logo
+   * aurait été fabriqué — ce que ce contrôle interdit.
+   */
+  check(
+    'BLOCK',
+    'préproduction : Mirinda tombe sur son logo, Lipton Ice Tea sur le repli typographique',
+    cells.find((c) => c.brand === 'mirinda')?.logo === true &&
+      cells.find((c) => c.brand === 'lipton-ice-tea')?.fallback === true,
+    `mirinda logo=${cells.find((c) => c.brand === 'mirinda')?.logo} · ` +
+      `lipton-ice-tea repli=${cells.find((c) => c.brand === 'lipton-ice-tea')?.fallback}`,
   );
   const reused = featured.filter((o) => o.asset === 'hero').map((o) => o.brand).sort();
   check(

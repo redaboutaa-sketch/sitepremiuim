@@ -2,12 +2,14 @@ import { expect, test } from '@playwright/test';
 
 /** Sections éditoriales de la homepage — S3 et suivantes. */
 
-test('S3 — les 5 familles forment un index numéroté', async ({ page }) => {
+test('S3 — les 4 familles forment un index numéroté', async ({ page }) => {
   await page.goto('/');
   const rows = page.locator('.categories__row');
-  await expect(rows).toHaveCount(5);
+  // `water` et `international` ont été retirées le 2026-08-24 après s'être
+  // vidées ; `iced-tea` a été créée pour Lipton Ice Tea.
+  await expect(rows).toHaveCount(4);
   await expect(rows.first().locator('.categories__name')).toHaveText('Carbonated');
-  await expect(rows.last().locator('.categories__name')).toHaveText('International Finds');
+  await expect(rows.last().locator('.categories__name')).toHaveText('Iced Tea');
 });
 
 test('S3 — chaque famille mène au catalogue filtré', async ({ page }) => {
@@ -18,17 +20,25 @@ test('S3 — chaque famille mène au catalogue filtré', async ({ page }) => {
   expect(hrefs).toEqual([
     '/drinks/?category=carbonated',
     '/drinks/?category=energy-sport',
-    '/drinks/?category=water',
     '/drinks/?category=juice-fruit',
-    '/drinks/?category=international',
+    '/drinks/?category=iced-tea',
   ]);
 });
 
 test('S3 — aucune revendication d’importation directe', async ({ page }) => {
   await page.goto('/');
   const text = (await page.locator('.categories__index').textContent())!;
-  // La formulation validée est « imported-style », jamais « imported ».
-  expect(text).toContain('imported-style');
+  /*
+   * L'assertion POSITIVE (`toContain('imported-style')`) a été retirée le
+   * 2026-08-24 : la formulation ne vivait que dans la description de la
+   * famille `international`, vidée puis supprimée. Exiger encore sa présence
+   * aurait poussé à réintroduire une revendication d'importation là où le
+   * site n'en fait plus aucune.
+   *
+   * L'assertion NÉGATIVE est le vrai garde-fou et reste en place : Ivan
+   * n'ayant jamais confirmé importer en direct, le site ne doit nulle part
+   * l'affirmer.
+   */
   expect(text).not.toMatch(/\bwe import\b|\bdirectly imported\b/i);
 });
 
@@ -64,80 +74,24 @@ test('S3 — version allemande adaptée, pas transposée', async ({ page }) => {
   );
 });
 
-/* ================================================================== *
- * S4 — Discover something different.
+/* ==================================================================
+ * S4 — « Discover something different. » — SECTION SUPPRIMÉE le 2026-08-24.
+ *
+ * Sept de ses huit spécimens ont quitté le catalogue avec la réduction à 14
+ * articles, et la famille `international` qui portait son propos a été vidée.
+ * Les huit tests de dérive, de teinte et de collant sont partis avec elle.
+ *
+ * Le contrôle est CONSERVÉ et inversé : il vérifie que la section ne
+ * réapparaît pas. Supprimer le test avec la section aurait laissé son retour
+ * accidentel passer inaperçu.
  * ================================================================== */
 
-const toDiscovery = async (page: any, offset = 0) => {
-  const top = await page.evaluate(
-    () => document.querySelector('[data-discovery]')!.getBoundingClientRect().top + window.scrollY,
-  );
-  await page.evaluate((y: number) => window.scrollTo(0, y), top + offset);
-  await page.waitForTimeout(600);
-};
-
-test('S4 — la séquence ne présente que des marques internationales', async ({ page }) => {
-  await page.goto('/');
-  const items = page.locator('[data-drift-item]');
-  await expect(items).toHaveCount(8);
-  await expect(items.first()).toContainText('Chupa Chups');
-});
-
-test('S4 — le marqueur international est transversal aux familles', async ({ page }) => {
-  await page.goto('/');
-  const families = await page
-    .locator('[data-drift-item]')
-    .evaluateAll((els) => [...new Set(els.map((e) => (e as HTMLElement).dataset.family))]);
-  // Si la séquence ne couvrait qu'une famille, le marqueur ferait doublon
-  // avec `category` et la section perdrait son propos.
-  expect(families.length).toBeGreaterThan(2);
-});
-
-test('S4 — la dérive suit le spécimen le plus proche du centre', async ({ page }, info) => {
-  test.skip(info.project.name !== 'desktop');
-  await page.goto('/');
-  await toDiscovery(page, 0);
-  const first = await page.evaluate(
-    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
-  );
-  await toDiscovery(page, 900);
-  const later = await page.evaluate(
-    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
-  );
-  expect(first).toBeTruthy();
-  expect(later, 'la teinte doit avoir changé au fil de la séquence').not.toBe(first);
-});
-
-test('S4 — en reduced-motion, la teinte est arrêtée et ne dérive pas', async ({ page }, info) => {
-  test.skip(info.project.name !== 'desktop');
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
-  await toDiscovery(page, 0);
-  const a = await page.evaluate(
-    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
-  );
-  await toDiscovery(page, 900);
-  const b = await page.evaluate(
-    () => (document.querySelector('[data-discovery]') as HTMLElement).dataset.family,
-  );
-  expect(a).toBe('international');
-  expect(b, 'aucune dérive sous reduced-motion').toBe(a);
-});
-
-test('S4 — la colonne de texte est collante sans épinglage JavaScript', async ({ page }, info) => {
-  test.skip(info.project.name !== 'desktop');
-  await page.goto('/');
-  const position = await page
-    .locator('.discovery__sticky')
-    .evaluate((el) => getComputedStyle(el).position);
-  expect(position).toBe('sticky');
-});
-
-test('S4 — aucun SKU inventé : seules marques et familles sont nommées', async ({ page }) => {
-  await page.goto('/');
-  const text = (await page.locator('[data-discovery]').textContent())!;
-  // Aucun format ni contenance ne doit apparaître.
-  expect(text).not.toMatch(/\d+\s?(ml|cl|l\b|oz)/i);
+test('S4 — la section Discovery est absente de la page d’accueil', async ({ page }) => {
+  for (const route of ['/', '/de/']) {
+    await page.goto(route);
+    await expect(page.locator('[data-discovery]'), route).toHaveCount(0);
+    await expect(page.locator('[data-drift-item]'), route).toHaveCount(0);
+  }
 });
 
 /* ================================================================== *
@@ -176,14 +130,23 @@ test('S6 — le spécimen final est décoratif', async ({ page }) => {
   await expect(page.locator('.final__object')).toHaveAttribute('aria-hidden', 'true');
 });
 
-test('la homepage compte six sections, dans l’ordre prévu', async ({ page }) => {
+test('la homepage compte cinq sections, dans l’ordre prévu', async ({ page }) => {
   await page.goto('/');
   const surfaces = await page.evaluate(() =>
     Array.from(document.querySelectorAll('main > section')).map(
       (el) => (el as HTMLElement).dataset.surface,
     ),
   );
-  expect(surfaces).toEqual(['ink', 'ink', 'paper', 'ink', 'paper', 'ink']);
+  /*
+   * S1 hero (ink) · S2 featured (ink) · S3 familles (paper) · S4 process
+   * (paper) · S5 CTA final (ink).
+   *
+   * L'ancienne S4 Discovery (ink) séparait les deux surfaces claires ; sa
+   * suppression le 2026-08-24 les a rendues ADJACENTES. C'est un changement
+   * de rythme réel, assumé et documenté ici plutôt que masqué — la respiration
+   * encre/papier/encre du milieu de page n'existe plus.
+   */
+  expect(surfaces).toEqual(['ink', 'ink', 'paper', 'paper', 'ink']);
 });
 
 test('un seul style de CTA primaire sur toute la homepage', async ({ page }) => {

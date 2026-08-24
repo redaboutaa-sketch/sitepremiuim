@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
  * LOGOS DE MARQUE AU CATALOGUE — décision DA du 2026-08-16.
  *
  * Les logos sont autorisés SUR UNE SEULE SURFACE : le catalogue `/drinks/`,
- * qui est sur papier. Sur encre, 23 des 60 logos livrés tombent sous le seuil
+ * qui est sur papier. Sur encre, 23 des 60 logos livrés tombaient sous le seuil
  * de lisibilité — le hero, Featured et S4 restent donc en repli typographique.
  *
  * Ces tests s'adaptent au mode de build et vérifient les DEUX régimes :
@@ -26,10 +26,26 @@ async function stagingArtifact(page: Page): Promise<boolean> {
  * 1 · Cloisonnement des surfaces
  * ================================================================== */
 
+/*
+ * La page d'accueil fait exception depuis le 2026-08-24, et ELLE SEULE :
+ * Mirinda a un logo officiel mais aucune photo produit, et le propriétaire a
+ * arbitré qu'elle occupe un plateau de même taille que les autres plutôt que
+ * de laisser un trou dans une piste de quatorze. Le plafond est donc fixé à
+ * UN — un second logo signifierait qu'une photo a disparu, ou qu'un logo a
+ * été fabriqué pour combler un manque.
+ *
+ * L'exception est bornée à la PRÉPRODUCTION. En production, aucun asset n'est
+ * `validated` : le compte attendu retombe à zéro partout, y compris ici.
+ */
+const LOGOS_ATTENDUS_STAGING: Record<string, number> = { '/': 1, '/de/': 1 };
+
 for (const route of ['/', '/brands/', '/about/', '/contact/', '/de/', '/de/marken/']) {
   test(`aucun logo hors du catalogue · ${route}`, async ({ page }) => {
+    const staging = await stagingArtifact(page);
     await page.goto(route);
-    await expect(page.locator(LOGO)).toHaveCount(0);
+    await expect(page.locator(LOGO)).toHaveCount(
+      staging ? (LOGOS_ATTENDUS_STAGING[route] ?? 0) : 0,
+    );
   });
 }
 
@@ -44,8 +60,25 @@ test('aucun logo de marque dans le hero ni dans Featured Brands', async ({ page 
    * la décision DA du 2026-08-16 — un logo n'a droit qu'au catalogue, sur
    * papier — n'a pas changé d'un iota.
    */
+  // Le hero, lui, n'a jamais dérogé : aucun logo, en aucune circonstance.
   await expect(page.locator('[data-hero]').locator(LOGO)).toHaveCount(0);
-  await expect(page.locator('[data-track]').locator(LOGO)).toHaveCount(0);
+
+  /*
+   * Featured tolère exactement UN logo depuis le 2026-08-24 — celui de
+   * Mirinda. La dérogation est étroite et vérifiée : le registre note ce logo
+   * « peu lisible sur PAPIER (27 %) », or la piste Featured est sur ENCRE,
+   * surface pour laquelle il n'est pas signalé. C'est ce qui la distingue des
+   * 23 logos sur 60 qui avaient motivé la décision DA du 2026-08-16.
+   */
+  await expect(page.locator('[data-track]').locator(LOGO)).toHaveCount(staging ? 1 : 0);
+  if (staging) {
+    await expect(
+      page
+        .locator('[data-track] .featured__item')
+        .filter({ has: page.locator(LOGO) })
+        .locator('.featured__name'),
+    ).toHaveText('Mirinda');
+  }
 
   const fallbacks = page.locator('[data-hero] .product-object__fallback');
   if (staging) {
@@ -68,17 +101,26 @@ test('catalogue : logos rendus en staging, aucun en production', async ({ page }
   const count = await page.locator(LOGO).count();
 
   if (staging) {
-    // 60 logos admissibles ; A&W et Bundaberg n'en ont pas.
-    expect(count).toBe(60);
+    /*
+     * 13 logos admissibles depuis la réduction du 2026-08-24 : les 14 articles
+     * du catalogue, moins Lipton Ice Tea, pour laquelle aucun fichier n'a
+     * jamais été livré — la marque était exclue jusqu'à cette date.
+     */
+    expect(count).toBe(13);
   } else {
     // Aucun asset n'est `validated` : la production n'en publie aucun.
     expect(count).toBe(0);
   }
 });
 
-test('les deux marques sans logo gardent leur repli', async ({ page }) => {
+test('la marque sans logo garde son repli', async ({ page }) => {
   await page.goto('/drinks/');
-  for (const slug of ['a-and-w', 'bundaberg']) {
+  /*
+   * A&W et Bundaberg, les deux cas d'origine, ont quitté le catalogue.
+   * Lipton Ice Tea les remplace : aucun logo ne sera dessiné pour elle, ce
+   * repli est donc le comportement ATTENDU, pas un défaut à rattraper.
+   */
+  for (const slug of ['lipton-ice-tea']) {
     const cell = page.locator(`[data-brand="${slug}"]`);
     await expect(cell, slug).toHaveCount(1);
     await expect(cell.locator(LOGO), slug).toHaveCount(0);
@@ -147,7 +189,13 @@ test('des formes très différentes ont un poids visuel comparable', async ({ pa
     }),
   );
 
-  expect(areas.length).toBeGreaterThan(50);
+  /*
+   * 13 logos au catalogue depuis la réduction du 2026-08-24, contre 60 avant.
+   * Le seuil suivait la taille du catalogue, pas la règle : c'est
+   * l'ÉCART de surface qui est contrôlé ci-dessous, et il se mesure aussi bien
+   * sur treize formes que sur soixante.
+   */
+  expect(areas.length).toBeGreaterThanOrEqual(13);
 
   const shares = areas.map((a) => a.share);
   const min = Math.min(...shares);
@@ -171,7 +219,10 @@ test('des formes très différentes ont un poids visuel comparable', async ({ pa
 
 test('aucun logo de marque exclue n’est rendu', async ({ page }) => {
   const EXCLUDED = [
-    'arizona', 'banditos', 'dilmah', 'nescafe', 'lipton', 'fuze-tea',
+    // `lipton` a quitté cette liste le 2026-08-24 — exclusion levée
+    // nominativement sur décision du propriétaire (voir doc/tr-028). Le
+    // périmètre est désormais tenu par la `scopeNote` de l'entrée.
+    'arizona', 'banditos', 'dilmah', 'nescafe', 'fuze-tea',
     'barebells', 'chocomel', 'fristi', 'optimel', 'pinar',
     'karvan-cevitam', 'raak', 'slimpie', 'xxl-nutrition',
   ];
@@ -185,14 +236,14 @@ test('aucun logo de marque exclue n’est rendu', async ({ page }) => {
   }
 });
 
-test('le catalogue n’a pas bougé : 62 marques, 5 familles', async ({ page }) => {
+test('le catalogue est celui des 14 articles, en 4 familles', async ({ page }) => {
   await page.goto('/drinks/');
-  await expect(page.locator('[data-brand]')).toHaveCount(62);
+  await expect(page.locator('[data-brand]')).toHaveCount(14);
   const families = await page.locator('[data-category]').evaluateAll((els) => [
     ...new Set(els.map((e) => e.getAttribute('data-category'))),
   ]);
   expect(families.sort()).toEqual(
-    ['carbonated', 'energy-sport', 'international', 'juice-fruit', 'water'].sort(),
+    ['carbonated', 'energy-sport', 'iced-tea', 'juice-fruit'].sort(),
   );
 });
 

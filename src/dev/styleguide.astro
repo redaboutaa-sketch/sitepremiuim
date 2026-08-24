@@ -14,15 +14,15 @@ import { brandBySlug } from '@/lib/catalog';
 
 // Marques réelles du catalogue : la démonstration passe par le composant de
 // production, pas par du balisage recopié.
-const DEMO_PRODUCTS = ['monster-energy', 'chaudfontaine', 'chupa-chups', 'coca-cola']
+// Réduction du 2026-08-24 : Chaudfontaine et Chupa Chups ont quitté le catalogue.
+const DEMO_PRODUCTS = ['monster-energy', 'capri-sun', 'lipton-ice-tea', 'coca-cola']
   .map((slug, i) => ({ brand: brandBySlug(slug)!, index: String(i + 1).padStart(2, '0') }));
 
 const SIGNALS = [
   { key: 'carbonated', label: '01 — Carbonated', graphic: '#C8102E', text: '#FF6B7D', ratio: '6.1:1' },
   { key: 'energy-sport', label: '02 — Energy & Sport', graphic: '#00B8A9', text: '#2FE0CF', ratio: '9.8:1' },
-  { key: 'water', label: '03 — Water', graphic: '#4A9BD1', text: '#7FC4EE', ratio: '8.6:1' },
-  { key: 'juice-fruit', label: '04 — Juice & Fruit', graphic: '#E8890C', text: '#FFAE47', ratio: '9.4:1' },
-  { key: 'international', label: '05 — International', graphic: '#E0447C', text: '#FF8FB4', ratio: '8.3:1' },
+  { key: 'juice-fruit', label: '03 — Juice & Fruit', graphic: '#E8890C', text: '#FFAE47', ratio: '9.4:1' },
+  { key: 'iced-tea', label: '04 — Iced Tea', graphic: '#4AAE29', text: '#69D345', ratio: '10.4:1' },
 ];
 
 const NEUTRALS = [
@@ -194,7 +194,7 @@ const SCALE = [
                 <p class="t-index">Label</p>
                 <p class="t-small t-muted">Archivo 500 étirée · 0.6875rem · ls 0.16em · capitales</p>
               </div>
-              <p class="t-label t-label--ruled" style="--signal: var(--signal-water)">
+              <p class="t-label t-label--ruled" style="--signal: var(--signal-tea)">
                 Global icons · International favourites
               </p>
             </div>
@@ -696,7 +696,7 @@ const SCALE = [
   }
 
   .field__input.sg--focus {
-    border-block-end-color: var(--signal-water);
+    border-block-end-color: var(--signal-tea);
   }
 
   /* Bascule d'affichage selon la préférence système réelle. */

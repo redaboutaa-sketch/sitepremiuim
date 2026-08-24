@@ -2,13 +2,18 @@
 /**
  * HOMEPAGE.
  *
- * Six sections, dont le rythme d'impact est délibérément inégal :
+ * Cinq sections, dont le rythme d'impact est délibérément inégal :
  * un site où chaque section cherche le « wow » devient épuisant.
- * S1 hero · S2 featured · S3 éditorial calme · S4 second grand moment ·
- * S5 process sobre · S6 CTA final.
+ * S1 hero · S2 featured · S3 éditorial calme · S4 process sobre ·
+ * S5 CTA final.
+ *
+ * ⚠️ 2026-08-24 — l'ancienne S4 « Discovery » a été RETIRÉE. Elle mettait en
+ * scène huit trouvailles internationales ; la réduction du catalogue à 14
+ * articles en a supprimé sept et a vidé la famille `international` qui portait
+ * son propos. Un second grand moment construit sur un seul produit, déjà
+ * présent en Featured, n'aurait plus rien montré.
  */
 import Categories from '@/components/home/Categories.astro';
-import Discovery from '@/components/home/Discovery.astro';
 import FinalCta from '@/components/home/FinalCta.astro';
 import FeaturedBrands from '@/components/home/FeaturedBrands.astro';
 import Process from '@/components/home/Process.astro';
@@ -25,14 +30,16 @@ const { locale } = Astro.props;
 <Hero locale={locale} />
 <FeaturedBrands locale={locale} />
 <Categories locale={locale} />
-<Discovery locale={locale} />
 <Process locale={locale} />
 <FinalCta locale={locale} />
 
 <script>
+  /*
+   * `drift.ts` a été supprimé avec S4 le 2026-08-24 : la dérive chromatique
+   * n'avait que cette section pour consommateur. Le garder aurait envoyé du
+   * JavaScript mort à chaque visiteur.
+   */
   import '@/scripts/hero.ts';
   import { initTrack } from '@/scripts/track.ts';
-  import { initDrift } from '@/scripts/drift.ts';
   initTrack();
-  initDrift();
 </script>

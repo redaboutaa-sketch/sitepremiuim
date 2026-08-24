@@ -4,6 +4,7 @@ import { BRANDS } from '../src/data/brands';
 import { CATEGORY_SLUGS } from '../src/data/categories';
 import { EXCLUSIONS } from '../src/data/exclusions';
 import {
+  allBrands,
   brandLevelOnly,
   catalog,
   catalogStats,
@@ -52,48 +53,74 @@ test('le catalogue réel est valide', () => {
   expect(collectIssues(BRANDS)).toEqual([]);
 });
 
-test('62 marques publiables réparties en 5 familles', () => {
+/*
+ * RÉDUCTION DU 2026-08-24 — le catalogue passe de 62 marques en 5 familles à
+ * la liste fermée de 14 articles arrêtée par le propriétaire du site.
+ * Les chiffres attendus ci-dessous ont donc changé ; l'état à 62 marques reste
+ * vérifiable sur `backup/catalogue-62-brands-full`.
+ */
+test('14 marques publiables réparties en 4 familles', () => {
   const stats = catalogStats();
-  expect(stats.total).toBe(62);
+  expect(stats.total).toBe(14);
   expect(stats.byCategory).toEqual({
-    carbonated: 26,
-    'energy-sport': 11,
-    water: 8,
-    'juice-fruit': 13,
-    international: 4,
+    carbonated: 10,
+    'energy-sport': 2,
+    'juice-fruit': 1,
+    'iced-tea': 1,
   });
-  expect(CATEGORY_SLUGS).toHaveLength(5);
+  expect(CATEGORY_SLUGS).toHaveLength(4);
 });
 
-test('16 marques featured, conformes à la liste approuvée', () => {
-  const slugs = featuredBrands().map((b) => b.slug).sort();
-  expect(slugs).toEqual(
+test('la liste des 14 articles est exactement celle demandée par le client', () => {
+  // Liste FERMÉE. Un ajout ici doit venir du client, pas d'un refactor.
+  expect(allBrands().map((b) => b.slug).sort()).toEqual(
     [
-      '7up', 'bundaberg', 'capri-sun', 'coca-cola', 'dr-pepper', 'evian',
-      'fanta', 'monster-energy', 'mountain-dew', 'orangina', 'pepsi',
-      'powerade', 'red-bull', 'schweppes', 'spa', 'sprite',
+      '7up', 'capri-sun', 'coca-cola', 'dr-pepper', 'fanta', 'lipton-ice-tea',
+      'mirinda', 'monster-energy', 'mountain-dew', 'orangina', 'pepsi',
+      'red-bull', 'schweppes', 'sprite',
     ].sort(),
   );
 });
 
-test('internationalFind est transversal aux familles', () => {
-  const families = new Set(internationalFinds().map((b) => b.category));
-  // S'il ne couvrait qu'une famille, le marqueur ferait doublon avec `category`.
-  expect(families.size).toBeGreaterThan(1);
-  expect(families.has('carbonated')).toBe(true);
-  expect(families.has('international')).toBe(true);
-  // Une Fanta internationale reste rangée dans Carbonated.
+test('les 14 marques sont mises en avant', () => {
+  // À 14 articles, « featured » ne sélectionne plus rien : il couvre tout.
+  expect(featuredBrands()).toHaveLength(14);
+  expect(featuredBrands().map((b) => b.slug).sort()).toEqual(
+    allBrands().map((b) => b.slug).sort(),
+  );
+});
+
+test('internationalFind reste indépendant de la famille', () => {
+  const intl = internationalFinds();
+  expect(intl.length).toBeGreaterThan(0);
+  /*
+   * Le marqueur ne couvre plus qu'une famille depuis la réduction : la
+   * famille `international`, qui portait les quatre autres marques marquées,
+   * a été vidée. Ce n'est PAS une régression du modèle — le marqueur reste
+   * transversal par construction, il ne fait que ne plus le démontrer.
+   *
+   * Ce qui se vérifie toujours, et qui est le vrai propos du marqueur : une
+   * marque marquée « trouvaille internationale » garde sa famille d'origine
+   * au lieu d'être déplacée dans une famille fourre-tout.
+   */
   const fanta = catalog.find((b) => b.slug === 'fanta');
   expect(fanta?.category).toBe('carbonated');
   expect(fanta?.internationalFind).toBe(true);
+  // Et le marqueur ne recouvre pas sa famille : tous les Carbonated ne le sont pas.
+  const carbonated = catalog.filter((b) => b.category === 'carbonated');
+  expect(carbonated.some((b) => !b.internationalFind)).toBe(true);
 });
 
-test('les 4 marques brand-level-only ne portent aucun SKU', () => {
+test('les marques brand-level-only ne portent aucun SKU', () => {
   const restricted = brandLevelOnly();
-  expect(restricted.map((b) => b.slug).sort()).toEqual([
-    'a-and-w', 'bundaberg', 'chupa-chups', 'hero', 'krombacher-spezi', 'mentos',
-    'squid-game', 'toxic-waste',
-  ].sort());
+  /*
+   * Une seule survit à la réduction. Lipton Ice Tea EST la raison pour
+   * laquelle ce contrôle doit rester : la marque a été retirée de la liste
+   * d'exclusions le 2026-08-24, et c'est cette `scopeNote` — thés glacés
+   * prêts à boire, jamais le thé en sachet — qui tient désormais le périmètre
+   * à sa place.
+   */
+  expect(restricted.map((b) => b.slug).sort()).toEqual(['lipton-ice-tea']);
   for (const b of restricted) {
     expect(b.productName, `${b.brand} ne doit porter aucun SKU`).toBeNull();
     expect(b.scopeNote, `${b.brand} doit documenter sa restriction`).not.toBeNull();
@@ -166,8 +193,14 @@ test('CONTRÔLE 3 — un productName sur une marque brand-level-only est rejeté
   expect(issues[0]).toContain('D7');
 });
 
-test('CONTRÔLE 4 — une famille hors des 5 autorisées est rejetée', () => {
-  for (const category of ['concentrates', 'iced-tea', 'dairy', 'coffee']) {
+test('CONTRÔLE 4 — une famille hors des 4 autorisées est rejetée', () => {
+  /*
+   * `iced-tea` a QUITTÉ cette liste le 2026-08-24 : c'est devenu une famille
+   * valide avec Lipton Ice Tea. `water` et `international` l'ont rejointe en
+   * sens inverse — elles ont été retirées des familles autorisées après
+   * s'être vidées, et doivent donc être rejetées comme les autres.
+   */
+  for (const category of ['concentrates', 'water', 'international', 'dairy', 'coffee']) {
     const issues = collectIssues([{ ...VALID, category }]);
     expect(issues.length, category).toBeGreaterThan(0);
     expect(issues.join(' '), category).toContain('category');

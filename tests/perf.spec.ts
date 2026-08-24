@@ -218,7 +218,7 @@ test('sans JavaScript : navigation, catalogue et formulaire restent lisibles', a
 
   await page.goto('http://127.0.0.1:4321/drinks/');
   // Les 62 marques sont dans le HTML, pas injectées par script.
-  await expect(page.locator('[data-brand]')).toHaveCount(62);
+  await expect(page.locator('[data-brand]')).toHaveCount(14);
   await expect(page.locator('h1')).toBeVisible();
 
   await page.goto('http://127.0.0.1:4321/contact/');

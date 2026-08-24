@@ -1,8 +1,23 @@
 /**
- * Familles de boissons — 5, pas 6.
+ * Familles de boissons — 4.
  *
  * Concentrates & Syrups est exclue de la V1 (décision D4 du 2026-08-14) :
  * ni famille, ni filtre, ni données, ni assets.
+ *
+ * RÉDUCTION DU 2026-08-24 (décision du propriétaire) — le catalogue passe de
+ * 62 à 14 articles. Deux familles se sont VIDÉES et sont donc retirées : une
+ * famille sans marque produit un filtre qui ne filtre rien et une section qui
+ * ne montre rien.
+ *   · `water`          — Evian, SPA, Chaudfontaine… tous retirés.
+ *   · `international`  — Chupa Chups, Mentos, Squid Game, Toxic Waste retirés.
+ * Le marqueur TRANSVERSAL `internationalFind` survit à la disparition de la
+ * famille : il qualifie une variante (une Fanta importée reste Carbonated) et
+ * n'a jamais dépendu de la famille `international`.
+ *
+ * `iced-tea` est ajoutée le 2026-08-24 pour accueillir Lipton Ice Tea. Aucune
+ * des familles existantes ne décrit un thé glacé : le ranger dans
+ * `juice-fruit` (« Fruit drinks, juices and tropical flavours ») aurait publié
+ * une classification fausse. Voir doc/tr-028-catalogue-reduction.md.
  *
  * Source de vérité : doc/catalog.md §1
  */
@@ -10,9 +25,8 @@
 export const CATEGORY_SLUGS = [
   'carbonated',
   'energy-sport',
-  'water',
   'juice-fruit',
-  'international',
+  'iced-tea',
 ] as const;
 
 export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
@@ -46,15 +60,6 @@ export const CATEGORIES: CategoryRecord[] = [
   },
   {
     index: '03',
-    slug: 'water',
-    name: { en: 'Water', de: 'Wasser' },
-    description: {
-      en: 'Still, sparkling and flavoured water.',
-      de: 'Stilles Wasser, Sprudel und aromatisiertes Wasser.',
-    },
-  },
-  {
-    index: '04',
     slug: 'juice-fruit',
     name: { en: 'Juice & Fruit', de: 'Saft & Frucht' },
     description: {
@@ -63,14 +68,14 @@ export const CATEGORIES: CategoryRecord[] = [
     },
   },
   {
-    index: '05',
-    slug: 'international',
-    name: { en: 'International Finds', de: 'Internationale Entdeckungen' },
+    index: '04',
+    slug: 'iced-tea',
+    name: { en: 'Iced Tea', de: 'Eistee' },
     description: {
-      // « imported-style » est volontaire : aucune revendication d'importation
-      // directe tant qu'Ivan ne l'a pas confirmée.
-      en: 'Regional variants, special flavours and distinctive imported-style products.',
-      de: 'Regionale Varianten, besondere Geschmacksrichtungen und importtypische Produkte.',
+      // Strictement descriptif. Aucune revendication de gamme, d'origine ni
+      // de format : aucun SKU Lipton n'est confirmé.
+      en: 'Ready-to-drink iced teas.',
+      de: 'Trinkfertige Eistees.',
     },
   },
 ];

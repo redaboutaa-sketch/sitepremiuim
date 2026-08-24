@@ -495,6 +495,11 @@ pages de marque individuelles (voir §5), langues autres que EN/DE.
 | **D6** | XXL Nutrition | ✅ **RETIRÉE** jusqu'à confirmation de la liste des SKU prêts à boire |
 | **D7** | **8 marques `brand-level-only`** — publiées au niveau marque uniquement, aucun SKU affiché tant que les références admises ne sont pas confirmées. Contrainte appliquée par le schéma | ✅ **Périmètre partiel de gamme** (2026-08-14) : A&W · Bundaberg · Krombacher Spezi · Hero. **Licence tierce** (extension approuvée le 2026-08-15) : Chupa Chups · Mentos · Squid Game · Toxic Waste — afficher un SKU non confirmé y reviendrait à présenter une confiserie comme une boisson |
 
+> ⛔ **Décomptes périmés depuis le 2026-08-24.** Le catalogue a été réduit de 62
+> marques à 14 articles sur décision du propriétaire, et les familles sont
+> passées de 5 à 4. Voir `doc/tr-028-catalogue-reduction.md`. Restauration :
+> branche `backup/catalogue-62-brands-full`, commit `5966e32`.
+
 **Catalogue V1 : 62 marques publiables** — 26 Carbonated · 11 Energy & Sport · 8 Water · 13 Juice & Fruit · 4 International.
 
 ### En attente — bloquantes pour la production

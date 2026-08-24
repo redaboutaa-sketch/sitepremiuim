@@ -82,28 +82,20 @@ const PAIRS = [
   // Variantes texte des signaux sur surface CLAIRE — le second jeu, assombri.
   ['signal-carbonated-on-paper / paper-alt', token('signal-carbonated-on-paper'), PAPER_ALT, 4.5],
   ['signal-energy-on-paper / paper-alt', token('signal-energy-on-paper'), PAPER_ALT, 4.5],
-  ['signal-water-on-paper / paper-alt', token('signal-water-on-paper'), PAPER_ALT, 4.5],
   ['signal-juice-on-paper / paper-alt', token('signal-juice-on-paper'), PAPER_ALT, 4.5],
-  [
-    'signal-international-on-paper / paper-alt',
-    token('signal-international-on-paper'),
-    PAPER_ALT,
-    4.5,
-  ],
+  ['signal-tea-on-paper / paper-alt', token('signal-tea-on-paper'), PAPER_ALT, 4.5],
 
   // Variantes texte des signaux — seules autorisées pour du texte coloré.
   ['signal-carbonated-text / ink-900', token('signal-carbonated-text'), INK, 4.5],
   ['signal-energy-text / ink-900', token('signal-energy-text'), INK, 4.5],
-  ['signal-water-text / ink-900', token('signal-water-text'), INK, 4.5],
   ['signal-juice-text / ink-900', token('signal-juice-text'), INK, 4.5],
-  ['signal-international-text / ink-900', token('signal-international-text'), INK, 4.5],
+  ['signal-tea-text / ink-900', token('signal-tea-text'), INK, 4.5],
 
   // Signaux graphiques — non textuels, seuil composant d'interface.
   ['signal-carbonated / ink-900  (graphique)', token('signal-carbonated'), INK, 3],
   ['signal-energy / ink-900  (graphique)', token('signal-energy'), INK, 3],
-  ['signal-water / ink-900  (graphique)', token('signal-water'), INK, 3],
   ['signal-juice / ink-900  (graphique)', token('signal-juice'), INK, 3],
-  ['signal-international / ink-900  (graphique)', token('signal-international'), INK, 3],
+  ['signal-tea / ink-900  (graphique)', token('signal-tea'), INK, 3],
 
   // CTA primaire — inversion de valeur.
   ['ink-900 sur paper  (CTA primaire)', INK, PAPER, 4.5],

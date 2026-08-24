@@ -23,10 +23,21 @@ export const EXCLUSIONS: Exclusion[] = [
   { slug: 'heineken', label: 'Heineken', reason: 'Alcool' },
   { slug: 'banditos', label: 'Banditos', reason: 'Alcool' },
 
-  // Thé et café — hors périmètre absolu.
+  // Thé et café.
+  //
+  // ⚠️ RENVERSEMENT PARTIEL DU 2026-08-24 — décision du propriétaire du site.
+  // « Lipton » figurait ici en « Thé — hors périmètre absolu ». Le propriétaire
+  // a demandé Lipton Ice Tea dans sa liste de 14 articles ; l'exclusion de la
+  // MARQUE est donc levée et remplacée par une restriction de PÉRIMÈTRE portée
+  // par l'entrée elle-même (`skuPolicy: 'brand-level-only'` + `scopeNote`),
+  // exactement comme Krombacher Spezi le fait pour la bière.
+  //
+  // La levée est NOMINATIVE et ne s'étend à rien d'autre : les thés ci-dessous
+  // restent exclus, et Arizona reste exclue au titre de la décision D5.
+  // Retirer cette entrée sans la remplacer par une `scopeNote` rouvrirait la
+  // porte aux thés en sachet et aux infusions, qui ne sont pas des soft drinks.
   { slug: 'dilmah', label: 'Dilmah', reason: 'Thé' },
   { slug: 'nescafe', label: 'Nescafé', reason: 'Café' },
-  { slug: 'lipton', label: 'Lipton', reason: 'Thé' },
   { slug: 'fuze-tea', label: 'Fuze Tea', reason: 'Thé' },
 
   // Décision D5 — marque trop fortement associée aux iced teas.

@@ -78,9 +78,11 @@
   initial-value: #f2f0ec;
 }
 
-[data-signal-drift] {
-  transition: --signal var(--dur-signal) var(--ease-out);
-}
+/*
+ * `[data-signal-drift]` a été retiré le 2026-08-24 avec la section S4, seule
+ * surface qui portait la dérive chromatique. `@property --signal` reste
+ * déclaré ci-dessus : il type la variable pour toute transition future.
+ */
 
 /* ----------------------------------------------------------------------
  * SURVOL — micro-échelle et inclinaison, pointeur fin uniquement.

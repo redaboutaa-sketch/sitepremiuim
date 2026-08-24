@@ -1,5 +1,13 @@
 /**
- * Catalogue de marques — 62 entrées publiables.
+ * Catalogue de marques — 14 entrées publiables.
+ *
+ * ⚠️ RÉDUCTION DU 2026-08-24 — décision du propriétaire du site.
+ * Le catalogue passait de 62 marques à la liste fermée de 14 articles
+ * demandée par le client. Les 49 autres entrées ont été SUPPRIMÉES, pas
+ * commentées : une entrée commentée finit par être décommentée par erreur.
+ * L'état complet à 62 marques est conservé et restaurable —
+ * branche `backup/catalogue-62-brands-full`, commit 5966e32.
+ * Voir doc/tr-028-catalogue-reduction.md §2 pour la liste des retraits.
  *
  * ⚠️ REFERENCE_CATALOG ≠ CONFIRMED_CURRENT_STOCK
  * Ces données décrivent l'assortiment CIBLE d'Ivan Arsenov, pas son stock réel.
@@ -34,7 +42,10 @@ export interface BrandRecord {
   volume: string | null;
   image: string | null;
   logo: string | null;
-  /** Décision de DESIGN — jamais une donnée de vente. 16 marques. */
+  /**
+   * Décision de DESIGN — jamais une donnée de vente. Depuis la réduction du
+   * 2026-08-24, les 14 entrées du catalogue sont mises en avant.
+   */
   featured: boolean;
   /** Marqueur TRANSVERSAL aux familles : une Fanta internationale reste Carbonated. */
   internationalFind: boolean;
@@ -96,146 +107,60 @@ function b(
   };
 }
 
+
+/**
+ * LES 14 ARTICLES RETENUS — liste FERMÉE arrêtée par le propriétaire du site
+ * le 2026-08-24. Ajouter une marque ici est une décision commerciale, pas une
+ * décision technique : elle doit venir du client.
+ *
+ * `featured` vaut `true` sur les 14. Ce n'est plus une sélection : à 14
+ * articles, mettre « 12 des 14 » en avant sur la page d'accueil reviendrait à
+ * cacher deux références sans qu'aucune règle ne le justifie.
+ */
 export const BRANDS: BrandRecord[] = [
-  // ── A · CARBONATED SOFT DRINKS — 26 ──────────────────────────────────
+  // ── A · CARBONATED SOFT DRINKS — 10 ──────────────────────────────────
   b('7up', '7UP', 'carbonated', { featured: true, searchTerms: ['seven up', '7 up'] }),
-  b('a-and-w', 'A&W', 'carbonated', {
-    brandLevelOnly: {
-      en: 'Root beer is a non-alcoholic soft drink, not a beer. Specific SKUs not confirmed.',
-      de: 'Root Beer ist ein alkoholfreies Erfrischungsgetränk, kein Bier. Konkrete Artikel nicht bestätigt.',
-    },
-    searchTerms: ['a and w', 'aw', 'root beer'],
-  }),
-  b('big-red', 'Big Red', 'carbonated'),
-  b('bundaberg', 'Bundaberg', 'carbonated', {
-    featured: true,
-    intl: true,
-    brandLevelOnly: {
-      en: 'Non-alcoholic references only. Specific SKUs not confirmed.',
-      de: 'Ausschließlich alkoholfreie Artikel. Konkrete Artikel nicht bestätigt.',
-    },
-  }),
-  b('canada-dry', 'Canada Dry', 'carbonated'),
   b('coca-cola', 'Coca-Cola', 'carbonated', {
     featured: true,
     searchTerms: ['coke', 'coca cola'],
   }),
-  b('dr-foots', 'Dr Foots', 'carbonated'),
   b('dr-pepper', 'Dr Pepper', 'carbonated', { featured: true, intl: true }),
   b('fanta', 'Fanta', 'carbonated', { featured: true, intl: true }),
-  b('fernandes', 'Fernandes', 'carbonated', { intl: true }),
-  b('guarana-antarctica', 'Guaraná Antarctica', 'carbonated', {
-    intl: true,
-    searchTerms: ['guarana'],
-  }),
-  b('krombacher-spezi', 'Krombacher Spezi', 'carbonated', {
-    brandLevelOnly: {
-      en: 'Spezi and soft drinks only — never Krombacher beers. Specific SKUs not confirmed.',
-      de: 'Nur Spezi und Erfrischungsgetränke — keine Krombacher Biere. Konkrete Artikel nicht bestätigt.',
-    },
-    searchTerms: ['spezi'],
-  }),
-  b('mirinda', 'Mirinda', 'carbonated'),
+  b('mirinda', 'Mirinda', 'carbonated', { featured: true }),
   b('mountain-dew', 'Mountain Dew', 'carbonated', {
     featured: true,
     intl: true,
     searchTerms: ['mtn dew'],
   }),
-  b('oasis', 'Oasis', 'carbonated'),
   b('orangina', 'Orangina', 'carbonated', { featured: true }),
-  b('pariba', 'Pariba', 'carbonated'),
   b('pepsi', 'Pepsi', 'carbonated', { featured: true, intl: true }),
-  b('poms', 'Poms', 'carbonated'),
-  b('rivella', 'Rivella', 'carbonated'),
-  b('royal-club', 'Royal Club', 'carbonated'),
   b('schweppes', 'Schweppes', 'carbonated', { featured: true }),
-  b('sisi', 'Sisi', 'carbonated'),
   b('sprite', 'Sprite', 'carbonated', { featured: true }),
-  b('sunkist', 'Sunkist', 'carbonated'),
-  b('yummy-miami-soda', 'Yummy Miami Soda', 'carbonated', {
-    intl: true,
-    searchTerms: ['yummy miami'],
-  }),
 
-  // ── B · ENERGY · SPORT · FUNCTIONAL — 11 ─────────────────────────────
-  b('28-black', '28 Black', 'energy-sport', { searchTerms: ['28black'] }),
-  b('aa-drink', 'AA Drink', 'energy-sport'),
-  b('aquarius', 'Aquarius', 'energy-sport'),
-  b('bomba', 'Bomba', 'energy-sport'),
-  b('freego', 'Freego', 'energy-sport'),
+  // ── B · ENERGY · SPORT · FUNCTIONAL — 2 ──────────────────────────────
   b('monster-energy', 'Monster Energy', 'energy-sport', {
     featured: true,
     searchTerms: ['monster'],
   }),
-  b('o2life', 'O2Life', 'energy-sport', { searchTerms: ['o2 life'] }),
-  b('powerade', 'Powerade', 'energy-sport', { featured: true }),
   b('red-bull', 'Red Bull', 'energy-sport', { featured: true, searchTerms: ['redbull'] }),
-  b('slammers-energy', 'Slammers Energy', 'energy-sport', { searchTerms: ['slammers'] }),
-  b('vitamin-well', 'Vitamin Well', 'energy-sport'),
 
-  // ── C · WATER · MINERAL · FLAVOURED — 8 ──────────────────────────────
-  b('bar-le-duc', 'Bar-le-Duc', 'water'),
-  b('chaudfontaine', 'Chaudfontaine', 'water'),
-  b('evian', 'Evian', 'water', { featured: true }),
-  b('feel-so-good', 'Feel So Good', 'water'),
-  b('kizilay', 'Kızılay', 'water', { searchTerms: ['kizilay'] }),
-  b('lacroix', 'LaCroix', 'water', { searchTerms: ['la croix'] }),
-  b('sourcy', 'Sourcy', 'water'),
-  b('spa', 'SPA', 'water', { featured: true }),
-
-  // ── D · JUICES · FRUIT · TROPICAL — 13 ───────────────────────────────
-  b('tropical-aloe-vera', 'Tropical Aloe Vera', 'juice-fruit', { searchTerms: ['aloe vera'] }),
+  // ── C · JUICES · FRUIT · TROPICAL — 1 ────────────────────────────────
   b('capri-sun', 'Capri-Sun', 'juice-fruit', { featured: true, searchTerms: ['caprisun'] }),
-  b('charlies', "Charlie's", 'juice-fruit', { searchTerms: ['charlies'] }),
-  b('coco-rico', 'Coco Rico', 'juice-fruit'),
-  b('dubbelfrisss', 'DubbelFrisss', 'juice-fruit', { searchTerms: ['dubbel frisss'] }),
-  b('grace', 'Grace', 'juice-fruit'),
-  b('hawai', 'Hawai', 'juice-fruit', { intl: true }),
-  b('hawaiian-punch', 'Hawaiian Punch', 'juice-fruit'),
-  b('hero', 'Hero', 'juice-fruit', {
-    brandLevelOnly: {
-      en: 'Drinks and juices only — not the jams or food range. Specific SKUs not confirmed.',
-      de: 'Nur Getränke und Säfte — keine Konfitüren oder Lebensmittel. Konkrete Artikel nicht bestätigt.',
-    },
-  }),
-  b('maaza', 'Maaza', 'juice-fruit'),
-  b('okf', 'OKF', 'juice-fruit'),
-  b('rauch', 'Rauch', 'juice-fruit'),
-  b('taksi', 'Taksi', 'juice-fruit'),
 
-  // ── F · INTERNATIONAL · NOVELTY · LICENSED — 4 ───────────────────────
-  // Licences tierces : sensibilité juridique supérieure aux marques de
-  // boissons classiques. Registre d'assets distinct (risque R7).
-  b('chupa-chups', 'Chupa Chups', 'international', {
-    intl: true,
-    special: true,
+  // ── D · ICED TEA — 1 ─────────────────────────────────────────────────
+  //
+  // ⚠️ Entrée créée le 2026-08-24 sur demande du propriétaire. « Lipton »
+  // figurait jusque-là dans `exclusions.ts` en « Thé — hors périmètre
+  // absolu ». L'exclusion de la marque a été levée, mais la restriction de
+  // périmètre est CONSERVÉE ici : le catalogue publie les thés glacés prêts à
+  // boire, jamais le thé en sachet ni les infusions. Sans cette `scopeNote`,
+  // la levée de l'exclusion aurait ouvert la marque entière.
+  b('lipton-ice-tea', 'Lipton Ice Tea', 'iced-tea', {
+    featured: true,
     brandLevelOnly: {
-      en: 'Licensed drinks only — not the confectionery.',
-      de: 'Nur Lizenzgetränke — keine Süßwaren.',
+      en: 'Ready-to-drink iced teas only — not the tea range. Specific SKUs not confirmed.',
+      de: 'Nur trinkfertige Eistees — kein Teesortiment. Konkrete Artikel nicht bestätigt.',
     },
-  }),
-  b('mentos', 'Mentos', 'international', {
-    intl: true,
-    special: true,
-    brandLevelOnly: {
-      en: 'Sodas and drinks only — not the sweets.',
-      de: 'Nur Limonaden und Getränke — keine Bonbons.',
-    },
-  }),
-  b('squid-game', 'Squid Game', 'international', {
-    intl: true,
-    special: true,
-    brandLevelOnly: {
-      en: 'Licensed drinks only.',
-      de: 'Nur Lizenzgetränke.',
-    },
-  }),
-  b('toxic-waste', 'Toxic Waste', 'international', {
-    intl: true,
-    special: true,
-    brandLevelOnly: {
-      en: 'Licensed drinks only — not the sweets.',
-      de: 'Nur Lizenzgetränke — keine Bonbons.',
-    },
+    searchTerms: ['lipton', 'ice tea', 'icetea', 'eistee'],
   }),
 ];

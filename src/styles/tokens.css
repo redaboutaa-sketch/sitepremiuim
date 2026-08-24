@@ -73,14 +73,25 @@
   --signal-energy: #00b8a9;
   --signal-energy-text: #2fe0cf;
 
-  --signal-water: #4a9bd1;
-  --signal-water-text: #7fc4ee;
-
   --signal-juice: #e8890c;
   --signal-juice-text: #ffae47;
 
-  --signal-international: #e0447c;
-  --signal-international-text: #ff8fb4;
+  /*
+   * `iced-tea` — famille créée le 2026-08-24 avec Lipton Ice Tea. Les teintes
+   * `water` (205°) et `international` (337°) ont été retirées en même temps
+   * que leurs familles, vidées par la réduction du catalogue.
+   *
+   * Vert feuille à 105°. Les hues restantes sont carbonated 350° et juice
+   * 34° ; energy, à 175°, est le voisin le plus proche, à 70° d'écart. C'est
+   * le plus grand intervalle libre du cercle, donc la moindre confusion.
+   *
+   * Contrastes mesurés, mêmes seuils que les autres signaux :
+   *   #4aae29 →  6,95:1 sur ink-900   (graphique seul)
+   *   #69d345 → 10,37:1 sur ink-900   (texte — bande des existantes, 7,2-12:1)
+   *   #31741b →  4,58:1 sur paper-alt (texte — bande des existantes, 4,61-4,68:1)
+   */
+  --signal-tea: #4aae29;
+  --signal-tea-text: #69d345;
 
   /*
    * Variantes texte pour SURFACE CLAIRE.
@@ -95,9 +106,8 @@
    */
   --signal-carbonated-on-paper: #c8102e; /* 4.68:1 sur paper-alt */
   --signal-energy-on-paper: #007268; /* 4.63:1 */
-  --signal-water-on-paper: #276a98; /* 4.64:1 */
   --signal-juice-on-paper: #945708; /* 4.61:1 */
-  --signal-international-on-paper: #c1205a; /* 4.61:1 */
+  --signal-tea-on-paper: #31741b; /* 4.58:1 */
 
   /* Signal actif — réaffecté par famille au niveau section (voir motion.css). */
   --signal: var(--text-primary);
@@ -302,17 +312,13 @@
   --signal: var(--signal-energy);
   --signal-text: var(--signal-energy-text);
 }
-[data-family='water'] {
-  --signal: var(--signal-water);
-  --signal-text: var(--signal-water-text);
-}
 [data-family='juice-fruit'] {
   --signal: var(--signal-juice);
   --signal-text: var(--signal-juice-text);
 }
-[data-family='international'] {
-  --signal: var(--signal-international);
-  --signal-text: var(--signal-international-text);
+[data-family='iced-tea'] {
+  --signal: var(--signal-tea);
+  --signal-text: var(--signal-tea-text);
 }
 
 /*
@@ -323,8 +329,8 @@
  * l'élément qui les déclare. Une section papier qui poserait
  * `--signal-text: var(--signal-text-paper)` résoudrait la variable AVEC SA
  * PROPRE valeur, pas avec celle de la cellule enfant qui porte la famille.
- * Il faut donc croiser les deux conditions dans le sélecteur — cinq règles,
- * explicites, plutôt qu'un tour de passe-passe.
+ * Il faut donc croiser les deux conditions dans le sélecteur — une règle par
+ * famille, explicites, plutôt qu'un tour de passe-passe.
  */
 [data-surface='paper'] [data-family='carbonated'],
 [data-surface='paper'][data-family='carbonated'] {
@@ -334,17 +340,13 @@
 [data-surface='paper'][data-family='energy-sport'] {
   --signal-text: var(--signal-energy-on-paper);
 }
-[data-surface='paper'] [data-family='water'],
-[data-surface='paper'][data-family='water'] {
-  --signal-text: var(--signal-water-on-paper);
-}
 [data-surface='paper'] [data-family='juice-fruit'],
 [data-surface='paper'][data-family='juice-fruit'] {
   --signal-text: var(--signal-juice-on-paper);
 }
-[data-surface='paper'] [data-family='international'],
-[data-surface='paper'][data-family='international'] {
-  --signal-text: var(--signal-international-on-paper);
+[data-surface='paper'] [data-family='iced-tea'],
+[data-surface='paper'][data-family='iced-tea'] {
+  --signal-text: var(--signal-tea-on-paper);
 }
 
 /* Sur surface claire sans famille active, le signal texte reste l'encre. */

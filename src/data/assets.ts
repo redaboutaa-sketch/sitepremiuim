@@ -132,27 +132,24 @@ export const HERO_BRANDS = [
 ] as const;
 
 /**
- * Les huit spécimens de S4 Discovery, dans l'ordre de la séquence.
+ * S4 DISCOVERY — SECTION SUPPRIMÉE le 2026-08-24.
  *
- * Déclarés ICI, avec `HERO_BRANDS`, et non dans le composant : le registre
- * d'assets doit savoir quels fichiers sont ATTENDUS, y compris ceux qui
- * n'existent pas encore. TR-026 a montré la conséquence de l'oubli —
- * `usagesFor()` n'accordait un usage `packshot` qu'aux marques `featured`, si
- * bien que six des huit produits de S4 n'avaient aucune entrée au registre,
- * pas même en `missing`. Personne ne pouvait savoir qu'ils manquaient.
+ * La séquence comptait huit spécimens : Chupa Chups, Guaraná Antarctica,
+ * Mountain Dew, Hawai, Fernandes, Mentos, Bundaberg, Yummy Miami Soda. La
+ * réduction du catalogue à 14 articles en a retiré SEPT ; la famille
+ * `international` qui portait le propos éditorial de la section a disparu avec
+ * eux. Il ne restait que Mountain Dew, déjà présent en Featured.
  *
- * `Discovery.astro` lit cette même liste : une séquence, une source.
+ * La liste reste déclarée et VIDE plutôt que supprimée : `usagesFor()` s'en
+ * sert pour accorder l'usage `packshot`, et TR-026 a montré ce que coûte une
+ * liste absente — six produits sans aucune entrée au registre, pas même en
+ * `missing`, donc invisibles à la QA. Une liste vide se relit ; une liste
+ * effacée se réinvente.
+ *
+ * Pour réactiver S4, restaurer `Discovery.astro` et `Home.astro` depuis
+ * `backup/catalogue-62-brands-full` en même temps que les marques.
  */
-export const DISCOVERY_BRANDS = [
-  'chupa-chups',
-  'guarana-antarctica',
-  'mountain-dew',
-  'hawai',
-  'fernandes',
-  'mentos',
-  'bundaberg',
-  'yummy-miami-soda',
-] as const;
+export const DISCOVERY_BRANDS = [] as const satisfies readonly string[];
 
 /**
  * Informations non déductibles, saisies à la main.
@@ -386,27 +383,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    * chaque entrée porte le chiffre réel.
    */
 
-  'evian:packshot': {
-    path: 'src/assets/brands/evian/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 184,
-    height: 529,
-    format: 'png',
-    bytes: 266105,
-    checksum: 'c7766952c2f45b3e063ec87d055d08bd71b97864930483ce84c98a8609e6d34b',
-    opticalCoverage: 0.847,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
-      'Résolution : 100 % du besoin DPR 2 et 67 % du besoin DPR 3 en Featured. ' +
-      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
-  },
   'orangina:packshot': {
     path: 'src/assets/brands/orangina/packshot.png',
     status: 'requires_validation',
@@ -426,27 +402,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     legalNote:
       'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
       'Résolution : 86 % du besoin DPR 2 et 57 % du besoin DPR 3 en Featured. ' +
-      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
-  },
-  'powerade:packshot': {
-    path: 'src/assets/brands/powerade/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 179,
-    height: 530,
-    format: 'png',
-    bytes: 240852,
-    checksum: '4fd130740dc6447b40f20c361840b7fd941cbe3a70b3c28f9f0ae71b5d480b7e',
-    opticalCoverage: 0.825,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
-      'Résolution : 100 % du besoin DPR 2 et 67 % du besoin DPR 3 en Featured. ' +
       'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
   },
   'capri-sun:packshot': {
@@ -489,27 +444,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     legalNote:
       'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
       'Résolution : 77 % du besoin DPR 2 et 51 % du besoin DPR 3 en Featured. ' +
-      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
-  },
-  'spa:packshot': {
-    path: 'src/assets/brands/spa/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 179,
-    height: 465,
-    format: 'png',
-    bytes: 225536,
-    checksum: '3954dc6393ea5b734870b0b758fe0db52cba5281244a164e8686eda867151a28',
-    opticalCoverage: 0.804,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
-      'Résolution : 88 % du besoin DPR 2 et 58 % du besoin DPR 3 en Featured. ' +
       'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
   },
   'mountain-dew:packshot': {
@@ -575,27 +509,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'Résolution : 77 % du besoin DPR 2 et 51 % du besoin DPR 3 en Featured. ' +
       'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
   },
-  'bundaberg:packshot': {
-    path: 'src/assets/brands/bundaberg/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 206,
-    height: 464,
-    format: 'png',
-    bytes: 282017,
-    checksum: 'e06d4bbd4466008083400872385e7ca74e3dfaaa175d6a980515afe58a07308c',
-    opticalCoverage: 0.866,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement. ' +
-      'Résolution : 88 % du besoin DPR 2 et 58 % du besoin DPR 3 en Featured. Aussi rendu en S4 Discovery, dont le besoin est plus élevé : 59 % de DPR 2 et 40 % de DPR 3. ' +
-      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
-  },
 
   /*
    * TR-026B — PACKSHOTS S4 DISCOVERY, six marques.
@@ -621,138 +534,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    * agrandissement n'a été appliqué ; la note de chaque entrée porte le chiffre.
    */
 
-  'chupa-chups:packshot': {
-    path: 'src/assets/brands/chupa-chups/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 237,
-    height: 722,
-    format: 'png',
-    bytes: 521394,
-    checksum: '6f30e8348bf3811d81de6315ef63d7b1d720bbf3d26ebd04670632b93c1f6114',
-    opticalCoverage: 0.963,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 72 % de DPR 2, ' +
-      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
-  'guarana-antarctica:packshot': {
-    path: 'src/assets/brands/guarana-antarctica/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 245,
-    height: 724,
-    format: 'png',
-    bytes: 520885,
-    checksum: 'dbb35f54ad3d2b13e2f81ec10b60ab3c2f8ba150eb86787d54bccc03368df307',
-    opticalCoverage: 0.96,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 73 % de DPR 2, ' +
-      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
-  'hawai:packshot': {
-    path: 'src/assets/brands/hawai/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 242,
-    height: 980,
-    format: 'png',
-    bytes: 642883,
-    checksum: '9152120f3456ca2aa81d001a5ddfeb13e46d4d3a6ae9b0560c50a4e8128ecb54',
-    opticalCoverage: 0.841,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 196 % du besoin DPR 1, 98 % de DPR 2, ' +
-      '65 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
-  'fernandes:packshot': {
-    path: 'src/assets/brands/fernandes/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 241,
-    height: 924,
-    format: 'png',
-    bytes: 654586,
-    checksum: '704ade59d830a7d5931a1f5dd781d20847f9cf2d95db11a895f184b763b2ce28',
-    opticalCoverage: 0.815,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 185 % du besoin DPR 1, 93 % de DPR 2, ' +
-      '62 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
-  'mentos:packshot': {
-    path: 'src/assets/brands/mentos/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 240,
-    height: 849,
-    format: 'png',
-    bytes: 575180,
-    checksum: '5753f097014f47646cdeb6ad6e6b5045f65a27408b1af6c026a85ccdb408ccf5',
-    opticalCoverage: 0.859,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 170 % du besoin DPR 1, 85 % de DPR 2, ' +
-      '57 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
-  'yummy-miami-soda:packshot': {
-    path: 'src/assets/brands/yummy-miami-soda/packshot.png',
-    status: 'requires_validation',
-    sourceType: 'generated',
-    source:
-      'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 23_19_17 » (TR-026B). ' +
-      'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
-      'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
-      'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
-    width: 239,
-    height: 722,
-    format: 'png',
-    bytes: 547104,
-    checksum: 'ac199ea423a34d4ab82f54ffd40fcd6af7cf59d2e1849351653b7f864e2edfb8',
-    opticalCoverage: 0.964,
-    legalNote:
-      'Asset GÉNÉRÉ, non fourni par le titulaire. Préproduction uniquement, ' +
-      'pour S4 Discovery. Résolution : 145 % du besoin DPR 1, 72 % de DPR 2, ' +
-      '48 % de DPR 3. Ne ferme pas B2 : la production exige un fichier presse ' +
-      'ou une autorisation écrite.',
-  },
   /*
    * LIVRAISON DU 2026-08-16 — archive « photos ivan.zip ».
    *
@@ -770,20 +551,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    * n'emporte pas cession des droits du titulaire de la marque. Rendu en
    * staging, repli typographique en production, tant qu'Ivan n'a pas confirme.
    */
-  '28-black:logo': {
-    path: 'src/assets/brands/28-black/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (28-Black.png, 842×841 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 639,
-    format: 'webp',
-    bytes: 81734,
-    checksum: '2be2614fe74c848a82688573140c61d8422fb8ba08a0464f5563a1c388d15f4c',
-    sourceType: null,
-    opticalCoverage: 0.222,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (20%).",
-  },
   '7up:logo': {
     path: 'src/assets/brands/7up/logo.webp',
     status: 'requires_validation',
@@ -797,90 +564,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.56,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (37%).",
-  },
-  'aa-drink:logo': {
-    path: 'src/assets/brands/aa-drink/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (AA-Drink.png, 473×350 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 473,
-    height: 350,
-    format: 'webp',
-    bytes: 28378,
-    checksum: '160dff9b38dd5909ac8a6a91bf42f3ba3149f49bb86fdbc65209f3b81a07dbba',
-    sourceType: null,
-    opticalCoverage: 0.414,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (35%).",
-  },
-  'aquarius:logo': {
-    path: 'src/assets/brands/aquarius/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Aquarius.png, 840×597 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 455,
-    format: 'webp',
-    bytes: 43690,
-    checksum: '5087b2033c6e51ee9515b4c498ddca74870cc6af60d98240f64b46e7d81ce958',
-    sourceType: null,
-    opticalCoverage: 0.231,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (25% des pixels ≥3:1).",
-  },
-  'bar-le-duc:logo': {
-    path: 'src/assets/brands/bar-le-duc/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (BAR-LE-DUC.png, 864×594 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 440,
-    format: 'webp',
-    bytes: 8180,
-    checksum: '36597632a813d7d3c1c6846f96591ec83397ffe652d8ccca6e5a11e0d3e2c20c',
-    sourceType: null,
-    opticalCoverage: 1,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (0%).",
-  },
-  'big-red:logo': {
-    path: 'src/assets/brands/big-red/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (big-red.png, 448×461 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 448,
-    height: 461,
-    format: 'webp',
-    bytes: 39090,
-    checksum: 'dfa9b2316b40f377012a7c207b08fc86dafc95ce4a884deff2f75ae7277a7e98',
-    sourceType: null,
-    opticalCoverage: 0.584,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (53% des pixels ≥3:1) · peu lisible sur papier (52%).",
-  },
-  'bomba:logo': {
-    path: 'src/assets/brands/bomba/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Bomba.png, 837×839 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 642,
-    format: 'webp',
-    bytes: 33172,
-    checksum: '5e66df85d0415d408a9b6f7705c9095c2eec5d4e11ca155695e680a4d565b924',
-    sourceType: null,
-    opticalCoverage: 0.783,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
-  },
-  'canada-dry:logo': {
-    path: 'src/assets/brands/canada-dry/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Canada-Dry.png, 537×505 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 537,
-    height: 505,
-    format: 'webp',
-    bytes: 36012,
-    checksum: '6313e299cd18639af4c4ce7caf92ace190537690a32d8ba7e3c5ef81ba51fdea',
-    sourceType: null,
-    opticalCoverage: 0.689,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (33%).",
   },
   'capri-sun:logo': {
     path: 'src/assets/brands/capri-sun/logo.webp',
@@ -896,48 +579,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     opticalCoverage: 0.452,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (39%) · très horizontal (ratio 3.03).",
   },
-  'charlies:logo': {
-    path: 'src/assets/brands/charlies/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Charlies.png, 795×270 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 217,
-    format: 'webp',
-    bytes: 41990,
-    checksum: '61f5f77103938afa794a8f03d14de33c71486ee017045a94d5cbe1041b5f55b1',
-    sourceType: null,
-    opticalCoverage: 0.437,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (43% des pixels ≥3:1) · très horizontal (ratio 2.94).",
-  },
-  'chaudfontaine:logo': {
-    path: 'src/assets/brands/chaudfontaine/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Chaudfontaine.png, 834×207 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 159,
-    format: 'webp',
-    bytes: 10728,
-    checksum: '346b10b10ec309fa141abe4f1a9fdf4f3dfa7d86b35b5dcf549909bb4453109a',
-    sourceType: null,
-    opticalCoverage: 1,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur encre (22% des pixels ≥3:1) · très horizontal (ratio 4.03).",
-  },
-  'chupa-chups:logo': {
-    path: 'src/assets/brands/chupa-chups/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Chupa-Chups.png, 466×465 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 466,
-    height: 465,
-    format: 'webp',
-    bytes: 38998,
-    checksum: '0d3b0b24051084f6b90395126ebc599f9367972db76b78551f01c4104a7aad62',
-    sourceType: null,
-    opticalCoverage: 0.789,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (30%).",
-  },
   'coca-cola:logo': {
     path: 'src/assets/brands/coca-cola/logo.webp',
     status: 'requires_validation',
@@ -951,34 +592,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.416,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 3.05).",
-  },
-  'coco-rico:logo': {
-    path: 'src/assets/brands/coco-rico/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Coco-Rico.png, 620×785 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 620,
-    height: 785,
-    format: 'webp',
-    bytes: 61186,
-    checksum: '43c9231a2541e462e349b39871ab566b96b93b173b3e3a3be92054f14df2e220',
-    sourceType: null,
-    opticalCoverage: 0.664,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (21%).",
-  },
-  'dr-foots:logo': {
-    path: 'src/assets/brands/dr-foots/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Dr.Foots_.png, 864×581 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 430,
-    format: 'webp',
-    bytes: 51544,
-    checksum: '5052fa832a5fd86271d814a23e2c533bdfd3383680bf653f68ee847cdd6311e9',
-    sourceType: null,
-    opticalCoverage: 0.981,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (45%).",
   },
   'dr-pepper:logo': {
     path: 'src/assets/brands/dr-pepper/logo.webp',
@@ -994,34 +607,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     opticalCoverage: 0.754,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (57%).",
   },
-  'dubbelfrisss:logo': {
-    path: 'src/assets/brands/dubbelfrisss/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Dubbel-Frisss.png, 434×590 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 434,
-    height: 590,
-    format: 'webp',
-    bytes: 25550,
-    checksum: 'ac06d9c1851d9d0ca7a1233c8575bd11fea4ee982d958128edcd8a4918d031d9',
-    sourceType: null,
-    opticalCoverage: 0.503,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (42%).",
-  },
-  'evian:logo': {
-    path: 'src/assets/brands/evian/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Evian.png, 864×476 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 353,
-    format: 'webp',
-    bytes: 36056,
-    checksum: 'a7d97bad2a19ad4786b0f04977875eee7efbf9590abce36c703828c24a63659e',
-    sourceType: null,
-    opticalCoverage: 0.329,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
   'fanta:logo': {
     path: 'src/assets/brands/fanta/logo.webp',
     status: 'requires_validation',
@@ -1035,188 +620,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.722,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (52% des pixels ≥3:1) · peu lisible sur papier (51%).",
-  },
-  'feel-so-good:logo': {
-    path: 'src/assets/brands/feel-so-good/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Feel-So-Good.png, 864×236 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 175,
-    format: 'webp',
-    bytes: 13114,
-    checksum: 'd8a314f20f07db2524a0894cd5c9ef0c68d44e53633659ae3bbdea24f6cfba31',
-    sourceType: null,
-    opticalCoverage: 1,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur encre (43% des pixels ≥3:1) · très horizontal (ratio 3.66).",
-  },
-  'fernandes:logo': {
-    path: 'src/assets/brands/fernandes/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Fernandes.png, 718×493 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 439,
-    format: 'webp',
-    bytes: 33878,
-    checksum: 'db621a4f180df391597b64d57de84a58b8eff05fdd094086d0fb9fcf35d0ff50',
-    sourceType: null,
-    opticalCoverage: 0.553,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (36%).",
-  },
-  'freego:logo': {
-    path: 'src/assets/brands/freego/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Freego.png, 786×488 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 397,
-    format: 'webp',
-    bytes: 118218,
-    checksum: 'a4cbd506ff1412782c63201426f00ec8b18b3e7efafe272555758f6cb846dab0',
-    sourceType: null,
-    opticalCoverage: 0.318,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (34% des pixels ≥3:1).",
-  },
-  'grace:logo': {
-    path: 'src/assets/brands/grace/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Grace.png, 864×445 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 330,
-    format: 'webp',
-    bytes: 44778,
-    checksum: '2d43d7d61f06d922ed270f71ded6342f295e4617f080e4999998707eba8beb73',
-    sourceType: null,
-    opticalCoverage: 0.729,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (22%).",
-  },
-  'guarana-antarctica:logo': {
-    path: 'src/assets/brands/guarana-antarctica/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Guarana.png, 828×833 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 644,
-    format: 'webp',
-    bytes: 81104,
-    checksum: '952e20f91e8b0311334ce0cd59583108d4294046ea011a5ccf07c5aa40bb62d3',
-    sourceType: null,
-    opticalCoverage: 0.51,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
-  'hawai:logo': {
-    path: 'src/assets/brands/hawai/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Hawai.png, 864×864 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 640,
-    format: 'webp',
-    bytes: 10136,
-    checksum: '36d578e959bd88b80bbb7258895aab2ac3af2b3911b6566865d61bbdc31c7746',
-    sourceType: null,
-    opticalCoverage: 1,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée · peu lisible sur papier (0%).",
-  },
-  'hawaiian-punch:logo': {
-    path: 'src/assets/brands/hawaiian-punch/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Hawaiian-Punch.png, 738×446 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 387,
-    format: 'webp',
-    bytes: 41508,
-    checksum: '3435bcbfb1b8ea0548a874f18cf36640d731581dc8e26109a065f7ce2fcbb933',
-    sourceType: null,
-    opticalCoverage: 0.567,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (59% des pixels ≥3:1) · peu lisible sur papier (42%).",
-  },
-  'hero:logo': {
-    path: 'src/assets/brands/hero/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Hero.png, 864×372 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 276,
-    format: 'webp',
-    bytes: 38664,
-    checksum: 'bff0b867044dfe55ec7f69f29e315d7f08b3cc9335009bf67f3f4a6b13e9f728',
-    sourceType: null,
-    opticalCoverage: 0.487,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (25% des pixels ≥3:1).",
-  },
-  'kizilay:logo': {
-    path: 'src/assets/brands/kizilay/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Kizilay.png, 500×780 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 500,
-    height: 780,
-    format: 'webp',
-    bytes: 21526,
-    checksum: '4b9cc2544ecf2b3574cc06c5a11b2befec13283ddc3708e3d78e74037d70cecc',
-    sourceType: null,
-    opticalCoverage: 0.346,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très vertical (ratio 0.64).",
-  },
-  'krombacher-spezi:logo': {
-    path: 'src/assets/brands/krombacher-spezi/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Krombacher-Spezi.png, 844×426 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 323,
-    format: 'webp',
-    bytes: 36146,
-    checksum: 'cd115f232c92b5999fcff10c97d5f59d26dde236afdfd2271b29a8de67c28eaf',
-    sourceType: null,
-    opticalCoverage: 0.411,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (35% des pixels ≥3:1).",
-  },
-  'lacroix:logo': {
-    path: 'src/assets/brands/lacroix/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (La-Croix.png, 665×322 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 310,
-    format: 'webp',
-    bytes: 64688,
-    checksum: '909d550d103a27581c82047fd4e4efc7b3f94116a07a74ee65ecb1bae60186dd',
-    sourceType: null,
-    opticalCoverage: 0.274,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (49% des pixels ≥3:1).",
-  },
-  'maaza:logo': {
-    path: 'src/assets/brands/maaza/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Maaza.png, 830×266 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 205,
-    format: 'webp',
-    bytes: 35292,
-    checksum: '76c6764f7d386caa069f96030578fae32d5e505957d2d7a91d1d02f12a0c7b95',
-    sourceType: null,
-    opticalCoverage: 0.568,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 3.12).",
-  },
-  'mentos:logo': {
-    path: 'src/assets/brands/mentos/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Mentos.png, 655×141 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 138,
-    format: 'webp',
-    bytes: 29942,
-    checksum: '02a801aa8d462d6004602e2d575571d066938f7c85eb4957a63350b4b6c25375',
-    sourceType: null,
-    opticalCoverage: 0.617,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (47% des pixels ≥3:1) · très horizontal (ratio 4.65).",
   },
   'mirinda:logo': {
     path: 'src/assets/brands/mirinda/logo.webp',
@@ -1260,48 +663,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     opticalCoverage: 0.35,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (55%).",
   },
-  'o2life:logo': {
-    path: 'src/assets/brands/o2life/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-O2Life.png, 864×864 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 640,
-    format: 'webp',
-    bytes: 10270,
-    checksum: '00312d771659abc0ae70b15fa7dcccc933585afccd83ff8a512fa09c4600e981',
-    sourceType: null,
-    opticalCoverage: 1,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ fond plein propre à la marque — rend un bloc coloré, pas une forme détourée.",
-  },
-  'oasis:logo': {
-    path: 'src/assets/brands/oasis/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Oasis.png, 488×381 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 488,
-    height: 381,
-    format: 'webp',
-    bytes: 29994,
-    checksum: '2037c9d524a4ed3fa522645cc39bb8e9cfe1f3a964aaa90e470fdf0e039ad63e',
-    sourceType: null,
-    opticalCoverage: 0.591,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (59%).",
-  },
-  'okf:logo': {
-    path: 'src/assets/brands/okf/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-OKF.png, 854×319 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 239,
-    format: 'webp',
-    bytes: 29596,
-    checksum: 'aa925e2c1f83b14c05458bd32a736f164cdcf502acd0b8a771b3cb32caa2cedd',
-    sourceType: null,
-    opticalCoverage: 0.801,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ très horizontal (ratio 2.68).",
-  },
   'orangina:logo': {
     path: 'src/assets/brands/orangina/logo.webp',
     status: 'requires_validation',
@@ -1315,20 +676,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.708,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (39%).",
-  },
-  'pariba:logo': {
-    path: 'src/assets/brands/pariba/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Pariba.png, 864×466 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 345,
-    format: 'webp',
-    bytes: 59390,
-    checksum: 'e9089b6b1a2d62f214b4985dc9cb3411d934273e5d9bfda9216296be9943e61c',
-    sourceType: null,
-    opticalCoverage: 0.383,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (33% des pixels ≥3:1).",
   },
   'pepsi:logo': {
     path: 'src/assets/brands/pepsi/logo.webp',
@@ -1344,48 +691,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     opticalCoverage: 0.784,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
   },
-  'poms:logo': {
-    path: 'src/assets/brands/poms/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Poms.png, 577×578 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 577,
-    height: 578,
-    format: 'webp',
-    bytes: 25800,
-    checksum: 'ca0ce19445f279cacdaf2bfec1cd92075f37b0b26537c9afaf4e5f3304a59f7a',
-    sourceType: null,
-    opticalCoverage: 0.789,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (21% des pixels ≥3:1).",
-  },
-  'powerade:logo': {
-    path: 'src/assets/brands/powerade/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Powerade.png, 807×268 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 213,
-    format: 'webp',
-    bytes: 16448,
-    checksum: '8b2b6c70c18dff69179386aca42f19079232ab603c51ec9cdf1222550c8159e6',
-    sourceType: null,
-    opticalCoverage: 0.533,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (18% des pixels ≥3:1) · très horizontal (ratio 3.01).",
-  },
-  'rauch:logo': {
-    path: 'src/assets/brands/rauch/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Rauch.png, 807×337 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 267,
-    format: 'webp',
-    bytes: 27784,
-    checksum: '43aaf0b7ac6ef26f7165b92036a0813dffe2be786552e91d97c40e98498bf671',
-    sourceType: null,
-    opticalCoverage: 0.789,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
-  },
   'red-bull:logo': {
     path: 'src/assets/brands/red-bull/logo.webp',
     status: 'requires_validation',
@@ -1399,34 +704,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.459,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
-  'rivella:logo': {
-    path: 'src/assets/brands/rivella/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Rivella.png, 634×475 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 634,
-    height: 475,
-    format: 'webp',
-    bytes: 19922,
-    checksum: '7208279a785827a038e56edb00a3632a9d3b3d30ea6dfa72996d6ca41594294d',
-    sourceType: null,
-    opticalCoverage: 0.751,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
-  'royal-club:logo': {
-    path: 'src/assets/brands/royal-club/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Royal-Club.png, 848×843 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 636,
-    format: 'webp',
-    bytes: 42472,
-    checksum: 'fc014aab59010553b35b59dabff0fb3ad9096e3c94fcb528d405a325c084dd1c',
-    sourceType: null,
-    opticalCoverage: 0.788,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (34% des pixels ≥3:1).",
   },
   'schweppes:logo': {
     path: 'src/assets/brands/schweppes/logo.webp',
@@ -1442,62 +719,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     opticalCoverage: 0.488,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (29%).",
   },
-  'sisi:logo': {
-    path: 'src/assets/brands/sisi/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Sisi.png, 860×585 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 435,
-    format: 'webp',
-    bytes: 35160,
-    checksum: 'b83dd3b6c15bf0b1f18e873fca4886a16337067c456576543575b036b22014cc',
-    sourceType: null,
-    opticalCoverage: 0.665,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (52% des pixels ≥3:1) · peu lisible sur papier (51%).",
-  },
-  'slammers-energy:logo': {
-    path: 'src/assets/brands/slammers-energy/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Slammers.png, 578×190 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 578,
-    height: 190,
-    format: 'webp',
-    bytes: 16668,
-    checksum: 'ad1f748e1ca6de55481e104b96026d2eddb2264f284c24e82c59c6970451c282',
-    sourceType: null,
-    opticalCoverage: 0.284,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (35% des pixels ≥3:1) · très horizontal (ratio 3.04).",
-  },
-  'sourcy:logo': {
-    path: 'src/assets/brands/sourcy/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Sourcy.png, 864×397 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 294,
-    format: 'webp',
-    bytes: 35270,
-    checksum: '1c89fae1de80fdd903ab1aed52609d0f22c20759296d2764d468bd2c5f5dae88',
-    sourceType: null,
-    opticalCoverage: 0.261,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (33% des pixels ≥3:1).",
-  },
-  'spa:logo': {
-    path: 'src/assets/brands/spa/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (SPA.png, 862×597 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 443,
-    format: 'webp',
-    bytes: 54304,
-    checksum: 'c1964c143bf8b9030dfdda50610142afaafc27b1bffb746722a39461821e4100',
-    sourceType: null,
-    opticalCoverage: 0.428,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (45% des pixels ≥3:1) · peu lisible sur papier (56%).",
-  },
   'sprite:logo': {
     path: 'src/assets/brands/sprite/logo.webp',
     status: 'requires_validation',
@@ -1511,104 +732,6 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.278,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
-  'squid-game:logo': {
-    path: 'src/assets/brands/squid-game/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Squid-Game.png, 864×448 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 332,
-    format: 'webp',
-    bytes: 22816,
-    checksum: 'eaa90402e8d1bfdbb73997e366c05b4f0401f9fc07edd7fddcab0aecd4fe6c18',
-    sourceType: null,
-    opticalCoverage: 0.238,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (29% des pixels ≥3:1).",
-  },
-  'sunkist:logo': {
-    path: 'src/assets/brands/sunkist/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Sunkist.png, 702×686 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 625,
-    format: 'webp',
-    bytes: 72626,
-    checksum: 'b9346447239654812950d7911eb51d40581439645e195745c60e8aaf2afc25fe',
-    sourceType: null,
-    opticalCoverage: 0.604,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (30%).",
-  },
-  'taksi:logo': {
-    path: 'src/assets/brands/taksi/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Taksi.png, 320×646 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 320,
-    height: 646,
-    format: 'webp',
-    bytes: 14542,
-    checksum: '269fce18368b80e1739d61d75fb01a9a20fe2676069371c992643a7689156c81',
-    sourceType: null,
-    opticalCoverage: 0.596,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (27%) · très vertical (ratio 0.5).",
-  },
-  'toxic-waste:logo': {
-    path: 'src/assets/brands/toxic-waste/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Toxic-Waste.png, 765×691 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 578,
-    format: 'webp',
-    bytes: 79772,
-    checksum: '16535834b0bc86ff19754085ceb0bdae2e3196dec1c9a82a0b20b3a93eb013c5',
-    sourceType: null,
-    opticalCoverage: 0.474,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (38%).",
-  },
-  'tropical-aloe-vera:logo': {
-    path: 'src/assets/brands/tropical-aloe-vera/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Aloe-Vera.png, 858×309 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 230,
-    format: 'webp',
-    bytes: 32104,
-    checksum: 'e19b862ab84352c311f8d5741bb0311e963282227eecf273b1e85c5b3c594e76',
-    sourceType: null,
-    opticalCoverage: 0.572,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (44% des pixels ≥3:1) · peu lisible sur papier (59%) · très horizontal (ratio 2.78).",
-  },
-  'vitamin-well:logo': {
-    path: 'src/assets/brands/vitamin-well/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Vitamin-Well.png, 844×338 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 256,
-    format: 'webp',
-    bytes: 25684,
-    checksum: 'b96ef19fee7140f7b4e16b1f2ec421f2e19d6fec6bd8e4cecb20a2a7c95cb463',
-    sourceType: null,
-    opticalCoverage: 0.444,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit.",
-  },
-  'yummy-miami-soda:logo': {
-    path: 'src/assets/brands/yummy-miami-soda/logo.webp',
-    status: 'requires_validation',
-    source: 'Client — archive « photos ivan.zip », 2026-08-16 (Logo-Yummy-Miami.png, 859×859 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
-    width: 640,
-    height: 640,
-    format: 'webp',
-    bytes: 30742,
-    checksum: '3177c2f48061ce33506b1197abb6326bbe6a9ad26f2e20dfad7b0ea10729c597',
-    sourceType: null,
-    opticalCoverage: 0.784,
-    legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (5%).",
   },
 };
 

@@ -13,7 +13,7 @@
  * Chaque marque conduit au catalogue filtré correspondant.
  */
 import EnquiryButton from '@/components/enquiry/EnquiryButton.astro';
-import { CATEGORIES, allBrands, brandsInCategory, catalogStats } from '@/lib/catalog';
+import { CATEGORIES, brandsInCategory, catalogStats } from '@/lib/catalog';
 import { useI18n, type Locale } from '@/i18n';
 
 interface Props {
@@ -30,7 +30,6 @@ const groups = CATEGORIES.map((category) => ({
   brands: brandsInCategory(category.slug),
 }));
 
-const featuredCount = allBrands().filter((b) => b.featured).length;
 ---
 
 <section class="brands-head section section--tight" data-surface="ink">
@@ -41,8 +40,7 @@ const featuredCount = allBrands().filter((b) => b.featured).length;
     <p class="t-index brands-head__stats">
       {t.brands.stats
         .replace('{total}', String(stats.total))
-        .replace('{families}', String(CATEGORIES.length))
-        .replace('{featured}', String(featuredCount))}
+        .replace('{families}', String(CATEGORIES.length))}
     </p>
   </div>
 </section>

@@ -5,31 +5,36 @@ import { mkdir, writeFile } from 'node:fs/promises';
  * TR-025 — FEATURED BRANDS AVEC PACKSHOTS.
  *
  * Mesure la piste, puis la photographie. S'exécute contre l'artefact de
- * préproduction ; sur un build de production les seize emplacements rendent
+ * préproduction ; sur un build de production les quatorze emplacements rendent
  * leur repli typographique et les contrôles de visuel se sautent.
  */
 
 const OUT = 'qa/screenshots/featured';
 
-/** Les seize marques mises en avant, dans l'ordre du catalogue. */
-const FEATURED = [
+/**
+ * Les DOUZE articles qui portent une photo produit, dans l'ordre du catalogue.
+ *
+ * La piste en compte quatorze depuis la réduction du 2026-08-24 ; Mirinda
+ * (logo officiel, pas de packshot) et Lipton Ice Tea (aucun fichier) ne sont
+ * pas des visuels produit et sont contrôlés séparément.
+ */
+const FEATURED_WITH_PHOTO = [
   '7up',
-  'bundaberg',
   'capri-sun',
   'coca-cola',
   'dr-pepper',
-  'evian',
   'fanta',
   'monster-energy',
   'mountain-dew',
   'orangina',
   'pepsi',
-  'powerade',
   'red-bull',
   'schweppes',
-  'spa',
   'sprite',
 ];
+
+/** Les deux articles sans photo produit. Aucun visuel ne sera fabriqué pour eux. */
+const FEATURED_WITHOUT_PHOTO = ['mirinda', 'lipton-ice-tea'];
 
 /** Les six qui réemploient leur master de scène plutôt qu'un doublon. */
 const REUSED = ['coca-cola', 'fanta', 'red-bull', 'monster-energy', 'pepsi', 'sprite'];
@@ -53,8 +58,12 @@ const settled = async (page: Page) => {
   await page.waitForTimeout(400);
 };
 
+/*
+ * Douze photos produit + le logo de Mirinda = treize images dans la piste.
+ * Lipton Ice Tea n'a aucun fichier et sort en repli typographique.
+ */
 const staging = async (page: Page) =>
-  (await page.locator('[data-track] .product-object img').count()) === 16;
+  (await page.locator('[data-track] .product-object img').count()) === 13;
 
 test.beforeAll(async () => {
   await mkdir(OUT, { recursive: true });
@@ -64,7 +73,7 @@ test.beforeAll(async () => {
  * 1 · Ce qui est rendu
  * ================================================================== */
 
-test('seize marques, seize visuels, aucun repli', async ({ page }, info) => {
+test('quatorze cellules · douze photos produit · un logo · un repli', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   await settled(page);
   test.skip(!(await staging(page)), 'artefact de production — replis typographiques');
@@ -78,30 +87,68 @@ test('seize marques, seize visuels, aucun repli', async ({ page }, info) => {
     })),
   );
 
-  expect(objs).toHaveLength(16);
-  expect([...objs.map((o) => o.brand!)].sort()).toEqual([...FEATURED].sort());
-  await expect(page.locator('[data-track] .product-object__fallback')).toHaveCount(0);
+  // La piste rend bien quatorze cellules.
+  await expect(page.locator('[data-track] .featured__item')).toHaveCount(14);
 
-  for (const o of objs) {
-    // Aucun logo de marque dans Featured : décision DA du 2026-08-16.
+  /*
+   * `.product-object` existe pour les QUATORZE cellules — c'est le conteneur,
+   * pas le visuel. Ce qui distingue une photo produit, ce sont les attributs
+   * d'audit, que `ProductObject` n'émet que sur le hero et sur les assets
+   * générés. On filtre donc sur `data-object`, présent uniquement là.
+   */
+  const photos = objs.filter((o) => o.brand !== null);
+  expect(photos).toHaveLength(12);
+  expect([...photos.map((o) => o.brand!)].sort()).toEqual([...FEATURED_WITH_PHOTO].sort());
+
+  for (const o of photos) {
     expect(o.asset, `${o.brand}`).not.toBe('logo');
     expect(o.asset, `${o.brand}`).toMatch(/^(packshot|hero)$/);
     expect(o.generated, `${o.brand} doit être marqué généré`).toBe(true);
     expect(o.alt, `${o.brand} ne doit rien affirmer`).toBe('');
   }
 
+  /*
+   * Les deux articles sans photo — décision du propriétaire du 2026-08-24.
+   * Mirinda tombe sur son logo officiel, Lipton Ice Tea sur le repli
+   * typographique. Si Lipton passait au logo, c'est qu'un logo aurait été
+   * fabriqué pour elle : c'est précisément ce que ce contrôle interdit.
+   */
+  await expect(page.locator('[data-track] .product-object__img--logo')).toHaveCount(1);
+  await expect(page.locator('[data-track] .product-object__fallback')).toHaveCount(1);
+  const holes = await page.locator('[data-track] .featured__item').evaluateAll((els) =>
+    els
+      .filter(
+        (el) =>
+          el.querySelector('.product-object__img--logo') ||
+          el.querySelector('.product-object__fallback'),
+      )
+      .map((el) => /brand=([a-z0-9-]+)/.exec(el.querySelector('a')?.getAttribute('href') ?? '')?.[1]),
+  );
+  expect(holes.sort()).toEqual([...FEATURED_WITHOUT_PHOTO].sort());
+
   // Les six marques de la scène réemploient leur master, sans fichier dupliqué.
-  const reused = objs.filter((o) => o.asset === 'hero').map((o) => o.brand!);
+  const reused = photos.filter((o) => o.asset === 'hero').map((o) => o.brand!);
   expect(reused.sort()).toEqual([...REUSED].sort());
 });
 
-test('aucun logo de marque ne s’est glissé dans la piste', async ({ page }, info) => {
+test('un seul logo dans la piste, et c’est celui de Mirinda', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   await settled(page);
-  await expect(page.locator('[data-track] .product-object__img--logo')).toHaveCount(0);
+  /*
+   * La règle était « aucun logo dans Featured » (décision DA du 2026-08-16).
+   * Elle a été assouplie le 2026-08-24, d'exactement UN : Mirinda a un logo
+   * officiel mais pas de photo produit, et le propriétaire a arbitré qu'elle
+   * occupe un plateau plutôt que de laisser un trou dans la piste.
+   *
+   * Le plafond à un est le garde-fou : un second logo signifierait qu'une
+   * photo a disparu, ou qu'un logo a été fabriqué pour combler un manque.
+   */
+  const logos = page.locator('[data-track] .product-object__img--logo');
+  await expect(logos).toHaveCount(1);
+  await expect(logos).toHaveAttribute('alt', 'Mirinda — logo');
 });
 
-test('les seize images décodent réellement', async ({ page }, info) => {
+test('les images de la piste décodent réellement', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   await settled(page);
   test.skip(!(await staging(page)));
@@ -189,7 +236,17 @@ test('piste défilable, sol commun, ligne de tête ondulante', async ({ page }, 
 
   const m = await page.evaluate(() => {
     const track = document.querySelector('[data-track-viewport]')!;
-    const imgs = [...document.querySelectorAll('[data-track] .product-object img')];
+    /*
+     * On mesure les PHOTOS PRODUIT seules. Le logo de Mirinda est dimensionné
+     * par `--logo-w` / `--logo-h` (normalisation optique des logos) et n'a
+     * aucune raison de partager la hauteur d'une bouteille : ce n'est pas un
+     * objet posé, c'est une marque plate.
+     */
+    const imgs = [
+      ...document.querySelectorAll(
+        '[data-track] .product-object img:not(.product-object__img--logo)',
+      ),
+    ];
     return {
       scrollable: track.scrollWidth > track.clientWidth,
       heights: imgs.map((i) => Math.round(i.getBoundingClientRect().height)),
@@ -203,42 +260,55 @@ test('piste défilable, sol commun, ligne de tête ondulante', async ({ page }, 
   expect(m.scrollable, 'la piste ne défile plus').toBe(true);
 
   /*
-   * NORMALISATION OPTIQUE (§9) — trois règles, aucune valeur par marque.
+   * « LES PHOTOS TOUTES À LA MÊME TAILLE » — demande du propriétaire du site,
+   * 2026-08-24. Trois règles, aucune valeur par marque.
    *
-   *  1. SOL COMMUN. `align-items: flex-end` : les seize objets reposent sur la
-   *     même ligne, quelle que soit la hauteur de leur plateau.
-   *  2. LIGNE DE TÊTE ONDULANTE. `--po-aspect` prend quatre valeurs en rotation
-   *     (3/4, 3/3.3, 3/3.75, 3/3) — c'est la piste qui ondule, pas les
-   *     produits qu'on redimensionne un par un.
-   *  3. PROPORTIONS RÉELLES. `block-size: 100%` + `inline-size: auto` : l'objet
-   *     remplit la hauteur de SON plateau et sa largeur suit son propre ratio.
+   *  1. SOL COMMUN. `align-items: flex-end` : tous les objets reposent sur la
+   *     même ligne.
+   *  2. LIGNE DE TÊTE DROITE. `--po-aspect` vaut `3 / 4` pour les quatorze.
+   *     C'est l'inverse exact de la règle précédente : la piste ondulait sur
+   *     quatre hauteurs de plateau (TR-025 §9), et cette ondulation avait pour
+   *     effet direct que deux boissons voisines n'avaient pas la même taille.
+   *  3. PROPORTIONS RÉELLES. `block-size: 100%` + `inline-size: auto` : chaque
+   *     objet remplit la hauteur de son plateau, sa largeur suit son ratio.
    *
-   * Une seizaine de largeurs identiques signifierait qu'on a déformé les
-   * produits ; une seizaine de hauteurs identiques, qu'on a supprimé
-   * l'ondulation voulue par la direction artistique.
+   * Des largeurs toutes identiques signifieraient qu'on a DÉFORMÉ les
+   * produits — une canette étirée à la largeur d'une poche Capri-Sun. C'est
+   * la seule chose que « à la même taille » ne doit jamais vouloir dire.
    */
   expect(m.bottoms.every((b) => b === m.bottoms[0]), `sols : ${[...new Set(m.bottoms)].join(', ')}`).toBe(true);
-  expect(new Set(m.heights).size, `hauteurs : ${[...new Set(m.heights)].join(', ')}`).toBe(4);
-  expect(new Set(m.widths).size, 'les largeurs ne doivent pas être uniformes').toBeGreaterThan(8);
+  expect(
+    new Set(m.heights).size,
+    `hauteurs — doivent être toutes égales : ${[...new Set(m.heights)].join(', ')}`,
+  ).toBe(1);
+  expect(
+    new Set(m.widths).size,
+    'largeurs uniformes = produits étirés',
+  ).toBeGreaterThan(6);
 
   /*
-   * ÉCART D'AIRE OPTIQUE — le contrôle qui a trouvé le défaut, gardé pour
-   * qu'il ne revienne pas. Le plateau était attribué par position : les trois
-   * bouteilles les plus fines étaient tombées sur les trois plateaux les plus
-   * courts, et l'écart atteignait 3,01×. Attribué par ratio, il tombe à 1,54×.
-   * Le plafond est posé au-dessus de la mesure, pas dessus : c'est une alarme
-   * de régression, pas une cible à frôler.
+   * ÉCART D'AIRE OPTIQUE — contrôle conservé de TR-025, mais son SEUIL a
+   * changé de nature.
+   *
+   * Il servait alors à prouver que la correction par ratio avait ramené
+   * l'écart de 3,01× à 1,54×. Avec un plateau unique, l'écart d'aire n'est
+   * plus corrigeable : il ne reflète plus que les proportions réelles des
+   * produits — une poche large couvre plus d'encre qu'une canette fine à
+   * hauteur égale, et l'annuler exigerait de les déformer.
+   *
+   * Le plafond reste, comme alarme de régression : au-delà, c'est qu'un
+   * fichier au cadrage aberrant est entré dans la piste.
    */
   const areas = m.widths.map((w, i) => w * m.heights[i]!);
   const spread = Math.max(...areas) / Math.min(...areas);
-  expect(spread, `écart d’aire optique ${spread.toFixed(2)}×`).toBeLessThan(1.9);
+  expect(spread, `écart d’aire optique ${spread.toFixed(2)}×`).toBeLessThan(3.2);
 });
 
 /* ================================================================== *
  * 3 · Poids réellement téléchargé
  *
  * Deux chiffres, pas un : la piste vit sous la ligne de flottaison et ses
- * seize images sont en `loading="lazy"`. Confondre le poids initial et le
+ * images de la piste sont en `loading="lazy"`. Confondre le poids initial et le
  * poids total ferait passer pour un coût de premier rendu ce qui n'arrive
  * qu'au défilement.
  * ================================================================== */
@@ -297,7 +367,7 @@ for (const [label, dpr] of [
     /*
      * Plafonds assumés : les valeurs MESURÉES, arrondies d'environ 10 %.
      *
-     * Le premier chiffre n'est pas la scène seule. Les seize objets de la
+     * Le premier chiffre n'est pas la scène seule. Les objets de la
      * piste sont bien en `loading="lazy"`, mais Chrome anticipe : à 1440×900
      * la piste entre dans sa fenêtre de préchargement, et huit visuels
      * partent avant tout défilement. C'est un comportement du navigateur, pas
@@ -310,7 +380,7 @@ for (const [label, dpr] of [
      * de master.
      *
      * Tout ceci ne concerne QUE la préproduction : la production ne publie
-     * aucun de ces fichiers et rend seize replis typographiques.
+     * aucun de ces fichiers et rend quatorze replis typographiques.
      */
     expect(initialBytes, `initial ${(initialBytes / 1024).toFixed(0)} Ko`).toBeLessThan(
       (dpr === 1 ? 520 : 800) * 1024,
@@ -342,7 +412,7 @@ for (const [name, width, height] of [
      * `scrollLeft` depuis la progression VERTICALE de la page, et la piste ne
      * se positionne donc pas par script — trois captures à trois offsets
      * sortaient rigoureusement identiques. Une capture d'élément ne rattrape
-     * pas le hors-champ non plus. La vue d'ensemble des seize produits est
+     * pas le hors-champ non plus. La vue d’ensemble des produits est
      * fournie par `planche-16-produits.png`, à hauteur optique comparable ;
      * celle-ci montre la piste telle qu'un visiteur la reçoit.
      */

@@ -87,7 +87,7 @@ publiables** · **5 familles** · marqueur `internationalFind` **transversal aux
 
 | # | Règle |
 |---|---|
-| 1 | Aucune entrée publiable ne porte un `slug` de la **liste d'exclusions** (Amstel, Bavaria, Heineken, Banditos, Dilmah, Nescafé, Lipton, Fuze Tea, Arizona, Barebells, Chocomel, Fristi, Optimel, Pınar, Karvan Cévitam, RAAK, Slimpie, XXL Nutrition) |
+| 1 | Aucune entrée publiable ne porte un `slug` de la **liste d'exclusions** (Amstel, Bavaria, Heineken, Banditos, Dilmah, Nescafé, Fuze Tea, Arizona, Barebells, Chocomel, Fristi, Optimel, Pınar, Karvan Cévitam, RAAK, Slimpie, XXL Nutrition) — ⚠️ **Lipton retirée de cette liste le 2026-08-24** sur décision du propriétaire ; son périmètre est désormais tenu par la `scopeNote` de `lipton-ice-tea` (voir `doc/tr-028-catalogue-reduction.md` §3) |
 | 2 | `slug` en doublon |
 | 3 | `skuPolicy: 'brand-level-only'` (A&W, Bundaberg, Krombacher Spezi, Hero) + `productName` non nul |
 | 4 | `category` hors des 5 familles autorisées |
@@ -386,6 +386,11 @@ TR-001 ─┬─ TR-002 ─┬─ TR-005 ─┬─ TR-006 ── TR-007 ── T
 - [ ] Les 4 contrôles de schéma du catalogue font échouer le build sur violation
 - [ ] Aucune **entrée de catalogue publiable** ne porte un slug exclu (contrôle de schéma, pas recherche de chaînes)
 - [ ] Aucun `productName` sur une marque `brand-level-only`
+> ⛔ **Décomptes périmés depuis le 2026-08-24.** Le catalogue a été réduit de 62
+> marques à 14 articles sur décision du propriétaire, et les familles sont
+> passées de 5 à 4. Voir `doc/tr-028-catalogue-reduction.md`. Restauration :
+> branche `backup/catalogue-62-brands-full`, commit `5966e32`.
+
 - [ ] Catalogue V1 = 62 marques, 5 familles
 - [ ] Aucune mention de stock, de disponibilité, de quantité ou de prix
 - [ ] Aucun SKU, format, contenance ou pays inventé
