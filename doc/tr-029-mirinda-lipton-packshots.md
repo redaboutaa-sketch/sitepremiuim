@@ -135,6 +135,13 @@ redimensionné.**
 
 ## 4. ⛔ Le logo Lipton est REFUSÉ
 
+> ✅ **SUITE — 2026-08-25, plus tard le même jour.** Une SECONDE livraison
+> (`logo.zip`) a apporté un **SVG vectoriel pur**, d'une tout autre nature que
+> le logo généré refusé ci-dessous. Elle a été auditée et **acceptée** :
+> voir `doc/tr-030-logo-lipton.md`. Le refus documenté ici porte sur la
+> première livraison uniquement, et reste la raison pour laquelle une seconde
+> a été demandée.
+
 Le troisième élément de la planche est un logo Lipton — cercle jaune, bandeau
 rouge, lettrage blanc.
 
@@ -242,7 +249,7 @@ Production : **0 packshot généré publié**, inchangé.
 | # | Blocage | État |
 | --- | --- | --- |
 | **B2** | Packshots officiels — **24** visuels générés désormais, aucun droit confirmé | **ouvert** |
-| **B11** | Droits sur les logos de marque · **+ logo Lipton Ice Tea manquant** | **ouvert** |
+| **B11** | Droits sur les logos de marque · le logo Lipton manquant a été livré depuis (TR-030) | **ouvert** |
 | B1 | Acheminement du formulaire | ouvert |
 | B3 | Mentions légales | ouvert |
 | B5 | Domaine e-mail — `info@ivan-arsenov.de` à confirmer | ouvert |

@@ -80,33 +80,30 @@ test('catalogue : logos rendus en staging, aucun en production', async ({ page }
 
   if (staging) {
     /*
-     * 13 logos admissibles : les 14 articles du catalogue, moins Lipton Ice
-     * Tea. Un logo Lipton figurait sur la planche livrée le 2026-08-25, mais
-     * il a été REFUSÉ — son manifeste C2PA le donne pour généré par
-     * gpt-image, c'est-à-dire une marque REDESSINÉE. Ce compte à 13 est le
-     * garde-fou de ce refus : il passerait à 14 le jour où quelqu'un
-     * l'intégrerait quand même.
+     * 14 logos depuis TR-030 : les quatorze articles du catalogue en portent
+     * un. Lipton Ice Tea a été le dernier servi, et en DEUXIÈME livraison —
+     * le logo généré de la planche du 2026-08-25 avait été refusé (TR-029 §4),
+     * celui-ci est un SVG vectoriel pur, rastérisé sans retouche.
      */
-    expect(count).toBe(13);
+    expect(count).toBe(14);
   } else {
     // Aucun asset n'est `validated` : la production n'en publie aucun.
     expect(count).toBe(0);
   }
 });
 
-test('la marque sans logo garde son repli', async ({ page }) => {
+test('plus aucune cellule de catalogue sans logo', async ({ page }) => {
+  if (!(await stagingArtifact(page))) test.skip(true, 'artefact de production — aucun logo rendu');
   await page.goto('/drinks/');
   /*
-   * A&W et Bundaberg, les deux cas d'origine, ont quitté le catalogue.
-   * Lipton Ice Tea les remplace : aucun logo ne sera dessiné pour elle, ce
-   * repli est donc le comportement ATTENDU, pas un défaut à rattraper.
+   * Il n'y a plus de trou : A&W et Bundaberg, les deux cas d'origine, ont
+   * quitté le catalogue avec la réduction, et Lipton Ice Tea — dernière sans
+   * logo — a été servie par TR-030.
+   *
+   * Le contrôle est CONSERVÉ et inversé. C'est ici qu'un repli réapparaîtrait
+   * si un logo était retiré, et c'est ici qu'on veut le voir.
    */
-  for (const slug of ['lipton-ice-tea']) {
-    const cell = page.locator(`[data-brand="${slug}"]`);
-    await expect(cell, slug).toHaveCount(1);
-    await expect(cell.locator(LOGO), slug).toHaveCount(0);
-    await expect(cell.locator('.product-object__fallback'), slug).toHaveCount(1);
-  }
+  await expect(page.locator('[data-brand] .product-object__fallback')).toHaveCount(0);
 });
 
 /* ================================================================== *
@@ -171,12 +168,12 @@ test('des formes très différentes ont un poids visuel comparable', async ({ pa
   );
 
   /*
-   * 13 logos au catalogue depuis la réduction du 2026-08-24, contre 60 avant.
-   * Le seuil suivait la taille du catalogue, pas la règle : c'est
-   * l'ÉCART de surface qui est contrôlé ci-dessous, et il se mesure aussi bien
-   * sur treize formes que sur soixante.
+   * 14 logos au catalogue depuis TR-030, contre 60 avant la réduction. Le
+   * seuil suivait la taille du catalogue, pas la règle : c'est l'ÉCART de
+   * surface qui est contrôlé ci-dessous, et il se mesure aussi bien sur
+   * quatorze formes que sur soixante.
    */
-  expect(areas.length).toBeGreaterThanOrEqual(13);
+  expect(areas.length).toBe(14);
 
   const shares = areas.map((a) => a.share);
   const min = Math.min(...shares);

@@ -589,7 +589,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'Résolution : 100 % du besoin DPR 2 et 100 % du besoin DPR 3 en Featured. ' +
       'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. ' +
       'La marque n’a toujours AUCUN LOGO : le logo Lipton de la planche livrée a ' +
-      'été REFUSÉ (voir doc/tr-029-mirinda-lipton-packshots.md §4).',
+      'été REFUSÉ (voir doc/tr-029-mirinda-lipton-packshots.md §4) ; le logo réellement intégré vient d’une seconde livraison vectorielle, voir doc/tr-030-logo-lipton.md.',
   },
 
   /*
@@ -702,6 +702,54 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
     sourceType: null,
     opticalCoverage: 0.722,
     legalNote: "Logo de marque fourni par le client, détouré d’un fond blanc uniforme. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur encre (52% des pixels ≥3:1) · peu lisible sur papier (51%).",
+  },
+  /*
+   * ── TR-030 — LE LOGO LIPTON, DEUXIÈME LIVRAISON ───────────────────────
+   *
+   * La première tentative, le 2026-08-25, était un logo GÉNÉRÉ inclus dans la
+   * planche de packshots : REFUSÉE (TR-029 §4), parce que redessiner une
+   * marque figurative est précisément ce que la règle interdit.
+   *
+   * Cette livraison-ci est d'une autre nature, et c'est mesurable :
+   *  · SVG VECTORIEL PUR — 9 <path>, 6 519 octets. Aucun <image>, aucune URI
+   *    `data:`, aucun raster embarqué : rien n'a été décalqué ;
+   *  · aucun <text> — le lettrage « Lipton » est en tracés convertis, ce que
+   *    fait un kit de marque et pas un export approximatif ;
+   *  · trois aplats exacts — #FCDA00, #BE0D30, blanc ;
+   *  · le ® est présent et correctement posé ;
+   *  · aucun <script>, aucun <style>, aucune référence externe.
+   *
+   * CE QUE JE NE PEUX PAS ÉTABLIR : un SVG ne porte pas de manifeste C2PA, et
+   * ce fichier n'a AUCUNE métadonnée de générateur. Sa provenance ne se
+   * démontre donc pas depuis le fichier, contrairement à la planche PNG dont
+   * le manifeste signé disait « gpt-image ». Ce qui est vérifiable, c'est que
+   * rien dedans n'indique une fabrication, et que ses caractéristiques sont
+   * celles d'un fichier de marque authentique.
+   * L'AUTORISATION reste non confirmée : `referential-use`, comme les treize
+   * autres logos du catalogue. Le blocage B11 n'est pas fermé.
+   *
+   * FORMAT — rastérisé en WebP 640 px, comme les treize autres. Le SVG n'est
+   * PAS conservé sous `src/assets/` pour deux raisons vérifiées : le glob de
+   * `ProductObject` ne couvre pas `.svg`, et surtout `isImageFile()` de
+   * `asset-governance.mjs` non plus — un SVG de marque tierce échapperait donc
+   * à l'élagage de production et partirait chez l'hébergeur. Master vectoriel :
+   * SHA-256 bb8033a6797a4def7534802381f471e1bad3a69746cfb91804a1186bb136fff5.
+   */
+  'lipton-ice-tea:logo': {
+    path: 'src/assets/brands/lipton-ice-tea/logo.webp',
+    status: 'requires_validation',
+    source:
+      'Client — archive « logo.zip », 2026-08-25 (logo.svg, vectoriel pur, 84×85, ' +
+      '9 tracés, SHA-256 bb8033a6…b136fff5). Rastérisé à 640 px, sans retouche.',
+    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    width: 640,
+    height: 648,
+    format: 'webp',
+    bytes: 31444,
+    checksum: '4f8afbee11cc9d61800df15c4914397fa81bf5e86269b7b19df0283be86fe9b7',
+    sourceType: null,
+    opticalCoverage: 0.766,
+    legalNote: "Logo de marque fourni par le client, rastérisé depuis un SVG vectoriel pur. N’EST PAS un packshot : ne peut pas alimenter le hero ni les plateaux produit. ⚠ peu lisible sur papier (26% des pixels ≥3:1) — l’identité Lipton est majoritairement jaune et blanche, seul le bandeau rouge passe le seuil sur surface claire. Lisible sur encre (98%).",
   },
   'mirinda:logo': {
     path: 'src/assets/brands/mirinda/logo.webp',
