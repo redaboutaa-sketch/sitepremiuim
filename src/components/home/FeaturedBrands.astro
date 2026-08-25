@@ -122,20 +122,22 @@ const items = ORDER.map((slug, i) => {
               master `hero` est le même produit, au même cadrage. On le réemploie
               plutôt que de dupliquer dix fois le même fichier sous deux noms.
 
-              `allowLogo` : décision du 2026-08-24. Douze des quatorze articles
-              ont une photo produit ; Mirinda n'a qu'un logo et Lipton Ice Tea
-              n'a rien du tout. Plutôt que de laisser deux trous dans une piste
-              de quatorze, on affiche le logo officiel dans un plateau de MÊME
-              taille que les autres. Ce n'est pas une photo de produit et la
-              distinction reste portée par le registre (`isLogo`), mais la
-              rangée reste régulière. Lipton, sans aucun fichier, garde le repli
-              typographique — aucun logo ne sera dessiné pour combler le vide.
+              PAS de `allowLogo` : la décision DA du 2026-08-16 — un logo n'a
+              droit qu'au catalogue, sur surface claire — s'applique de nouveau
+              sans exception.
+
+              Elle avait été assouplie d'exactement un le 2026-08-24, le temps
+              que Mirinda, qui n'avait qu'un logo, occupe un plateau plutôt que
+              de laisser un trou. TR-029 a livré son packshot et celui de
+              Lipton Ice Tea : les quatorze portent une photo produit, la
+              dérogation n'a plus d'objet et a été retirée. Une exception qu'on
+              laisse traîner après la disparition de son motif finit par passer
+              pour la règle.
             */}
             <ProductObject
               brand={brand}
               usage="packshot"
               fallbackUsage="hero"
-              allowLogo
               index={index}
               variant="plain"
               track="featured"

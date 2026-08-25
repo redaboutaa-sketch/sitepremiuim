@@ -27,25 +27,17 @@ async function stagingArtifact(page: Page): Promise<boolean> {
  * ================================================================== */
 
 /*
- * La page d'accueil fait exception depuis le 2026-08-24, et ELLE SEULE :
- * Mirinda a un logo officiel mais aucune photo produit, et le propriétaire a
- * arbitré qu'elle occupe un plateau de même taille que les autres plutôt que
- * de laisser un trou dans une piste de quatorze. Le plafond est donc fixé à
- * UN — un second logo signifierait qu'une photo a disparu, ou qu'un logo a
- * été fabriqué pour combler un manque.
+ * Zéro logo hors du catalogue, sans exception.
  *
- * L'exception est bornée à la PRÉPRODUCTION. En production, aucun asset n'est
- * `validated` : le compte attendu retombe à zéro partout, y compris ici.
+ * La page d'accueil a fait exception du 2026-08-24 au 2026-08-25, le temps que
+ * Mirinda — qui n'avait qu'un logo — occupe un plateau plutôt que de laisser un
+ * trou dans la piste. TR-029 a livré son packshot : le motif a disparu, et
+ * l'exception avec lui.
  */
-const LOGOS_ATTENDUS_STAGING: Record<string, number> = { '/': 1, '/de/': 1 };
-
 for (const route of ['/', '/brands/', '/about/', '/contact/', '/de/', '/de/marken/']) {
   test(`aucun logo hors du catalogue · ${route}`, async ({ page }) => {
-    const staging = await stagingArtifact(page);
     await page.goto(route);
-    await expect(page.locator(LOGO)).toHaveCount(
-      staging ? (LOGOS_ATTENDUS_STAGING[route] ?? 0) : 0,
-    );
+    await expect(page.locator(LOGO)).toHaveCount(0);
   });
 }
 
@@ -63,22 +55,8 @@ test('aucun logo de marque dans le hero ni dans Featured Brands', async ({ page 
   // Le hero, lui, n'a jamais dérogé : aucun logo, en aucune circonstance.
   await expect(page.locator('[data-hero]').locator(LOGO)).toHaveCount(0);
 
-  /*
-   * Featured tolère exactement UN logo depuis le 2026-08-24 — celui de
-   * Mirinda. La dérogation est étroite et vérifiée : le registre note ce logo
-   * « peu lisible sur PAPIER (27 %) », or la piste Featured est sur ENCRE,
-   * surface pour laquelle il n'est pas signalé. C'est ce qui la distingue des
-   * 23 logos sur 60 qui avaient motivé la décision DA du 2026-08-16.
-   */
-  await expect(page.locator('[data-track]').locator(LOGO)).toHaveCount(staging ? 1 : 0);
-  if (staging) {
-    await expect(
-      page
-        .locator('[data-track] .featured__item')
-        .filter({ has: page.locator(LOGO) })
-        .locator('.featured__name'),
-    ).toHaveText('Mirinda');
-  }
+  // Featured non plus : décision DA du 2026-08-16, rétablie intacte par TR-029.
+  await expect(page.locator('[data-track]').locator(LOGO)).toHaveCount(0);
 
   const fallbacks = page.locator('[data-hero] .product-object__fallback');
   if (staging) {
@@ -102,9 +80,12 @@ test('catalogue : logos rendus en staging, aucun en production', async ({ page }
 
   if (staging) {
     /*
-     * 13 logos admissibles depuis la réduction du 2026-08-24 : les 14 articles
-     * du catalogue, moins Lipton Ice Tea, pour laquelle aucun fichier n'a
-     * jamais été livré — la marque était exclue jusqu'à cette date.
+     * 13 logos admissibles : les 14 articles du catalogue, moins Lipton Ice
+     * Tea. Un logo Lipton figurait sur la planche livrée le 2026-08-25, mais
+     * il a été REFUSÉ — son manifeste C2PA le donne pour généré par
+     * gpt-image, c'est-à-dire une marque REDESSINÉE. Ce compte à 13 est le
+     * garde-fou de ce refus : il passerait à 14 le jour où quelqu'un
+     * l'intégrerait quand même.
      */
     expect(count).toBe(13);
   } else {

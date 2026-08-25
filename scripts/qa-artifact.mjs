@@ -48,14 +48,14 @@ const FEATURED_SLUGS = [
 ];
 
 /**
- * Les deux articles sans photo produit au 2026-08-24.
- *   · `mirinda`        — logo officiel livré, aucun packshot ;
- *   · `lipton-ice-tea` — aucun fichier, la marque était exclue jusqu'ici.
- * Ils sont ATTENDUS en repli (logo ou typographie) dans la piste Featured.
- * Aucun visuel ne sera généré ni dessiné pour combler ces deux trous : ils se
- * ferment par une livraison du client (blocage B2).
+ * Les articles sans photo produit. VIDE depuis TR-029 (2026-08-25) : les
+ * packshots Mirinda et Lipton Ice Tea ont été livrés et intégrés, et les
+ * quatorze cellules de la piste portent désormais un visuel produit.
+ *
+ * La liste reste déclarée : la piste est le seul endroit du site où un trou
+ * se voit immédiatement, et c'est ici qu'on veut le nommer s'il revient.
  */
-const FEATURED_WITHOUT_PACKSHOT = ['mirinda', 'lipton-ice-tea'];
+const FEATURED_WITHOUT_PACKSHOT = [];
 
 const DIST = resolve(process.cwd(), 'dist');
 const SITE = SITE_ORIGIN;
@@ -538,29 +538,26 @@ if (TARGET === 'staging') {
   const noPhoto = cells.filter((c) => c.fallback || c.logo).map((c) => c.brand).sort();
   check(
     'BLOCK',
-    'préproduction : douze des quatorze Featured sont servis par une photo produit',
-    cells.length - noPhoto.length === 12,
+    'préproduction : les quatorze Featured sont servis par une photo produit',
+    cells.length - noPhoto.length === 14,
     `${cells.length - noPhoto.length} photos produit sur ${cells.length} cellules`,
   );
   check(
     'BLOCK',
-    'préproduction : seuls Mirinda et Lipton Ice Tea sont sans photo produit',
+    'préproduction : aucun article sans photo produit dans la piste',
     noPhoto.join(',') === [...FEATURED_WITHOUT_PACKSHOT].sort().join(','),
     `sans photo : ${noPhoto.join(', ') || 'aucun'}`,
   );
   /*
-   * Et le repli de chacun est celui qu'on a décidé, pas celui qui reste :
-   * Mirinda a un logo officiel livré, Lipton Ice Tea n'a aucun fichier. Si
-   * Lipton passait un jour au logo sans livraison du client, c'est qu'un logo
-   * aurait été fabriqué — ce que ce contrôle interdit.
+   * AUCUN LOGO dans la piste — décision DA du 2026-08-16, rétablie sans
+   * exception par TR-029. La dérogation d'un seul logo (Mirinda) est tombée
+   * avec son motif : la marque a désormais un packshot.
    */
   check(
     'BLOCK',
-    'préproduction : Mirinda tombe sur son logo, Lipton Ice Tea sur le repli typographique',
-    cells.find((c) => c.brand === 'mirinda')?.logo === true &&
-      cells.find((c) => c.brand === 'lipton-ice-tea')?.fallback === true,
-    `mirinda logo=${cells.find((c) => c.brand === 'mirinda')?.logo} · ` +
-      `lipton-ice-tea repli=${cells.find((c) => c.brand === 'lipton-ice-tea')?.fallback}`,
+    'préproduction : aucun logo de marque dans la piste Featured',
+    cells.every((c) => !c.logo),
+    `logos : ${cells.filter((c) => c.logo).map((c) => c.brand).join(', ') || 'aucun'}`,
   );
   const reused = featured.filter((o) => o.asset === 'hero').map((o) => o.brand).sort();
   check(

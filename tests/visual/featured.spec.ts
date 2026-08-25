@@ -12,11 +12,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 const OUT = 'qa/screenshots/featured';
 
 /**
- * Les DOUZE articles qui portent une photo produit, dans l'ordre du catalogue.
- *
- * La piste en compte quatorze depuis la réduction du 2026-08-24 ; Mirinda
- * (logo officiel, pas de packshot) et Lipton Ice Tea (aucun fichier) ne sont
- * pas des visuels produit et sont contrôlés séparément.
+ * Les QUATORZE articles, dans l'ordre du catalogue. TR-029 (2026-08-25) a
+ * livré les packshots Mirinda et Lipton Ice Tea, les deux derniers trous.
  */
 const FEATURED_WITH_PHOTO = [
   '7up',
@@ -24,6 +21,8 @@ const FEATURED_WITH_PHOTO = [
   'coca-cola',
   'dr-pepper',
   'fanta',
+  'lipton-ice-tea',
+  'mirinda',
   'monster-energy',
   'mountain-dew',
   'orangina',
@@ -32,9 +31,6 @@ const FEATURED_WITH_PHOTO = [
   'schweppes',
   'sprite',
 ];
-
-/** Les deux articles sans photo produit. Aucun visuel ne sera fabriqué pour eux. */
-const FEATURED_WITHOUT_PHOTO = ['mirinda', 'lipton-ice-tea'];
 
 /** Les six qui réemploient leur master de scène plutôt qu'un doublon. */
 const REUSED = ['coca-cola', 'fanta', 'red-bull', 'monster-energy', 'pepsi', 'sprite'];
@@ -58,12 +54,8 @@ const settled = async (page: Page) => {
   await page.waitForTimeout(400);
 };
 
-/*
- * Douze photos produit + le logo de Mirinda = treize images dans la piste.
- * Lipton Ice Tea n'a aucun fichier et sort en repli typographique.
- */
 const staging = async (page: Page) =>
-  (await page.locator('[data-track] .product-object img').count()) === 13;
+  (await page.locator('[data-track] .product-object img').count()) === 14;
 
 test.beforeAll(async () => {
   await mkdir(OUT, { recursive: true });
@@ -73,7 +65,7 @@ test.beforeAll(async () => {
  * 1 · Ce qui est rendu
  * ================================================================== */
 
-test('quatorze cellules · douze photos produit · un logo · un repli', async ({ page }, info) => {
+test('quatorze cellules, quatorze photos produit, aucun repli', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   await settled(page);
   test.skip(!(await staging(page)), 'artefact de production — replis typographiques');
@@ -97,7 +89,7 @@ test('quatorze cellules · douze photos produit · un logo · un repli', async (
    * générés. On filtre donc sur `data-object`, présent uniquement là.
    */
   const photos = objs.filter((o) => o.brand !== null);
-  expect(photos).toHaveLength(12);
+  expect(photos).toHaveLength(14);
   expect([...photos.map((o) => o.brand!)].sort()).toEqual([...FEATURED_WITH_PHOTO].sort());
 
   for (const o of photos) {
@@ -108,44 +100,25 @@ test('quatorze cellules · douze photos produit · un logo · un repli', async (
   }
 
   /*
-   * Les deux articles sans photo — décision du propriétaire du 2026-08-24.
-   * Mirinda tombe sur son logo officiel, Lipton Ice Tea sur le repli
-   * typographique. Si Lipton passait au logo, c'est qu'un logo aurait été
-   * fabriqué pour elle : c'est précisément ce que ce contrôle interdit.
+   * Plus aucun trou depuis TR-029, et plus aucun logo : la dérogation
+   * accordée à Mirinda le 2026-08-24 est tombée avec son motif.
    */
-  await expect(page.locator('[data-track] .product-object__img--logo')).toHaveCount(1);
-  await expect(page.locator('[data-track] .product-object__fallback')).toHaveCount(1);
-  const holes = await page.locator('[data-track] .featured__item').evaluateAll((els) =>
-    els
-      .filter(
-        (el) =>
-          el.querySelector('.product-object__img--logo') ||
-          el.querySelector('.product-object__fallback'),
-      )
-      .map((el) => /brand=([a-z0-9-]+)/.exec(el.querySelector('a')?.getAttribute('href') ?? '')?.[1]),
-  );
-  expect(holes.sort()).toEqual([...FEATURED_WITHOUT_PHOTO].sort());
+  await expect(page.locator('[data-track] .product-object__img--logo')).toHaveCount(0);
+  await expect(page.locator('[data-track] .product-object__fallback')).toHaveCount(0);
 
   // Les six marques de la scène réemploient leur master, sans fichier dupliqué.
   const reused = photos.filter((o) => o.asset === 'hero').map((o) => o.brand!);
   expect(reused.sort()).toEqual([...REUSED].sort());
 });
 
-test('un seul logo dans la piste, et c’est celui de Mirinda', async ({ page }, info) => {
+test('aucun logo de marque ne s’est glissé dans la piste', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   await settled(page);
   /*
-   * La règle était « aucun logo dans Featured » (décision DA du 2026-08-16).
-   * Elle a été assouplie le 2026-08-24, d'exactement UN : Mirinda a un logo
-   * officiel mais pas de photo produit, et le propriétaire a arbitré qu'elle
-   * occupe un plateau plutôt que de laisser un trou dans la piste.
-   *
-   * Le plafond à un est le garde-fou : un second logo signifierait qu'une
-   * photo a disparu, ou qu'un logo a été fabriqué pour combler un manque.
+   * Décision DA du 2026-08-16, rétablie sans exception par TR-029. La
+   * dérogation d'un logo (Mirinda) a duré le temps qu'il lui manque une photo.
    */
-  const logos = page.locator('[data-track] .product-object__img--logo');
-  await expect(logos).toHaveCount(1);
-  await expect(logos).toHaveAttribute('alt', 'Mirinda — logo');
+  await expect(page.locator('[data-track] .product-object__img--logo')).toHaveCount(0);
 });
 
 test('les images de la piste décodent réellement', async ({ page }, info) => {

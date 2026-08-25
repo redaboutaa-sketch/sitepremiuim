@@ -511,6 +511,88 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
 
   /*
+   * ── TR-029 — LES DEUX DERNIERS TROUS DE LA PISTE ──────────────────────
+   *
+   * Livrés le 2026-08-25, présentés comme « les packshots officiels Mirinda
+   * et Lipton Ice Tea ». LE FICHIER DIT AUTRE CHOSE, et c'est le fichier qui
+   * fait foi : son manifeste C2PA signé porte
+   *   c2pa.created · softwareAgent = gpt-image 2.0 ·
+   *   digitalSourceType = trainedAlgorithmicMedia ·
+   *   claim_generator_info = « OpenAI Media Service API ».
+   * Ils sont donc enregistrés `sourceType: 'generated'`, comme les vingt-deux
+   * précédents, et ne sont PAS marqués officiels.
+   *
+   * EXTRACTION — mesurée avant d'être décidée :
+   *  · la planche n'a AUCUN canal alpha ; son damier de transparence est
+   *    PEINT, à deux tons proches (244 / 254) et de période irrégulière ;
+   *  · une diffusion depuis les bords sépare néanmoins fond et produits sans
+   *    la moindre fuite dans leurs plages blanches — vérifié à cinq seuils,
+   *    de 235 à 252 : le bandeau blanc de Mirinda, le texte « LEMON ICE TEA »
+   *    et les lettres du logo restent enfermés par des contours plus sombres ;
+   *  · aucun halo : la luminance du fond est PLATE autour des objets
+   *    (248,3 à 1 px, 248,5 à 110 px — moins d'un niveau d'écart) ;
+   *  · une OMBRE PORTÉE cuite débordait latéralement des deux bases. Elle a
+   *    été retirée par SOUSTRACTION SEULE, jamais par retouche : diffusion
+   *    depuis l'extérieur du bas de la vignette, sur les seuls pixels à la
+   *    fois désaturés et clairs (sat < 0,18 · lum > 135). La marge est large
+   *    — ombre mesurée à 0,012-0,119 de saturation contre 0,911-0,949 pour
+   *    les bases. 1 825 px retirés sur Mirinda, 3 256 sur Lipton. Les bases
+   *    (jonc métallique de la canette, pieds PET de la bouteille) sont
+   *    intactes, contrôlées à l'œil sur encre.
+   *
+   * Aucun pixel de produit n'a été reconstruit, repeint ni interpolé. Si ça
+   * avait été nécessaire, la règle est le REJET.
+   */
+  'mirinda:packshot': {
+    path: 'src/assets/brands/mirinda/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 25 août 2026, 10_34_39 » (TR-029). ' +
+      'Détourage par diffusion depuis les bords, retrait soustractif de l’ombre ' +
+      'portée, recadrage strict sur la boîte alpha. Aucun redimensionnement, ' +
+      'aucune retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 359,
+    height: 717,
+    format: 'png',
+    bytes: 687708,
+    checksum: '3f6d68bdcbb7266b7dc1be309af5110cf5033c9e8a7904d99583860d73d863ff',
+    opticalCoverage: 0.964,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire — livré comme « officiel », ' +
+      'contredit par le manifeste C2PA du fichier. Préproduction uniquement. ' +
+      'Résolution : 100 % du besoin DPR 2 et 100 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite.',
+  },
+  'lipton-ice-tea:packshot': {
+    path: 'src/assets/brands/lipton-ice-tea/packshot.png',
+    status: 'requires_validation',
+    sourceType: 'generated',
+    source:
+      'Planche composite GÉNÉRÉE « ChatGPT Image 25 août 2026, 10_34_39 » (TR-029). ' +
+      'Détourage par diffusion depuis les bords, retrait soustractif de l’ombre ' +
+      'portée, recadrage strict sur la boîte alpha. Aucun redimensionnement, ' +
+      'aucune retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
+      'digitalSourceType = trainedAlgorithmicMedia.',
+    authorization: { status: 'unknown', evidence: null },
+    width: 303,
+    height: 969,
+    format: 'png',
+    bytes: 774345,
+    checksum: '6f865f1f3a6f694e41c5561bc108acf01fc58fbdb3706475fd245130b9bc4dd3',
+    opticalCoverage: 0.845,
+    legalNote:
+      'Asset GÉNÉRÉ, non fourni par le titulaire — livré comme « officiel », ' +
+      'contredit par le manifeste C2PA du fichier. Préproduction uniquement. ' +
+      'Résolution : 100 % du besoin DPR 2 et 100 % du besoin DPR 3 en Featured. ' +
+      'Ne ferme pas B2 : la production exige un fichier presse ou une autorisation écrite. ' +
+      'La marque n’a toujours AUCUN LOGO : le logo Lipton de la planche livrée a ' +
+      'été REFUSÉ (voir doc/tr-029-mirinda-lipton-packshots.md §4).',
+  },
+
+  /*
    * TR-026B — PACKSHOTS S4 DISCOVERY, six marques.
    *
    * Extraits par recadrage strict sur la boîte alpha d'une planche composite
