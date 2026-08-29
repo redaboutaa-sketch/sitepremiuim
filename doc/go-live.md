@@ -336,8 +336,28 @@ personne n'assume reste interdit.
   choix, pas une contrainte : la configuration livrée canonicalise vers
   `www.ivanarsenov.de` et fonctionnera. Pour préférer l'apex, changer
   `SITE_HOST` dans `site.config.mjs` et rebâtir — une seule valeur, tout suit.
-- **`public_html` est-il vide ?** Quelque chose répondait déjà sur l'ancien
-  domaine. Ne remplacer aucun site existant sans confirmation d'Ivan.
+- **⚠️ IL Y A UN AUTRE SITE SUR CE COMPTE HOSTINGER.** Relevé le 2026-08-29 :
+  le plan Premium héberge `staging.ivanarsenov.de` ET **`sospneu74.com`**, qui
+  n'a rien à voir avec ce projet.
+
+  Sur Hostinger, chaque site a son propre répertoire — typiquement
+  `domains/<domaine>/public_html`. L'instruction « vider `public_html` » ne
+  vaut donc QUE pour celui de `ivanarsenov.de`. Vider celui d'un voisin met
+  hors ligne un site qui n'est pas le nôtre, et un gestionnaire de fichiers ne
+  demande pas confirmation.
+
+  **Vérifier le chemin affiché en haut du gestionnaire avant de supprimer quoi
+  que ce soit.**
+
+- **`ivanarsenov.de` n'est pas encore un site sur le compte.** Il faut
+  l'ajouter (« Add website »). Le domaine résout pourtant déjà vers
+  `2.57.91.91` : quelque chose y répond — page de parking, ou autre. Regarder
+  ce que c'est avant de le remplacer.
+
+- **`www` doit être accepté comme alias.** Le site canonicalise vers
+  `www.ivanarsenov.de` et la zone DNS porte bien `CNAME www → ivanarsenov.de`,
+  mais Hostinger doit AUSSI reconnaître `www` comme appartenant à ce site.
+  Sinon le visiteur qui suit la redirection tombe sur une erreur d'hôte.
 
 ### 5.1 Téléverser
 
