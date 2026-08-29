@@ -12,13 +12,14 @@ développement.
 
 | Porte | Résultat |
 | --- | --- |
-| `npm run qa` (production) | **566/566** · 0 bloquant |
+| `npm run qa` (production) | **565/565** · 0 bloquant |
 | `npm run qa:staging` | **569/569** · 0 bloquant |
-| Tests | **1 092** passés |
+| Tests | **1 124** passés |
 | Préproduction | en ligne sur `staging.ivanarsenov.de` |
 
-Ce qui reste à obtenir n'est **pas du code**. Ce sont quatre décisions ou
-livraisons qui n'appartiennent qu'au propriétaire du site.
+Ce qui reste à obtenir n'est **pas du code**. Au 2026-08-29, **une seule étape
+bloque encore la mise en ligne** : brancher la livraison du formulaire
+(étape 3). Tout le reste est fait, sous réserve des relectures signalées.
 
 > ### ✅ RÉSOLU LE 2026-08-29 — les visuels sont publiés
 >
