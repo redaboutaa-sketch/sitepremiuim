@@ -177,48 +177,99 @@ export const en = {
 
   legal: {
     "eyebrow": "Legal",
-    "pendingTitle": "Draft for legal review.",
-    "pendingBody": "Company identification details are accurate. The legal wording below is a structured placeholder and must be reviewed by Ivan Arsenov's legal adviser before publication.",
+    "updated": "Last updated: 29 August 2026",
     "controllerHeading": "Controller",
     "imprint": {
       "title": "Imprint",
       "providerHeading": "Information pursuant to § 5 DDG",
       "contactHeading": "Contact",
-      "taxHeading": "Tax identification",
-      "taxNumber": "Tax number",
-      "responsibleHeading": "Responsible for content",
-      "trademarkHeading": "Third-party trademarks"
+      "contactBody": [
+        "Enquiries reach Ivan Arsenov directly by email or through the business enquiry form on this website.",
+        "No telephone number is published: none is currently designated for business enquiries."
+      ],
+      "taxHeading": "VAT identification",
+      "taxBody": "VAT identification number pursuant to § 27a of the German Value Added Tax Act (UStG):",
+      "responsibleHeading": "Responsible for editorial content",
+      "responsibleBody": "Pursuant to § 18 (2) of the German Interstate Media Treaty (MStV):",
+      "sections": [
+        {
+          "heading": "Third-party trademarks",
+          "body": [
+            "All brand names, logos and product images shown on this website are the property of their respective owners. They are used to identify the goods this business trades in.",
+            "Their presence on this website indicates the assortment Ivan Arsenov works with. It does not imply that the trademark owners endorse, sponsor or are otherwise affiliated with this business.",
+            "If you are a trademark owner and wish to discuss the use of your material here, please write to us at the address above."
+          ]
+        },
+        {
+          "heading": "Liability for content",
+          "body": [
+            "As a service provider we are responsible for our own content on these pages under § 7 (1) DDG and general law. Under §§ 8 to 10 DDG, however, we are not obliged to monitor transmitted or stored third-party information, or to investigate circumstances indicating unlawful activity.",
+            "Obligations to remove or block the use of information under general law remain unaffected. Liability in this respect arises only from the point at which a concrete infringement becomes known. Should we become aware of such an infringement, we will remove the content without delay."
+          ]
+        },
+        {
+          "heading": "Liability for links",
+          "body": [
+            "This website contains no links to external websites. Should links be added, their content would remain the responsibility of the respective operator: we have no influence over it.",
+            "Any linked pages would be checked for possible legal infringement at the time of linking. Permanent monitoring without concrete evidence of an infringement is not reasonable."
+          ]
+        },
+        {
+          "heading": "Consumer dispute resolution",
+          "body": [
+            "This website addresses businesses, not consumers.",
+            "We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board within the meaning of § 36 of the German Consumer Dispute Resolution Act (VSBG)."
+          ]
+        }
+      ]
     },
     "privacy": {
       "title": "Privacy Policy",
       "sections": [
         {
-          "heading": "What this website collects",
+          "heading": "Scope",
           "body": [
-            "This website has no analytics, no advertising identifiers and no third-party trackers. No cookies are set for measurement or profiling.",
-            "Personal data is processed only when you submit the business enquiry form."
+            "This policy describes how personal data is processed on this website. Named at the end of this page is the controller within the meaning of Article 4 (7) GDPR.",
+            "This website has no analytics, no advertising identifiers, no tracking pixels and no third-party scripts. It sets no cookies. Personal data is processed in exactly two circumstances: when your browser requests a page, and when you submit the business enquiry form."
+          ]
+        },
+        {
+          "heading": "Data processed when you visit a page",
+          "body": [
+            "Each time a page is requested, the hosting provider's server records technical data: the IP address of the requesting device, the date and time, the address requested, the HTTP status, the volume transferred, and the browser and operating system reported by your device.",
+            "This data is required to deliver the website and to detect and defend against attacks. The legal basis is Article 6 (1) (f) GDPR — our legitimate interest in operating the site securely and reliably.",
+            "This website is hosted by Hostinger, which processes this log data on our behalf as a processor under Article 28 GDPR. We do not merge it with other data and do not use it to identify individual visitors."
           ]
         },
         {
           "heading": "Business enquiry form",
           "body": [
-            "The form collects your name, company, country, email address and message, plus optional VAT number, phone, brands of interest and estimated volume.",
-            "These details are used solely to answer your enquiry and to continue the commercial conversation.",
-            "Legal basis, retention period and your rights are to be confirmed by legal review before publication."
+            "The form requires your first name, last name, company, country, email address and message. You may additionally provide a VAT number, a telephone number, the categories you are interested in and an estimated volume. The brands you add to your enquiry are transmitted with it.",
+            "This data is used solely to answer your enquiry and to continue the commercial conversation with you. The legal basis is Article 6 (1) (b) GDPR for steps taken at your request prior to entering into a contract, and Article 6 (1) (f) GDPR for our legitimate interest in responding to business enquiries.",
+            "The content of the form is delivered to us by email. Providing the data is neither required by law nor by contract, but without the required fields we cannot process the enquiry.",
+            "Your enquiry and the associated data remain with us for as long as needed to handle it and to conduct any resulting business relationship, and thereafter for as long as statutory retention periods under commercial and tax law require — as a rule six or ten years under §§ 257 HGB and 147 AO."
           ]
         },
         {
-          "heading": "Hosting and external services",
+          "heading": "Spam protection",
           "body": [
-            "Fonts are served from this domain. The website makes no requests to third-party servers.",
-            "Server log data handled by the hosting provider is subject to a separate agreement, to be documented before publication."
+            "The form contains a field hidden from visitors and measures the time between the page loading and the form being sent. Both serve to detect automated submissions.",
+            "Neither is used to analyse your behaviour, neither is stored, and neither is passed on. The legal basis is Article 6 (1) (f) GDPR — our legitimate interest in protecting the form against abuse."
+          ]
+        },
+        {
+          "heading": "No transfer to third parties",
+          "body": [
+            "Typefaces, images and scripts are served from this domain. The website makes no request to any external server, so no third party receives your IP address through this website.",
+            "Your data is not sold, not rented and not passed to third parties for their own purposes. It is disclosed only where we are legally obliged to do so, or to processors acting on our instructions under Article 28 GDPR — currently our hosting provider alone."
           ]
         },
         {
           "heading": "Your rights",
           "body": [
-            "You may request access, rectification, erasure, restriction of processing, data portability and object to processing.",
-            "The exact wording of these rights and the supervisory authority reference are to be confirmed by legal review."
+            "You have the right to obtain confirmation as to whether we process personal data concerning you and, if so, to access it (Article 15 GDPR), to have inaccurate data rectified (Article 16), to have data erased (Article 17), to restrict processing (Article 18), to receive your data in a structured, commonly used and machine-readable format (Article 20), and to object at any time to processing based on legitimate interests (Article 21).",
+            "To exercise any of these rights, an email to the address below is sufficient.",
+            "You also have the right to lodge a complaint with a supervisory authority (Article 77 GDPR). The authority responsible for us is: Die Landesbeauftragte für den Datenschutz Niedersachsen, Prinzenstraße 5, 30159 Hannover, Germany."
           ]
         }
       ]
@@ -227,30 +278,31 @@ export const en = {
       "title": "Cookies & Local Storage",
       "sections": [
         {
-          "heading": "Cookies",
+          "heading": "This website sets no cookies",
           "body": [
-            "This website sets no cookies for analytics, advertising or profiling.",
-            "No third-party service is loaded, so no third party can set cookies through this website."
+            "No cookie is set for analytics, advertising, profiling or any other purpose. Not by us, and not by anyone else: no third-party service is loaded, so no third party is in a position to set one."
           ]
         },
         {
-          "heading": "Enquiry selection",
+          "heading": "Your enquiry selection",
           "body": [
-            "When you add a brand to your enquiry, the identifiers you select are written to your browser's sessionStorage — a storage limited to the browsing session, with no intention of persistence between sessions.",
-            "It contains only the brand identifiers you have chosen. No advertising identifier, no profiling, no personal data.",
-            "It is not transmitted to any server unless you submit the enquiry form."
+            "When you add a brand to your enquiry, the identifiers you have selected are written to your browser's sessionStorage.",
+            "It holds only those identifiers — no advertising identifier, no profile, no personal data. It exists on your device alone and is discarded when you close the tab. Nothing is transmitted to any server unless you send the enquiry form yourself.",
+            "Its sole purpose is to let a selection survive from one page to the next: without it, the brands you picked would be lost the moment you navigated."
           ]
         },
         {
-          "heading": "Fonts and assets",
+          "heading": "Fonts and images",
           "body": [
-            "Typefaces and images are served from this domain. No request is made to a content delivery network, so no visitor IP address is transmitted to a third party by this website."
+            "Typefaces and images are served from this domain. No request goes to a content delivery network or to a font service, so this website transmits no visitor IP address to a third party."
           ]
         },
         {
-          "heading": "Consent regime",
+          "heading": "Why there is no consent banner",
           "body": [
-            "This page describes the technical use of browser storage. The applicable consent regime is to be determined by Ivan Arsenov's legal adviser before publication."
+            "Storing information on your device requires consent under § 25 (1) of the German Telecommunications Digital Services Data Protection Act (TDDDG). § 25 (2) no. 2 exempts storage that is strictly necessary to provide a telemedia service you have expressly requested.",
+            "The enquiry selection falls under that exemption: it is created only when you click to add a brand, it contains only what that click implies, and it exists solely to deliver the feature you asked for. Since nothing else is stored and no cookie is set, there is nothing left for a banner to ask about.",
+            "A consent banner that asked for permission we do not need would give a misleading impression of what this website does."
           ]
         }
       ]

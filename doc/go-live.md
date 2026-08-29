@@ -1,6 +1,6 @@
 # CHEMIN VERS LA MISE EN LIGNE — ivanarsenov.de
 
-**Établi le 2026-08-25**, mis à jour le même jour · commit `8ec96d3`
+**Établi le 2026-08-25**, mis à jour le 2026-08-29 · commit `89c2216`
 Destinataires : Ivan Arsenov, son conseil juridique, l'intégrateur.
 
 ---
@@ -42,7 +42,7 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 
 | # | Étape | Qui | Bloque la mise en ligne ? |
 | --- | --- | --- | --- |
-| 1 | Textes juridiques (B3) | conseil juridique d'Ivan | **oui — risque légal** |
+| 1 | Textes juridiques (B3) | ✅ **rédigés** — relecture recommandée | non, mais à faire relire |
 | 2 | Adresses e-mail (B5) | ✅ **SPF publié et vérifié** | reste à constater `spf=pass` à l'envoi |
 | 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
 | 4 | Visuels : droits (B2 · B11) | ✅ **autorisations déclarées** — publiés | non |
@@ -52,44 +52,65 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 
 ## Étape 1 · Textes juridiques — B3
 
-**C'est le seul point qui présente un risque juridique réel.**
+### ✅ RÉDIGÉS le 2026-08-29
 
-Les trois pages légales affichent aujourd'hui, **en clair et visible du
-public** :
+Les trois pages portent désormais des textes complets, en anglais et en
+allemand. Le bandeau « brouillon en attente de relecture » — qui s'affichait
+au **public** — a été retiré : une page légale qui annonce elle-même n'être
+qu'un gabarit est pire que pas de page du tout. Une **date de dernière mise à
+jour** l'a remplacé.
 
-> *« The legal wording below is a structured placeholder and must be reviewed
-> by Ivan Arsenov's legal adviser before publication. »*
+**Chaque affirmation a été vérifiée contre le code**, pas reprise d'un modèle :
+aucun cookie, aucun script tiers, aucune requête externe, polices
+auto-hébergées, et un seul traitement de données — le formulaire, dont la
+liste de champs est celle réellement postée.
 
-Les **données d'identification sont réelles et exactes** — raison sociale,
-adresse, USt-IdNr `DE464097303`, numéro fiscal. C'est la **rédaction
-juridique** qui est un gabarit.
+| Page | Contenu |
+| --- | --- |
+| **Impressum** | § 5 DDG · contact · USt-IdNr (§ 27a UStG) · responsable § 18 Abs. 2 MStV · marques de tiers · responsabilité contenus et liens (§§ 7–10 DDG) · § 36 VSBG |
+| **Datenschutz** | portée · journaux serveur (Art. 6 (1) f) · formulaire (Art. 6 (1) b et f, conservation §§ 257 HGB / 147 AO) · anti-spam · aucune transmission à des tiers · droits (Art. 15–21, 77) avec l'autorité de Basse-Saxe nommée |
+| **Cookies** | aucun cookie · sessionStorage de l'anfrage · polices locales · pourquoi il n'y a pas de bandeau |
 
-En Allemagne l'Impressum est obligatoire (§ 5 DDG) et un Impressum incomplet
-expose à une mise en demeure (*Abmahnung*).
+### ⚠️ Ce que ces textes ne sont pas
 
-### Ce que le conseil juridique doit fournir
+**Un avis juridique.** Ils ont été rédigés par l'intégrateur, pas par un
+avocat. Ils sont exacts sur les faits techniques ; la qualification juridique,
+elle, appartient au conseil d'Ivan.
 
-Un texte, en **anglais et en allemand**, pour chacune de ces rubriques déjà en
-place :
+Deux points méritent particulièrement son œil :
 
-**Impressum** — § 5 DDG · Contact · Identification fiscale · Responsable du
-contenu · Marques de tiers
+1. **L'absence de numéro de téléphone.** Le § 5 DDG exige des moyens permettant
+   « une prise de contact rapide et une communication directe ». L'e-mail et le
+   formulaire sont fournis. La jurisprudence européenne (CJUE C-298/07) admet
+   ce dispositif **à condition qu'une réponse intervienne sous une heure** pour
+   qui le demande. Si Ivan ne peut pas le garantir, publier un numéro est plus
+   sûr — le champ existe déjà dans les données (`COMPANY.phone`, aujourd'hui
+   nul).
+2. **La qualification du sessionStorage.** Les pages retiennent le § 25 Abs. 2
+   Nr. 2 TDDDG — stockage strictement nécessaire à un service expressément
+   demandé — et en concluent qu'aucun bandeau de consentement n'est requis.
+   Le raisonnement est exposé sur la page même : la sélection n'existe que
+   parce que le visiteur a cliqué, ne contient que ce que ce clic implique, et
+   sert uniquement à fournir la fonction demandée. C'est défendable et c'est la
+   position retenue ; c'est aussi le point qu'un conseil validerait ou
+   corrigerait en premier.
 
-**Politique de confidentialité** — Données collectées par le site · Formulaire
-de demande d'offre · Hébergement et services externes · Droits des personnes ·
-Responsable du traitement
+### 🔒 Une correction au passage : le Steuernummer n'est plus publié
 
-**Cookies** — Cookies · Sélection de demande d'offre · Polices et ressources ·
-**Régime de consentement** · Responsable du traitement
+La page affichait le numéro fiscal `68/120/14293`. **Le § 5 DDG ne l'exige
+pas** — il n'exige que l'USt-IdNr (n° 6) — et le publier facilite l'usurpation
+d'identité fiscale sans rien apporter au visiteur. Il a été retiré du rendu.
+La donnée reste au dépôt : elle est vraie et sert ailleurs, elle ne sort
+simplement plus sur la page.
 
-> La rubrique « régime de consentement » est volontairement laissée ouverte :
-> la page **décrit** l'usage technique et **ne conclut pas** sur le régime
-> applicable. Cette qualification appartient au conseil, pas à l'intégrateur.
+### Ce qu'il reste à faire
 
-**Éléments factuels utiles au conseil** — le site ne pose aucun cookie de
-mesure d'audience, n'embarque aucun script tiers, ne fait aucune requête
-externe, et héberge ses polices lui-même. Le seul traitement de données est le
-formulaire de demande d'offre.
+- **Faire relire** par le conseil d'Ivan, en attirant son attention sur les
+  deux points ci-dessus.
+- **Conclure le contrat de sous-traitance (Art. 28 DSGVO) avec Hostinger.** La
+  page de confidentialité indique que l'hébergeur traite les journaux pour le
+  compte d'Ivan : c'est une affirmation qu'il faut rendre vraie. Hostinger
+  fournit un DPA standard.
 
 ---
 
@@ -394,7 +415,7 @@ Dès qu'une autorisation arrive, transmettez-la : elle est enregistrée dans
 
 | # | Blocage | Qui le lève | Effet s'il reste ouvert |
 | --- | --- | --- | --- |
-| **B3** | Textes juridiques | conseil juridique | **risque de mise en demeure** |
+| **B3** | Textes juridiques rédigés · relecture + DPA Hostinger | conseil juridique · Ivan | qualification juridique non validée |
 | **B1** | Livraison du formulaire | intégrateur, après B5 | **aucune demande n'arrive** |
 | **B5** | ✅ adresses arbitrées · SPF publié et vérifié | — | reste à constater `spf=pass` à l'envoi réel |
 | **B2** | Photos produit — 14 **générées**, publiées | Ivan | à remplacer par les packshots presse |

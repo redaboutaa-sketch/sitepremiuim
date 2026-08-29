@@ -2,11 +2,21 @@
 /**
  * PAGES LÉGALES — Impressum, Privacy, Cookies.
  *
- * ⚠️ LEGAL_CONTENT_REQUIRES_VALIDATION
- * Les données d'identification sont réelles et fournies par le client. Les
- * TEXTES juridiques sont des placeholders structurés : ils couvrent les
- * rubriques attendues mais doivent être revus par le conseil juridique
- * d'Ivan Arsenov avant mise en production.
+ * ⚠️ TEXTES RÉDIGÉS LE 2026-08-29 — RELECTURE JURIDIQUE RECOMMANDÉE.
+ *
+ * Ce ne sont plus des placeholders : les textes sont rédigés, en EN et en DE,
+ * et décrivent ce que ce site fait RÉELLEMENT — pas de cookies, aucun script
+ * tiers, aucune requête externe, polices auto-hébergées, un seul traitement
+ * (le formulaire). Chaque affirmation a été vérifiée contre le code.
+ *
+ * Ce qu'ils NE sont pas : un avis juridique. Ils ont été rédigés par
+ * l'intégrateur, pas par un avocat. Deux points méritent particulièrement
+ * l'œil du conseil d'Ivan Arsenov, et sont documentés dans doc/go-live.md :
+ *   · l'absence de numéro de téléphone au titre du § 5 DDG ;
+ *   · la qualification du sessionStorage au titre du § 25 Abs. 2 Nr. 2 TDDDG,
+ *     qui justifie l'absence de bandeau de consentement.
+ *
+ * Le Steuernummer n'est PAS publié : le § 5 DDG n'exige que l'USt-IdNr.
  *
  * Aucun document du benchmark n'est copié.
  * La page Cookies DÉCRIT l'usage technique et NE CONCLUT PAS sur le régime
@@ -30,7 +40,7 @@ interface Section {
   heading: string;
   body: string[];
 }
-const sections: Section[] = page === 'imprint' ? [] : (doc as { sections: Section[] }).sections;
+const sections: Section[] = doc.sections;
 ---
 
 <section class="legal section" data-surface="ink">
@@ -38,9 +48,7 @@ const sections: Section[] = page === 'imprint' ? [] : (doc as { sections: Sectio
     <p class="t-label t-label--ruled">{t.legal.eyebrow}</p>
     <h1 class="t-h1 legal__title">{doc.title}</h1>
 
-    <p class="legal__notice t-small" data-legal-pending>
-      <strong>{t.legal.pendingTitle}</strong> {t.legal.pendingBody}
-    </p>
+    <p class="legal__updated t-small t-muted">{t.legal.updated}</p>
 
     {
       page === 'imprint' && (
@@ -55,24 +63,33 @@ const sections: Section[] = page === 'imprint' ? [] : (doc as { sections: Sectio
           <p class="t-body">
             <a class="link-inline" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
           </p>
+          {t.legal.imprint.contactBody.map((paragraph) => (
+            <p class="t-body t-secondary">{paragraph}</p>
+          ))}
 
+          {/*
+            SEULE l'USt-IdNr est publiée. Le § 5 DDG l'exige (n° 6) ; il
+            n'exige NULLE PART le Steuernummer, et le publier facilite
+            l'usurpation d'identité fiscale sans rien apporter au visiteur.
+            `COMPANY.taxNumber` reste dans les données — la donnée est vraie et
+            sert ailleurs — mais elle ne sort pas sur cette page.
+          */}
           <h2 class="t-h3">{t.legal.imprint.taxHeading}</h2>
-          <dl class="legal__facts">
-            <div>
-              <dt class="t-label">{t.footer.vatId}</dt>
-              <dd class="t-body legal__mono">{COMPANY.vatId}</dd>
-            </div>
-            <div>
-              <dt class="t-label">{t.legal.imprint.taxNumber}</dt>
-              <dd class="t-body legal__mono">{COMPANY.taxNumber}</dd>
-            </div>
-          </dl>
+          <p class="t-body t-secondary">{t.legal.imprint.taxBody}</p>
+          <p class="t-body legal__mono">{COMPANY.vatId}</p>
 
           <h2 class="t-h3">{t.legal.imprint.responsibleHeading}</h2>
+          <p class="t-body t-secondary">{t.legal.imprint.responsibleBody}</p>
           <p class="t-body">{COMPANY.legalName}, {addressLines().join(', ')}</p>
 
-          <h2 class="t-h3">{t.legal.imprint.trademarkHeading}</h2>
-          <p class="t-body t-secondary">{t.footer.trademarkNotice}</p>
+          {sections.map((section) => (
+            <>
+              <h2 class="t-h3">{section.heading}</h2>
+              {section.body.map((paragraph) => (
+                <p class="t-body t-secondary">{paragraph}</p>
+              ))}
+            </>
+          ))}
         </div>
       )
     }
@@ -107,15 +124,17 @@ const sections: Section[] = page === 'imprint' ? [] : (doc as { sections: Sectio
     max-inline-size: 18ch;
   }
 
-  /* Le bandeau de validation reste VISIBLE en staging : il doit sauter aux
-     yeux du client, pas se cacher dans un commentaire de code. */
-  .legal__notice {
-    max-inline-size: 62ch;
+  /*
+   * Le bandeau « brouillon en attente de relecture » a été retiré le
+   * 2026-08-29 avec la rédaction des textes définitifs. Il s'adressait au
+   * client mais s'affichait au PUBLIC : une page légale qui annonce
+   * elle-même n'être qu'un gabarit est pire que pas de page du tout.
+   *
+   * Ce qui doit rester visible, c'est la DATE : une mention légale sans date
+   * ne permet pas de savoir à quelle version on a affaire.
+   */
+  .legal__updated {
     margin-block-end: var(--sp-8);
-    padding: var(--sp-4) var(--sp-5);
-    border-inline-start: 2px solid var(--signal-juice);
-    background: var(--ink-800);
-    color: var(--fg-secondary);
   }
 
   .legal__body {

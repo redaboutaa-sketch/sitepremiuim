@@ -181,48 +181,99 @@ export const de: Dictionary = {
 
   legal: {
     "eyebrow": "Rechtliches",
-    "pendingTitle": "Entwurf zur rechtlichen Prüfung.",
-    "pendingBody": "Die Angaben zum Unternehmen sind korrekt. Die nachstehenden Rechtstexte sind ein strukturierter Platzhalter und müssen vor der Veröffentlichung durch die Rechtsberatung von Ivan Arsenov geprüft werden.",
+    "updated": "Stand: 29. August 2026",
     "controllerHeading": "Verantwortlicher",
     "imprint": {
       "title": "Impressum",
       "providerHeading": "Angaben gemäß § 5 DDG",
       "contactHeading": "Kontakt",
-      "taxHeading": "Steuerliche Angaben",
-      "taxNumber": "Steuernummer",
-      "responsibleHeading": "Inhaltlich verantwortlich",
-      "trademarkHeading": "Marken Dritter"
+      "contactBody": [
+        "Anfragen erreichen Ivan Arsenov unmittelbar per E-Mail oder über das Anfrageformular dieser Website.",
+        "Eine Telefonnummer wird nicht veröffentlicht: für Geschäftsanfragen ist derzeit keine eingerichtet."
+      ],
+      "taxHeading": "Umsatzsteuer",
+      "taxBody": "Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:",
+      "responsibleHeading": "Verantwortlich für den Inhalt",
+      "responsibleBody": "Gemäß § 18 Abs. 2 Medienstaatsvertrag (MStV):",
+      "sections": [
+        {
+          "heading": "Marken Dritter",
+          "body": [
+            "Sämtliche auf dieser Website gezeigten Markennamen, Logos und Produktabbildungen sind Eigentum der jeweiligen Rechteinhaber. Sie dienen der Kennzeichnung der Waren, mit denen dieses Unternehmen handelt.",
+            "Ihre Darstellung auf dieser Website weist auf das Sortiment hin, mit dem Ivan Arsenov arbeitet. Sie begründet keine Aussage darüber, dass die Markeninhaber dieses Unternehmen unterstützen, sponsern oder mit ihm verbunden sind.",
+            "Sind Sie Rechteinhaber und möchten die Verwendung Ihres Materials besprechen, schreiben Sie uns bitte an die oben genannte Anschrift."
+          ]
+        },
+        {
+          "heading": "Haftung für Inhalte",
+          "body": [
+            "Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.",
+            "Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen werden wir diese Inhalte umgehend entfernen."
+          ]
+        },
+        {
+          "heading": "Haftung für Links",
+          "body": [
+            "Diese Website enthält keine Links auf externe Websites. Sollten Links aufgenommen werden, so liegen deren Inhalte in der Verantwortung des jeweiligen Anbieters: auf sie haben wir keinen Einfluss.",
+            "Verlinkte Seiten würden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Eine permanente inhaltliche Kontrolle ohne konkrete Anhaltspunkte einer Rechtsverletzung ist nicht zumutbar."
+          ]
+        },
+        {
+          "heading": "Verbraucherstreitbeilegung",
+          "body": [
+            "Diese Website richtet sich an Unternehmen, nicht an Verbraucher.",
+            "Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle im Sinne des § 36 Verbraucherstreitbeilegungsgesetz (VSBG) teilzunehmen."
+          ]
+        }
+      ]
     },
     "privacy": {
       "title": "Datenschutzerklärung",
       "sections": [
         {
-          "heading": "Was diese Website erhebt",
+          "heading": "Geltungsbereich",
           "body": [
-            "Diese Website nutzt keine Analysewerkzeuge, keine Werbe-Identifikatoren und keine Tracker Dritter. Es werden keine Cookies zu Mess- oder Profilzwecken gesetzt.",
-            "Personenbezogene Daten werden ausschließlich verarbeitet, wenn Sie das Formular für Geschäftsanfragen absenden."
+            "Diese Erklärung beschreibt, wie auf dieser Website personenbezogene Daten verarbeitet werden. Der Verantwortliche im Sinne des Art. 4 Nr. 7 DSGVO ist am Ende dieser Seite genannt.",
+            "Diese Website verwendet keine Reichweitenmessung, keine Werbekennungen, keine Zählpixel und keine Skripte Dritter. Sie setzt keine Cookies. Personenbezogene Daten werden in genau zwei Fällen verarbeitet: wenn Ihr Browser eine Seite abruft, und wenn Sie das Anfrageformular absenden."
           ]
         },
         {
-          "heading": "Formular für Geschäftsanfragen",
+          "heading": "Daten beim Aufruf einer Seite",
           "body": [
-            "Erhoben werden Name, Firma, Land, E-Mail-Adresse und Nachricht sowie optional USt-IdNr., Telefon, Marken von Interesse und geschätztes Volumen.",
-            "Diese Angaben dienen ausschließlich der Beantwortung Ihrer Anfrage und der Fortführung des geschäftlichen Gesprächs.",
-            "Rechtsgrundlage, Speicherdauer und Ihre Rechte sind vor der Veröffentlichung rechtlich zu bestätigen."
+            "Bei jedem Seitenaufruf erfasst der Server des Hosting-Anbieters technische Daten: die IP-Adresse des anfragenden Geräts, Datum und Uhrzeit, die angeforderte Adresse, den HTTP-Status, die übertragene Datenmenge sowie den von Ihrem Gerät gemeldeten Browser und dessen Betriebssystem.",
+            "Diese Daten sind erforderlich, um die Website auszuliefern sowie Angriffe zu erkennen und abzuwehren. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO — unser berechtigtes Interesse am sicheren und zuverlässigen Betrieb der Website.",
+            "Diese Website wird bei Hostinger gehostet. Der Anbieter verarbeitet diese Protokolldaten für uns als Auftragsverarbeiter gemäß Art. 28 DSGVO. Wir führen sie nicht mit anderen Daten zusammen und nutzen sie nicht, um einzelne Besucher zu identifizieren."
           ]
         },
         {
-          "heading": "Hosting und externe Dienste",
+          "heading": "Anfrageformular",
           "body": [
-            "Schriften werden von dieser Domain ausgeliefert. Die Website stellt keine Anfragen an Server Dritter.",
-            "Die Verarbeitung von Server-Logdaten durch den Hosting-Anbieter unterliegt einer gesonderten Vereinbarung, die vor der Veröffentlichung zu dokumentieren ist."
+            "Das Formular verlangt Vorname, Nachname, Unternehmen, Land, E-Mail-Adresse und Nachricht. Freiwillig können Sie eine Umsatzsteuer-Identifikationsnummer, eine Telefonnummer, die Sie interessierenden Kategorien und eine Mengenschätzung angeben. Die Marken, die Sie Ihrer Anfrage hinzugefügt haben, werden mit übermittelt.",
+            "Diese Daten dienen ausschließlich der Beantwortung Ihrer Anfrage und der Fortführung des geschäftlichen Gesprächs mit Ihnen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO für auf Ihre Anfrage hin erfolgende vorvertragliche Maßnahmen sowie Art. 6 Abs. 1 lit. f DSGVO für unser berechtigtes Interesse an der Beantwortung geschäftlicher Anfragen.",
+            "Der Inhalt des Formulars wird uns per E-Mail zugestellt. Die Bereitstellung der Daten ist weder gesetzlich noch vertraglich vorgeschrieben; ohne die Pflichtangaben können wir die Anfrage jedoch nicht bearbeiten.",
+            "Ihre Anfrage und die zugehörigen Daten verbleiben bei uns, solange dies zur Bearbeitung und zur Durchführung einer daraus entstehenden Geschäftsbeziehung erforderlich ist, und darüber hinaus so lange, wie handels- und steuerrechtliche Aufbewahrungsfristen es verlangen — in der Regel sechs beziehungsweise zehn Jahre nach §§ 257 HGB, 147 AO."
+          ]
+        },
+        {
+          "heading": "Schutz vor automatisierten Einsendungen",
+          "body": [
+            "Das Formular enthält ein für Besucher unsichtbares Feld und misst die Zeit zwischen dem Laden der Seite und dem Absenden. Beides dient allein dazu, automatisierte Einsendungen zu erkennen.",
+            "Weder wird damit Ihr Verhalten ausgewertet, noch wird etwas davon gespeichert oder weitergegeben. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO — unser berechtigtes Interesse am Schutz des Formulars vor Missbrauch."
+          ]
+        },
+        {
+          "heading": "Keine Weitergabe an Dritte",
+          "body": [
+            "Schriften, Bilder und Skripte werden von dieser Domain ausgeliefert. Die Website ruft keinen externen Server auf; über diese Website erhält daher kein Dritter Ihre IP-Adresse.",
+            "Ihre Daten werden nicht verkauft, nicht vermietet und nicht zu eigenen Zwecken Dritter weitergegeben. Eine Offenlegung erfolgt nur, soweit wir gesetzlich dazu verpflichtet sind, oder gegenüber Auftragsverarbeitern, die nach Art. 28 DSGVO weisungsgebunden für uns tätig werden — derzeit ausschließlich unser Hosting-Anbieter."
           ]
         },
         {
           "heading": "Ihre Rechte",
           "body": [
-            "Sie können Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit verlangen sowie der Verarbeitung widersprechen.",
-            "Der genaue Wortlaut dieser Rechte und die zuständige Aufsichtsbehörde sind rechtlich zu bestätigen."
+            "Sie haben das Recht, eine Bestätigung darüber zu verlangen, ob wir Sie betreffende personenbezogene Daten verarbeiten, und gegebenenfalls Auskunft darüber zu erhalten (Art. 15 DSGVO), unrichtige Daten berichtigen zu lassen (Art. 16), die Löschung zu verlangen (Art. 17), die Verarbeitung einschränken zu lassen (Art. 18), Ihre Daten in einem strukturierten, gängigen und maschinenlesbaren Format zu erhalten (Art. 20) sowie einer auf berechtigten Interessen beruhenden Verarbeitung jederzeit zu widersprechen (Art. 21).",
+            "Für die Ausübung dieser Rechte genügt eine E-Mail an die unten genannte Adresse.",
+            "Ihnen steht zudem ein Beschwerderecht bei einer Aufsichtsbehörde zu (Art. 77 DSGVO). Für uns zuständig ist: Die Landesbeauftragte für den Datenschutz Niedersachsen, Prinzenstraße 5, 30159 Hannover."
           ]
         }
       ]
@@ -231,30 +282,31 @@ export const de: Dictionary = {
       "title": "Cookies & lokale Speicherung",
       "sections": [
         {
-          "heading": "Cookies",
+          "heading": "Diese Website setzt keine Cookies",
           "body": [
-            "Diese Website setzt keine Cookies zu Analyse-, Werbe- oder Profilzwecken.",
-            "Es wird kein Dienst Dritter geladen, daher kann kein Dritter über diese Website Cookies setzen."
+            "Es wird kein Cookie gesetzt — weder zur Reichweitenmessung noch zu Werbezwecken, zur Profilbildung oder zu irgendeinem anderen Zweck. Weder durch uns noch durch andere: es wird kein Dienst Dritter geladen, sodass Dritte gar nicht in der Lage sind, eines zu setzen."
           ]
         },
         {
-          "heading": "Auswahl für Anfragen",
+          "heading": "Ihre Anfrageauswahl",
           "body": [
-            "Wenn Sie eine Marke Ihrer Anfrage hinzufügen, werden die von Ihnen gewählten Kennungen im sessionStorage Ihres Browsers gespeichert — einer auf die Browsing-Sitzung begrenzten Speicherung, ohne Absicht der Persistenz zwischen Sitzungen.",
-            "Sie enthält ausschließlich die von Ihnen gewählten Markenkennungen. Kein Werbe-Identifikator, kein Profiling, keine personenbezogenen Daten.",
-            "Sie wird an keinen Server übermittelt, solange Sie das Anfrageformular nicht absenden."
+            "Wenn Sie eine Marke Ihrer Anfrage hinzufügen, werden die von Ihnen gewählten Kennungen im sessionStorage Ihres Browsers abgelegt.",
+            "Er enthält ausschließlich diese Kennungen — keine Werbekennung, kein Profil, keine personenbezogenen Daten. Er besteht allein auf Ihrem Gerät und wird verworfen, sobald Sie den Tab schließen. An einen Server wird nichts übermittelt, solange Sie das Anfrageformular nicht selbst absenden.",
+            "Sein einziger Zweck ist, eine Auswahl von einer Seite zur nächsten zu erhalten: ohne ihn wären die gewählten Marken beim Seitenwechsel verloren."
           ]
         },
         {
-          "heading": "Schriften und Assets",
+          "heading": "Schriften und Bilder",
           "body": [
-            "Schriften und Bilder werden von dieser Domain ausgeliefert. Es erfolgt keine Anfrage an ein Content Delivery Network, sodass durch diese Website keine Besucher-IP an Dritte übermittelt wird."
+            "Schriften und Bilder werden von dieser Domain ausgeliefert. Es erfolgt keine Anfrage an ein Content Delivery Network oder einen Schriftendienst; diese Website übermittelt daher keine Besucher-IP-Adresse an Dritte."
           ]
         },
         {
-          "heading": "Einwilligungsregime",
+          "heading": "Warum es kein Einwilligungsbanner gibt",
           "body": [
-            "Diese Seite beschreibt die technische Nutzung der Browser-Speicherung. Das anwendbare Einwilligungsregime ist vor der Veröffentlichung durch die Rechtsberatung von Ivan Arsenov zu bestimmen."
+            "Das Speichern von Informationen auf Ihrem Endgerät bedarf nach § 25 Abs. 1 TDDDG grundsätzlich Ihrer Einwilligung. § 25 Abs. 2 Nr. 2 TDDDG nimmt davon Speicherungen aus, die unbedingt erforderlich sind, um einen von Ihnen ausdrücklich gewünschten Telemediendienst zur Verfügung zu stellen.",
+            "Die Anfrageauswahl fällt unter diese Ausnahme: sie entsteht erst, wenn Sie eine Marke hinzufügen, sie enthält nur das, was dieser Klick bedeutet, und sie besteht allein, um die von Ihnen gewünschte Funktion bereitzustellen. Da darüber hinaus nichts gespeichert und kein Cookie gesetzt wird, bleibt für ein Banner nichts übrig, wonach es fragen könnte.",
+            "Ein Einwilligungsbanner, das um eine nicht benötigte Erlaubnis bäte, würde ein falsches Bild davon vermitteln, was diese Website tut."
           ]
         }
       ]
