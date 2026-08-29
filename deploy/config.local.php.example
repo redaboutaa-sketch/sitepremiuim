@@ -6,32 +6,33 @@
  * réelles. Le fichier est ignoré par git (.gitignore).
  */
 /*
- * ✅ DESTINATAIRE CONFIRMÉ — 2026-08-25, par le propriétaire.
- * `info@ivan-arsenov.de` (AVEC tiret) est bien la boîte qui reçoit, alors que
- * le site vit sur `ivanarsenov.de` (sans tiret). Ne pas « harmoniser » : site
- * et messagerie vivent délibérément sur deux domaines.
+ * ✅ LES DEUX VALEURS SONT ARBITRÉES — 2026-08-25, par le propriétaire.
  *
- * ⚠️ L'EXPÉDITEUR, LUI, N'EST PAS CONFIRMÉ.
+ * Elles vivent délibérément sur DEUX DOMAINES DIFFÉRENTS, chacun dans son
+ * rôle. Ne pas les « harmoniser » :
  *
- * `sender` est ce que ce serveur présentera en `From:`. Les deux domaines sont
- * hébergés séparément — relevé le 2026-08-25 :
- *     ivan-arsenov.de     → 91.184.0.200   (messagerie)
- *     www.ivanarsenov.de  →   2.57.91.91   (ce serveur)
+ *   recipient  info@ivan-arsenov.de      domaine de MESSAGERIE (avec tiret)
+ *   sender     no-reply@ivanarsenov.de   domaine du SITE       (sans tiret)
  *
- * Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les messages
- * seront classés indésirables ou rejetés — et le formulaire annoncera quand
- * même un envoi réussi, puisque la remise au serveur aura fonctionné. C'est
- * le scénario le plus coûteux : des demandes d'offre perdues en silence.
+ * Pourquoi l'expéditeur est sur le domaine du site : c'est ce serveur qui
+ * envoie, et son SPF est le seul des deux à dépendre du même hébergeur que ce
+ * formulaire — donc le seul directement modifiable.
+ *     ivan-arsenov.de     → 91.184.0.200   (messagerie — reçoit)
+ *     www.ivanarsenov.de  →   2.57.91.91   (ce serveur — envoie)
  *
- * Deux issues acceptables, à trancher avec l'hébergeur de messagerie :
- *   a) ajouter le serveur web au SPF de `ivan-arsenov.de` ;
- *   b) faire porter `sender` par le domaine du SITE — `no-reply@ivanarsenov.de` —
- *      dont le SPF dépend du même hébergeur que ce formulaire.
- * Dans les deux cas, `recipient` ne bouge pas.
+ * ⚠️ IL RESTE UNE ACTION : publier sur `ivanarsenov.de` un enregistrement SPF
+ * autorisant le serveur d'envoi Hostinger. Le choix ci-dessus rend le SPF
+ * modifiable, il ne le configure pas. Sans cet enregistrement, SPF renvoie
+ * « none » — neutre, pas conforme — et une partie des destinataires classera
+ * les messages en indésirable. Le formulaire, lui, annoncera un envoi réussi :
+ * des demandes d'offre perdues en silence.
+ *
+ * `enquiry.php` met l'adresse du prospect en `Reply-To`, jamais en `From` :
+ * cette boîte « no-reply » n'a donc pas besoin d'exister ni d'être relevée.
  */
 return [
     // Boîte qui reçoit les demandes.
     'recipient' => 'info@ivan-arsenov.de',
-    // Expéditeur technique — requis pour SPF/DKIM.
-    'sender'    => 'no-reply@ivan-arsenov.de',
+    // Expéditeur technique — sur le domaine du SITE, voir ci-dessus.
+    'sender'    => 'no-reply@ivanarsenov.de',
 ];

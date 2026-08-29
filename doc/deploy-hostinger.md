@@ -34,17 +34,20 @@ d'offre par e-mail.
 > `info@ivan-arsenov.de` (avec tiret) est bien la boîte destinataire. Le
 > domaine de messagerie est délibérément distinct du domaine web.
 >
-> ⚠️ **Ce qui reste ouvert : l'EXPÉDITEUR.** La confirmation portait sur le
-> destinataire. Les deux domaines sont hébergés séparément — relevé le
-> 2026-08-25 : `ivan-arsenov.de` → 91.184.0.200, `www.ivanarsenov.de` →
-> 2.57.91.91. Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les
-> messages du formulaire seront classés indésirables ou rejetés — et le
-> formulaire annoncera quand même un envoi réussi, puisque la remise au
-> serveur aura fonctionné. Des demandes d'offre perdues en silence.
+> ✅ **Expéditeur arbitré le 2026-08-25 : `no-reply@ivanarsenov.de`**, sur le
+> domaine du SITE. C'est ce serveur qui envoie, et son SPF est le seul des deux
+> à dépendre du même hébergeur que le formulaire — donc le seul directement
+> modifiable. Relevé : `ivan-arsenov.de` → 91.184.0.200 (reçoit),
+> `www.ivanarsenov.de` → 2.57.91.91 (envoie).
 >
-> Deux issues, à trancher avec l'hébergeur de messagerie : ajouter le serveur
-> web au SPF de `ivan-arsenov.de`, ou faire porter l'expéditeur par le domaine
-> du site (`no-reply@ivanarsenov.de`). `recipient` ne bouge pas.
+> ⚠️ **Il reste UNE action** : publier sur `ivanarsenov.de` un enregistrement
+> SPF autorisant le serveur d'envoi Hostinger. Le choix ci-dessus rend le SPF
+> modifiable, il ne le configure pas. Sans lui, SPF renvoie « none » — neutre,
+> pas conforme — et une partie des destinataires classera les messages en
+> indésirable, pendant que le formulaire annoncera un envoi réussi.
+>
+> `enquiry.php` met l'adresse du prospect en `Reply-To`, jamais en `From` :
+> cette boîte « no-reply » n'a pas besoin d'exister ni d'être relevée.
 >
 > Point pratique : si la boîte vit sur `ivan-arsenov.de` alors que le site est
 > sur `ivanarsenov.de`, l'expéditeur technique `no-reply@ivan-arsenov.de` reste

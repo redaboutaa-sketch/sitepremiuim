@@ -52,22 +52,25 @@ export const STAGING_HOST = `staging.${SITE_APEX}`;
 export const CONTACT_EMAIL = 'info@ivan-arsenov.de';
 
 /**
- * ⚠️ SENDER_SPF_REQUIRES_CONFIRMATION — la confirmation du 2026-08-25 portait
- * sur le DESTINATAIRE, pas sur l'expéditeur.
+ * Expéditeur technique du formulaire — arbitré le 2026-08-25.
  *
- * Cette adresse est celle que le serveur web présentera en `From:`. Or les
- * deux domaines sont hébergés SÉPARÉMENT — relevé le 2026-08-25 :
- *   ivan-arsenov.de     → 91.184.0.200   (messagerie)
- *   www.ivanarsenov.de  →   2.57.91.91   (serveur web qui enverra)
+ * Porté par le domaine du SITE, et non par celui de la messagerie. C'est le
+ * seul des deux dont l'enregistrement SPF dépend du même hébergeur que ce
+ * formulaire, donc le seul directement modifiable. Le destinataire, lui, reste
+ * sur `ivan-arsenov.de` : les deux domaines cohabitent, chacun dans son rôle.
  *
- * Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les messages du
- * formulaire partiront avec un `From:` que le domaine ne cautionne pas : ils
- * seront classés indésirables ou rejetés. Le formulaire annoncera pourtant un
- * envoi réussi, puisque la remise au serveur, elle, aura fonctionné.
+ * Relevé du 2026-08-25 :
+ *   ivan-arsenov.de     → 91.184.0.200   (messagerie — reçoit)
+ *   www.ivanarsenov.de  →   2.57.91.91   (serveur web — envoie)
  *
- * À vérifier auprès de l'hébergeur de messagerie AVANT la mise en production.
- * Deux issues acceptables : ajouter le serveur web au SPF, ou faire porter le
- * `sender` par le domaine du SITE (`no-reply@ivanarsenov.de`), dont le SPF est
- * sous le contrôle du même hébergeur que le formulaire.
+ * ⚠️ CE CHOIX NE SUFFIT PAS À LUI SEUL. Il rend le SPF modifiable ; il ne le
+ * configure pas. Il reste à publier, sur `ivanarsenov.de`, un enregistrement
+ * SPF autorisant le serveur d'envoi Hostinger. Sans lui, SPF renvoie « none »
+ * — neutre, pas conforme — et une partie des destinataires classera les
+ * messages en indésirable.
+ *
+ * `enquiry.php` met déjà l'adresse du prospect en `Reply-To`, jamais en
+ * `From` : répondre à une demande d'offre renvoie donc bien au prospect, et
+ * cette boîte « no-reply » n'a pas besoin d'être relevée.
  */
-export const SENDER_EMAIL = 'no-reply@ivan-arsenov.de';
+export const SENDER_EMAIL = 'no-reply@ivanarsenov.de';

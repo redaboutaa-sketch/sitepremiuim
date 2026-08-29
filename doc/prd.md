@@ -14,7 +14,7 @@
 |---|---|
 | **Entreprise** | Ivan Arsenov Iliev — *IVAN ARSENOV* |
 | **Adresse** | Zwischenbrücken 8, 27793 Wildeshausen, Allemagne |
-| **E-mail** | info@ivan-arsenov.de — ✅ confirmé par le propriétaire le 2026-08-25. Domaine de messagerie volontairement distinct du domaine web. L'EXPÉDITEUR technique reste à confirmer (SPF) |
+| **E-mail** | info@ivan-arsenov.de — ✅ confirmé par le propriétaire le 2026-08-25. Domaine de messagerie volontairement distinct du domaine web. Expéditeur technique : `no-reply@ivanarsenov.de`, sur le domaine du site. Reste à publier un SPF sur `ivanarsenov.de` |
 | **Domaine web** | www.ivanarsenov.de — **sans tiret** |
 | **USt-IdNr** | DE464097303 |
 | **St.-Nr.** | 68/120/14293 |

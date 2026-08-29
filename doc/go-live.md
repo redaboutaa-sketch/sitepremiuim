@@ -1,6 +1,6 @@
 # CHEMIN VERS LA MISE EN LIGNE — ivanarsenov.de
 
-**Établi le 2026-08-25** · commit `1adc63f`
+**Établi le 2026-08-25**, mis à jour le même jour · commit `8ec96d3`
 Destinataires : Ivan Arsenov, son conseil juridique, l'intégrateur.
 
 ---
@@ -45,7 +45,7 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 | # | Étape | Qui | Bloque la mise en ligne ? |
 | --- | --- | --- | --- |
 | 1 | Textes juridiques (B3) | conseil juridique d'Ivan | **oui — risque légal** |
-| 2 | Domaine e-mail (B5) | Ivan | **destinataire ✅ confirmé** · expéditeur ouvert |
+| 2 | Adresses e-mail (B5) | ✅ arbitré · **SPF à publier** | oui — sinon les demandes tombent en indésirable |
 | 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
 | 4 | Visuels : droits ou décision (B2 · B11) | Ivan | non — mais change tout |
 | 5 | Publication et contrôles | intégrateur | — |
@@ -95,7 +95,7 @@ formulaire de demande d'offre.
 
 ---
 
-## Étape 2 · Domaine e-mail — B5
+## Étape 2 · Adresses e-mail — B5
 
 ### ✅ Destinataire confirmé — 2026-08-25
 
@@ -104,42 +104,56 @@ demandes, alors que le site vit sur `ivanarsenov.de` (**sans tiret**). Les deux
 domaines sont délibérément distincts. Enregistré dans `site.config.mjs`,
 `src/data/company.ts` et le gabarit de configuration du formulaire.
 
-### ⚠️ L'expéditeur, lui, reste à trancher
+### ✅ Expéditeur arbitré — `no-reply@ivanarsenov.de`
 
-La confirmation portait sur le **destinataire**. Elle ne dit rien de l'adresse
-que le serveur web présentera en `From:`, et c'est de celle-là que dépend
-l'arrivée réelle des messages.
+Sur le domaine du **site**, pas sur celui de la messagerie. Les deux valeurs
+vivent donc délibérément sur deux domaines, chacun dans son rôle :
 
-Les deux domaines sont hébergés **séparément** — relevé le 2026-08-25 :
+| Valeur | Adresse | Domaine |
+| --- | --- | --- |
+| `recipient` — reçoit | `info@ivan-arsenov.de` | messagerie (avec tiret) |
+| `sender` — envoie | `no-reply@ivanarsenov.de` | site (sans tiret) |
+
+**Pourquoi ce choix.** C'est le serveur web qui envoie, et son SPF est le seul
+des deux à dépendre du même hébergeur que le formulaire — donc le seul
+directement modifiable.
 
 | Hôte | Adresse IP | Rôle |
 | --- | --- | --- |
-| `ivan-arsenov.de` | `91.184.0.200` | messagerie |
-| `www.ivanarsenov.de` | `2.57.91.91` | serveur web — c'est lui qui enverra |
+| `ivan-arsenov.de` | `91.184.0.200` | messagerie — reçoit |
+| `www.ivanarsenov.de` | `2.57.91.91` | serveur web — envoie |
 | `staging.ivanarsenov.de` | `77.37.76.100` | préproduction |
 
-Si le SPF de `ivan-arsenov.de` **n'autorise pas** `2.57.91.91`, les messages
-partiront avec un `From:` que le domaine ne cautionne pas : classés
-indésirables, ou rejetés.
+La boîte `no-reply@` **n'a pas besoin d'exister ni d'être relevée** :
+`enquiry.php` met l'adresse du prospect en `Reply-To` et jamais en `From`.
+Répondre à une demande d'offre écrit donc bien au prospect.
 
-> **C'est le scénario le plus coûteux du projet.** Le formulaire annoncera un
-> envoi réussi — parce que la remise au serveur, elle, aura fonctionné — et les
-> demandes d'offre se perdront en silence. Un formulaire cassé se voit ; un
-> formulaire dont les messages tombent en indésirable, non.
+### ⚠️ Il reste une action : publier le SPF
 
-**Question à poser à l'hébergeur de messagerie**, et deux issues acceptables :
+Ce choix **rend** le SPF modifiable, il ne le **configure** pas.
 
-1. **Ajouter le serveur web au SPF** de `ivan-arsenov.de`.
-2. **Faire porter l'expéditeur par le domaine du site** —
-   `no-reply@ivanarsenov.de` — dont le SPF dépend du même hébergeur que le
-   formulaire, donc directement modifiable.
+Il faut publier, sur `ivanarsenov.de`, un enregistrement SPF autorisant le
+serveur d'envoi Hostinger — dans hPanel, la zone DNS du domaine. Sans lui, SPF
+renvoie « none » : neutre, pas conforme, et une partie des destinataires
+classera les messages en indésirable.
 
-Dans les deux cas, le **destinataire ne bouge pas**.
+> **C'est toujours le mode de défaillance le plus coûteux du projet.** Le
+> formulaire annoncera un envoi réussi — la remise au serveur, elle, aura
+> fonctionné — et les demandes d'offre se perdront en silence. Un formulaire
+> cassé se voit ; un formulaire dont les messages tombent en indésirable, non.
 
-*Note : je n'ai pas pu lire les enregistrements SPF depuis cet environnement —
+**À vérifier après publication**, depuis un poste avec accès direct :
+
+```bash
+dig +short TXT ivanarsenov.de | grep spf
+```
+
+Puis un envoi réel vers une boîte externe (Gmail, Outlook) et un contrôle de
+l'en-tête reçu : `spf=pass` attendu.
+
+*Note : je n'ai pas pu lire les enregistrements SPF depuis mon environnement —
 aucun outil DNS n'y est installé. Les adresses IP ci-dessus, elles, sont bien
-mesurées. Ne pas conclure de mon silence qu'il n'y a pas de SPF : c'est à
-vérifier, pas à supposer.*
+mesurées.*
 
 ---
 
@@ -159,14 +173,16 @@ public_html/api/config.local.php   ← deploy/config.local.php.example   (644)
 public_html/api/                                                       (755)
 ```
 
-`config.local.php` porte deux valeurs : `recipient` (la boîte qui reçoit,
-**confirmée**) et `sender` (expéditeur technique, **à trancher — voir étape 2**).
+`config.local.php` porte deux valeurs, **toutes deux arbitrées** et déjà
+inscrites dans le gabarit :
 
-La règle sur `sender` : il doit appartenir à un domaine dont le SPF autorise
-**ce serveur web**. Selon l'issue retenue à l'étape 2, ce sera soit
-`ivan-arsenov.de` une fois son SPF élargi, soit `ivanarsenov.de` directement.
-Ne pas renseigner cette valeur au hasard — c'est elle qui décide si les
-messages arrivent ou tombent en indésirable.
+```php
+'recipient' => 'info@ivan-arsenov.de',      // domaine de messagerie
+'sender'    => 'no-reply@ivanarsenov.de',   // domaine du site
+```
+
+Il n'y a donc plus rien à décider ici — seulement à copier les fichiers. Le SPF
+de l'étape 2 reste, lui, à publier.
 
 ### Vérification
 
@@ -308,7 +324,7 @@ Dès qu'une autorisation arrive, transmettez-la : elle est enregistrée dans
 | --- | --- | --- | --- |
 | **B3** | Textes juridiques | conseil juridique | **risque de mise en demeure** |
 | **B1** | Livraison du formulaire | intégrateur, après B5 | **aucune demande n'arrive** |
-| **B5** | Expéditeur / SPF — destinataire confirmé | Ivan + hébergeur messagerie | **demandes perdues en silence** |
+| **B5** | Publier le SPF de `ivanarsenov.de` — adresses arbitrées | Ivan, dans hPanel | **demandes perdues en silence** |
 | **B2** | Photos produit — 14 générées | Ivan / titulaires | site sans photos |
 | **B11** | Droits sur les logos — 14 | Ivan / titulaires | site sans logos |
 
