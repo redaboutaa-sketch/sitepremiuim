@@ -158,7 +158,7 @@ Production : **28 visuels de marque non validés élagués, 0 publié.**
 
 | # | Blocage | État |
 | --- | --- | --- |
-| **B2** | Packshots officiels — 24 visuels générés, aucun droit confirmé | **ouvert** |
+| **B2** | Packshots officiels — 14 visuels générés, aucun droit confirmé | **ouvert** |
 | **B11** | Droits sur les logos de marque — **14 logos, aucune autorisation écrite** | **ouvert** |
 | B1 | Acheminement du formulaire | ouvert |
 | B3 | Mentions légales | ouvert |

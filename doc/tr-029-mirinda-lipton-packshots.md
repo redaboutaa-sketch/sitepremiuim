@@ -248,7 +248,7 @@ Production : **0 packshot généré publié**, inchangé.
 
 | # | Blocage | État |
 | --- | --- | --- |
-| **B2** | Packshots officiels — **24** visuels générés désormais, aucun droit confirmé | **ouvert** |
+| **B2** | Packshots officiels — **14** visuels générés (12 conservés après la réduction + 2 ici), aucun droit confirmé | **ouvert** |
 | **B11** | Droits sur les logos de marque · le logo Lipton manquant a été livré depuis (TR-030) | **ouvert** |
 | B1 | Acheminement du formulaire | ouvert |
 | B3 | Mentions légales | ouvert |
