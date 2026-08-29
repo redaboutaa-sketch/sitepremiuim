@@ -43,7 +43,7 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 | # | Étape | Qui | Bloque la mise en ligne ? |
 | --- | --- | --- | --- |
 | 1 | Textes juridiques (B3) | conseil juridique d'Ivan | **oui — risque légal** |
-| 2 | Adresses e-mail (B5) | ✅ arbitré · **SPF à publier** | oui — sinon les demandes tombent en indésirable |
+| 2 | Adresses e-mail (B5) | ✅ **SPF publié et vérifié** | reste à constater `spf=pass` à l'envoi |
 | 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
 | 4 | Visuels : droits (B2 · B11) | ✅ **autorisations déclarées** — publiés | non |
 | 5 | Publication et contrôles | intégrateur | — |
@@ -126,48 +126,48 @@ La boîte `no-reply@` **n'a pas besoin d'exister ni d'être relevée** :
 `enquiry.php` met l'adresse du prospect en `Reply-To` et jamais en `From`.
 Répondre à une demande d'offre écrit donc bien au prospect.
 
-### ⚠️ Il reste une action : publier le SPF
+### ✅ SPF publié et vérifié — 2026-08-29
 
-Ce choix **rend** le SPF modifiable, il ne le **configure** pas.
+L'enregistrement est en place, et il a été **lu directement dans le DNS**, pas
+constaté sur une capture d'écran :
 
-État de la zone DNS de `ivanarsenov.de` au 2026-08-29 (relevé sur hPanel) :
-un `A @ → 2.57.91.91`, un `CNAME www → ivanarsenov.de`, et **aucun TXT, aucun
-MX**. Il n'y a donc pas de SPF à modifier : il y en a un à créer.
-
-#### L'enregistrement à ajouter
-
-| Champ | Valeur |
-| --- | --- |
-| **Type** | `TXT` |
-| **Name** | `@` |
-| **Value** | `v=spf1 a ~all` |
-| **TTL** | `300` |
-
-**`@` et non `www`.** L'expéditeur est `no-reply@ivanarsenov.de`, donc le SPF
-interrogé est celui de l'**apex**. Un TXT posé sur `www` ne serait jamais lu —
-c'est l'erreur classique, d'autant que `www` n'est ici qu'un CNAME vers l'apex.
-
-**Pourquoi `a`** — le mécanisme `a` autorise l'adresse du `A` du domaine, soit
-exactement `2.57.91.91`, le serveur qui enverra. Il se maintient tout seul si
-l'IP change un jour. `v=spf1 ip4:2.57.91.91 ~all` est l'équivalent explicite,
-si vous préférez figer la valeur.
-
-**Ne pas utiliser d'`include:` d'un service de messagerie.** Ces inclusions
-autorisent les serveurs de boîtes hébergées ; or ce domaine n'a aucun MX et
-n'héberge aucune boîte. C'est le serveur *web* qui envoie. Autoriser autre
-chose n'aurait aucun effet.
-
-**`~all` et non `-all`.** Softfail le temps de vérifier. Passer à `-all` une
-fois le test concluant, si vous le souhaitez.
-
-#### Vérifier — et ne pas s'arrêter à la propagation
-
-```bash
-dig +short TXT ivanarsenov.de
-# attendu : "v=spf1 a ~all"
+```
+TXT ivanarsenov.de  →  "v=spf1 a ~all"
+   1 enregistrement · 1 segment · 13 octets
 ```
 
-Puis, et c'est le seul contrôle qui prouve quelque chose : **un envoi réel**
+Trois points contrôlés, chacun étant une erreur classique :
+
+| Contrôle | Résultat |
+| --- | --- |
+| Un seul enregistrement SPF | ✅ — deux SPF sur un domaine = `permerror` |
+| Aucun guillemet littéral | ✅ — 13 octets exactement, les guillemets d'hPanel n'étaient qu'un affichage |
+| Le mécanisme `a` désigne bien l'expéditeur | ✅ — `ivanarsenov.de` → `2.57.91.91`, le serveur web |
+
+#### Ce que la vérification a révélé sur l'autre domaine
+
+En interrogeant `ivan-arsenov.de` — le domaine de messagerie — j'ai lu :
+
+```
+v=spf1 a mx include:_spf.hostnet.nl -all
+```
+
+La messagerie d'Ivan est chez **Hostnet**, et sa politique se termine par
+**`-all` : un rejet dur.** Le serveur web Hostinger (`2.57.91.91`) n'est ni
+son `a`, ni son `mx`, ni dans l'`include` de Hostnet.
+
+Autrement dit : avoir mis l'expéditeur sur `ivan-arsenov.de` n'aurait pas
+seulement fait tomber les messages en indésirable — **ils auraient été
+purement et simplement rejetés**. Le choix de l'étape précédente était le bon,
+et c'est maintenant mesuré et non plus seulement raisonné.
+
+#### Ce qui reste à faire, et ne peut se faire qu'à l'envoi
+
+Un SPF publié n'est pas un SPF qui passe. Sur un hébergement mutualisé,
+`mail()` peut sortir par un relais dont l'IP diffère de celle du serveur web —
+et dans ce cas `a` ne suffit pas.
+
+**Le seul contrôle qui prouve quelque chose** : après l'étape 3, un envoi réel
 depuis le formulaire vers une boîte externe (Gmail, Outlook), puis lecture de
 l'en-tête du message reçu.
 
@@ -175,18 +175,18 @@ l'en-tête du message reçu.
 Authentication-Results: ... spf=pass ...
 ```
 
-> ⚠️ **Si le résultat est `spf=fail` ou `softfail`, ne pas conclure que le SPF
-> est mauvais.** Sur un hébergement mutualisé, `mail()` peut sortir par un
-> relais SMTP dont l'IP diffère de celle du serveur web. Le cas échéant,
-> l'en-tête `Received:` du message nomme l'IP réellement utilisée : il suffit
-> alors de l'ajouter — `v=spf1 a ip4:<cette IP> ~all`.
->
-> Je ne peux pas anticiper ce point depuis mon environnement : il ne se
-> constate qu'à l'envoi.
+Si le résultat est `fail` ou `softfail`, l'en-tête `Received:` nomme l'IP
+réellement utilisée : il suffit alors de l'ajouter —
+`v=spf1 a ip4:<cette IP> ~all`.
 
-*Note : aucun outil DNS n'est installé ici, je n'ai donc pas pu lire les TXT
-moi-même. Les adresses IP ci-dessus sont mesurées, et la zone vient de votre
-capture hPanel.*
+Une fois `spf=pass` constaté, `~all` peut passer à `-all` si vous le souhaitez.
+
+#### Optionnel — DMARC
+
+`_dmarc.ivanarsenov.de` n'a aucun enregistrement. Ce n'est pas requis et rien
+n'en dépend. Un `v=DMARC1; p=none; rua=mailto:…` donnerait de la visibilité
+sur ce que les destinataires font des messages, sans aucun risque de blocage.
+À considérer après coup, jamais avant d'avoir constaté `spf=pass`.
 
 ---
 
@@ -215,7 +215,7 @@ inscrites dans le gabarit :
 ```
 
 Il n'y a donc plus rien à décider ici — seulement à copier les fichiers. Le SPF
-de l'étape 2 reste, lui, à publier.
+de l'étape 2 est publié et vérifié.
 
 ### Vérification
 
@@ -396,7 +396,7 @@ Dès qu'une autorisation arrive, transmettez-la : elle est enregistrée dans
 | --- | --- | --- | --- |
 | **B3** | Textes juridiques | conseil juridique | **risque de mise en demeure** |
 | **B1** | Livraison du formulaire | intégrateur, après B5 | **aucune demande n'arrive** |
-| **B5** | Publier le SPF de `ivanarsenov.de` — adresses arbitrées | Ivan, dans hPanel | **demandes perdues en silence** |
+| **B5** | ✅ adresses arbitrées · SPF publié et vérifié | — | reste à constater `spf=pass` à l'envoi réel |
 | **B2** | Photos produit — 14 **générées**, publiées | Ivan | à remplacer par les packshots presse |
 | **B11** | Droits sur les logos — 14, publiés | Ivan | **documents d'autorisation à archiver** |
 

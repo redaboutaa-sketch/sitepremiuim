@@ -63,11 +63,19 @@ export const CONTACT_EMAIL = 'info@ivan-arsenov.de';
  *   ivan-arsenov.de     → 91.184.0.200   (messagerie — reçoit)
  *   www.ivanarsenov.de  →   2.57.91.91   (serveur web — envoie)
  *
- * ⚠️ CE CHOIX NE SUFFIT PAS À LUI SEUL. Il rend le SPF modifiable ; il ne le
- * configure pas. Il reste à publier, sur `ivanarsenov.de`, un enregistrement
- * SPF autorisant le serveur d'envoi Hostinger. Sans lui, SPF renvoie « none »
- * — neutre, pas conforme — et une partie des destinataires classera les
- * messages en indésirable.
+ * ✅ SPF PUBLIÉ ET VÉRIFIÉ le 2026-08-29, lu directement dans le DNS :
+ *   TXT ivanarsenov.de → "v=spf1 a ~all"   (1 enregistrement, 1 segment,
+ *   13 octets — pas de guillemet littéral, pas de doublon)
+ * Le mécanisme `a` désigne 2.57.91.91, soit exactement le serveur qui envoie.
+ *
+ * Ce que la vérification a confirmé au passage : `ivan-arsenov.de` publie
+ * `v=spf1 a mx include:_spf.hostnet.nl -all`. Sa messagerie est chez Hostnet
+ * et sa politique est un REJET DUR. Le serveur web Hostinger n'y figure pas —
+ * un expéditeur sur ce domaine aurait donc été rejeté, pas seulement filtré.
+ *
+ * ⚠️ Reste à constater `spf=pass` sur un ENVOI RÉEL. Sur un mutualisé,
+ * `mail()` peut sortir par un relais d'IP différente ; le cas échéant,
+ * l'en-tête `Received:` la nomme et il suffit de l'ajouter en `ip4:`.
  *
  * `enquiry.php` met déjà l'adresse du prospect en `Reply-To`, jamais en
  * `From` : répondre à une demande d'offre renvoie donc bien au prospect, et

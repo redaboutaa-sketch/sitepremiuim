@@ -40,11 +40,17 @@ d'offre par e-mail.
 > modifiable. Relevé : `ivan-arsenov.de` → 91.184.0.200 (reçoit),
 > `www.ivanarsenov.de` → 2.57.91.91 (envoie).
 >
-> ⚠️ **Il reste UNE action** : publier sur `ivanarsenov.de` un enregistrement
-> SPF autorisant le serveur d'envoi Hostinger. Le choix ci-dessus rend le SPF
-> modifiable, il ne le configure pas. Sans lui, SPF renvoie « none » — neutre,
-> pas conforme — et une partie des destinataires classera les messages en
-> indésirable, pendant que le formulaire annoncera un envoi réussi.
+> ✅ **SPF publié et vérifié le 2026-08-29**, lu dans le DNS :
+> `TXT ivanarsenov.de → "v=spf1 a ~all"` — un seul enregistrement, un seul
+> segment, 13 octets, et le mécanisme `a` désigne bien `2.57.91.91`.
+>
+> Au passage : `ivan-arsenov.de` publie
+> `v=spf1 a mx include:_spf.hostnet.nl -all` — messagerie chez Hostnet, rejet
+> DUR. Un expéditeur porté par ce domaine aurait été rejeté, pas filtré.
+>
+> ⚠️ Reste à constater `spf=pass` sur un envoi RÉEL vers une boîte externe.
+> Un SPF publié n'est pas un SPF qui passe : sur un mutualisé, `mail()` peut
+> sortir par un relais d'IP différente.
 >
 > `enquiry.php` met l'adresse du prospect en `Reply-To`, jamais en `From` :
 > cette boîte « no-reply » n'a pas besoin d'exister ni d'être relevée.
