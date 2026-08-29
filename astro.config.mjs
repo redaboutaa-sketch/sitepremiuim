@@ -170,15 +170,38 @@ function pruneUnvalidatedAssets() {
         await walk(root);
         const haystack = texts.join('\n');
 
+        /*
+         * ⚠️ INVERSION DU 2026-08-29 — décision du propriétaire.
+         *
+         * Cette étape RETIRAIT tout visuel de marque et LEVAIT une erreur si
+         * l'un d'eux était référencé : à l'époque, aucun n'avait
+         * d'autorisation, et le seul comportement correct était de tout
+         * bloquer. Ivan Arsenov déclare depuis détenir les autorisations
+         * auprès des fournisseurs et des marques ; les 28 visuels sont passés
+         * `validated` / `granted` au registre et se rendent en production.
+         *
+         * Le tri se fait donc désormais sur la RÉFÉRENCE, et le registre
+         * redevient le seul décideur :
+         *   · référencé   → `resolve()` l'a jugé publiable, on le garde ;
+         *   · non référencé → aucune page ne l'appelle, c'est du poids mort
+         *                     déposé chez l'hébergeur : on le retire.
+         *
+         * Le garde-fou n'a pas disparu, il a changé de place. Il ne peut plus
+         * vivre ici : Astro nomme ses dérivés `<base>.<hash>.<ext>` et perd le
+         * dossier de la marque, si bien que ce plugin ne peut pas distinguer
+         * le logo de Coca-Cola de celui de Fanta. La vérification par asset
+         * est donc tenue par `tests/assets.spec.ts`, qui lit le registre
+         * TypeScript — notamment qu'un visuel généré publié porte bien une
+         * autorisation `granted` avec sa trace.
+         */
         const referenced = suspects.filter((f) => haystack.includes(f));
-        if (referenced.length > 0) {
-          throw new Error(
-            `Visuels de marque non validés RÉFÉRENCÉS en production : ${referenced.join(', ')}`,
-          );
-        }
+        const orphans = suspects.filter((f) => !haystack.includes(f));
 
-        for (const f of suspects) await rm(join(root, '_astro', f));
-        logger.info(`${suspects.length} visuels de marque non validés retirés de la production`);
+        for (const f of orphans) await rm(join(root, '_astro', f));
+        logger.info(
+          `visuels de marque — ${referenced.length} publiés (registre), ` +
+            `${orphans.length} non référencés retirés`,
+        );
       },
     },
   };

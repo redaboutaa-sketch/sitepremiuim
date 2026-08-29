@@ -20,21 +20,19 @@ développement.
 Ce qui reste à obtenir n'est **pas du code**. Ce sont quatre décisions ou
 livraisons qui n'appartiennent qu'au propriétaire du site.
 
-> ### ⚠️ Le point à comprendre avant tout le reste
+> ### ✅ RÉSOLU LE 2026-08-29 — les visuels sont publiés
 >
-> **La version de production n'affiche AUCUNE photo de boisson.**
+> Ce document s'ouvrait sur un avertissement : la production n'affichait
+> aucune photo de boisson, parce qu'aucun visuel n'avait d'autorisation.
 >
-> Mesuré sur l'artefact du 2026-08-25 : page d'accueil **27 replis
-> typographiques, 0 image** ; catalogue `/drinks/` **14 replis, 0 image** ;
-> **0 visuel de marque** dans les fichiers publiés.
+> Ivan Arsenov **déclare détenir les autorisations** auprès des fournisseurs
+> et des marques. Les 28 visuels sont publiés, et **la production rend
+> désormais la même chose que la préproduction**.
 >
-> Ce n'est pas une panne. Le build **retire délibérément 28 visuels** — 14
-> logos et 14 photos produit — parce qu'aucun n'a d'autorisation écrite du
-> titulaire de la marque. La préproduction est le seul endroit où ils
-> s'affichent, et c'est voulu.
->
-> **Le site validé en préproduction et le site publiable ne se ressemblent
-> donc pas.** C'est l'objet de l'étape 4.
+> Deux réserves subsistent, détaillées à l'étape 4 : les **documents
+> d'autorisation restent à archiver**, et les quatorze photos produit sont
+> **générées par un modèle** — elles restent à remplacer par les packshots
+> presse des marques.
 
 ---
 
@@ -47,7 +45,7 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 | 1 | Textes juridiques (B3) | conseil juridique d'Ivan | **oui — risque légal** |
 | 2 | Adresses e-mail (B5) | ✅ arbitré · **SPF à publier** | oui — sinon les demandes tombent en indésirable |
 | 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
-| 4 | Visuels : droits ou décision (B2 · B11) | Ivan | non — mais change tout |
+| 4 | Visuels : droits (B2 · B11) | ✅ **autorisations déclarées** — publiés | non |
 | 5 | Publication et contrôles | intégrateur | — |
 
 ---
@@ -132,28 +130,63 @@ Répondre à une demande d'offre écrit donc bien au prospect.
 
 Ce choix **rend** le SPF modifiable, il ne le **configure** pas.
 
-Il faut publier, sur `ivanarsenov.de`, un enregistrement SPF autorisant le
-serveur d'envoi Hostinger — dans hPanel, la zone DNS du domaine. Sans lui, SPF
-renvoie « none » : neutre, pas conforme, et une partie des destinataires
-classera les messages en indésirable.
+État de la zone DNS de `ivanarsenov.de` au 2026-08-29 (relevé sur hPanel) :
+un `A @ → 2.57.91.91`, un `CNAME www → ivanarsenov.de`, et **aucun TXT, aucun
+MX**. Il n'y a donc pas de SPF à modifier : il y en a un à créer.
 
-> **C'est toujours le mode de défaillance le plus coûteux du projet.** Le
-> formulaire annoncera un envoi réussi — la remise au serveur, elle, aura
-> fonctionné — et les demandes d'offre se perdront en silence. Un formulaire
-> cassé se voit ; un formulaire dont les messages tombent en indésirable, non.
+#### L'enregistrement à ajouter
 
-**À vérifier après publication**, depuis un poste avec accès direct :
+| Champ | Valeur |
+| --- | --- |
+| **Type** | `TXT` |
+| **Name** | `@` |
+| **Value** | `v=spf1 a ~all` |
+| **TTL** | `300` |
+
+**`@` et non `www`.** L'expéditeur est `no-reply@ivanarsenov.de`, donc le SPF
+interrogé est celui de l'**apex**. Un TXT posé sur `www` ne serait jamais lu —
+c'est l'erreur classique, d'autant que `www` n'est ici qu'un CNAME vers l'apex.
+
+**Pourquoi `a`** — le mécanisme `a` autorise l'adresse du `A` du domaine, soit
+exactement `2.57.91.91`, le serveur qui enverra. Il se maintient tout seul si
+l'IP change un jour. `v=spf1 ip4:2.57.91.91 ~all` est l'équivalent explicite,
+si vous préférez figer la valeur.
+
+**Ne pas utiliser d'`include:` d'un service de messagerie.** Ces inclusions
+autorisent les serveurs de boîtes hébergées ; or ce domaine n'a aucun MX et
+n'héberge aucune boîte. C'est le serveur *web* qui envoie. Autoriser autre
+chose n'aurait aucun effet.
+
+**`~all` et non `-all`.** Softfail le temps de vérifier. Passer à `-all` une
+fois le test concluant, si vous le souhaitez.
+
+#### Vérifier — et ne pas s'arrêter à la propagation
 
 ```bash
-dig +short TXT ivanarsenov.de | grep spf
+dig +short TXT ivanarsenov.de
+# attendu : "v=spf1 a ~all"
 ```
 
-Puis un envoi réel vers une boîte externe (Gmail, Outlook) et un contrôle de
-l'en-tête reçu : `spf=pass` attendu.
+Puis, et c'est le seul contrôle qui prouve quelque chose : **un envoi réel**
+depuis le formulaire vers une boîte externe (Gmail, Outlook), puis lecture de
+l'en-tête du message reçu.
 
-*Note : je n'ai pas pu lire les enregistrements SPF depuis mon environnement —
-aucun outil DNS n'y est installé. Les adresses IP ci-dessus, elles, sont bien
-mesurées.*
+```
+Authentication-Results: ... spf=pass ...
+```
+
+> ⚠️ **Si le résultat est `spf=fail` ou `softfail`, ne pas conclure que le SPF
+> est mauvais.** Sur un hébergement mutualisé, `mail()` peut sortir par un
+> relais SMTP dont l'IP diffère de celle du serveur web. Le cas échéant,
+> l'en-tête `Received:` du message nomme l'IP réellement utilisée : il suffit
+> alors de l'ajouter — `v=spf1 a ip4:<cette IP> ~all`.
+>
+> Je ne peux pas anticiper ce point depuis mon environnement : il ne se
+> constate qu'à l'envoi.
+
+*Note : aucun outil DNS n'est installé ici, je n'ai donc pas pu lire les TXT
+moi-même. Les adresses IP ci-dessus sont mesurées, et la zone vient de votre
+capture hPanel.*
 
 ---
 
@@ -209,26 +242,65 @@ Les photos actuelles ont été **produites par un modèle** — leur manifeste C
 signé porte `gpt-image 2.0` / `trainedAlgorithmicMedia`. Elles servent à juger
 le design ; elles ne donnent aucun droit et ne seront jamais publiées en l'état.
 
-### Deux issues, et il faut en choisir une
+### ✅ DÉCISION DU CLIENT — 2026-08-29 : les visuels sont PUBLIÉS
 
-**A · Obtenir les fichiers presse.** Chaque marque possède un service de presse
-ou un kit distributeur. La demande porte sur deux choses : le fichier
-(packshot détouré, logo vectoriel) **et** l'autorisation écrite d'usage
-référentiel de distributeur. Un modèle de demande est en annexe.
+Ivan Arsenov **déclare détenir les autorisations** auprès des fournisseurs et
+des marques. Les 28 visuels — 14 logos et 14 photos produit — passent donc
+`validated` / `granted` au registre et sont publiés en production.
 
-Dès qu'un fichier officiel arrive, il remplace le visuel généré et passe
-`validated` : il s'affiche alors en production sans aucune modification du
-code.
+> ⚠️ **Ce qui est enregistré, c'est une déclaration, pas une preuve.** Les
+> documents n'ont pas été transmis au dépôt. Le champ `evidence` de chaque
+> asset porte l'auteur de la déclaration et sa date, rien de plus.
+> **À archiver dès réception** — c'est la seule pièce qui compterait en cas de
+> contestation.
 
-**B · Publier une V1 typographique.** Le site fonctionne sans photos — la
-composition a été conçue pour rester lisible et tenue en repli typographique,
-et c'est ce que les 1 092 tests vérifient. C'est **une décision parfaitement
-défendable**, à condition qu'elle soit prise en connaissance de cause plutôt
-que découverte après la mise en ligne.
+#### La nuance qui subsiste sur les quatorze photos
 
-> Recommandation : **ne pas publier un catalogue de boissons sans une seule
-> photo sans qu'Ivan ait vu, et accepté, à quoi ressemble la production.**
-> Les visuels sont le cœur de ce qu'il vend.
+Une autorisation d'usage de marque **ne transforme pas un fichier généré par un
+modèle en photographie officielle du produit**. Les quatorze visuels produits
+restent `sourceType: 'generated'` au registre — à vie, publiés ou non : la
+donnée ne ment jamais sur l'origine d'un fichier.
+
+Concrètement, deux conséquences :
+
+- une canette rendue par un modèle peut **différer du produit réellement
+  livré** — conditionnement, format, mentions d'étiquette ;
+- ces quatorze fichiers **restent à remplacer** par les packshots presse des
+  marques, qu'Ivan est maintenant en position de demander. Le modèle de
+  courrier est en annexe.
+
+Les visuels publiés gardent leur attribut `data-generated` dans le HTML : le
+jour du remplacement, on les retrouve sans avoir à deviner.
+
+#### Ce que ça change dans le site
+
+| | Avant | Après |
+| --- | --- | --- |
+| Accueil | 27 replis, 0 image | 0 repli, **21 images** |
+| Catalogue `/drinks/` | 14 replis, 0 image | 0 repli, **28 images** |
+| Poids de l'accueil | ~300 Ko | **782 Ko** |
+| Poids de `/drinks/` | ~250 Ko | **424 Ko** |
+
+Le poids de l'accueil a plus que doublé : 479 Ko d'images réparties sur une
+vingtaine de fichiers de 20 à 62 Ko. Aucun fichier n'est aberrant, c'est le
+nombre qui pèse. Les budgets de non-régression ont été **remesurés** et
+relevés route par route, pas desserrés en bloc.
+
+Si le poids devient un sujet, la cible est claire : les **six packshots de la
+scène d'accueil**, chargés en avidité parce qu'ils sont au-dessus de la ligne
+de flottaison. La piste Featured, elle, est déjà paresseuse.
+
+#### Les garde-fous n'ont pas été supprimés, ils ont été retournés
+
+Sept contrôles d'artefact et trois tests exigeaient l'inverse exact — zéro
+visuel de marque en production. Ils vérifient désormais que **rien ne se vide** :
+la scène rend bien ses six packshots, la piste ses quatorze, plus aucun
+emplacement ne retombe sur un repli. Une régression qui rendrait à nouveau des
+replis passerait autrement inaperçue jusqu'à ce qu'un visiteur la voie.
+
+Un garde-fou est même renforcé : un visuel généré publié doit porter une
+autorisation `granted` **avec sa trace**. Publier un fichier fabriqué que
+personne n'assume reste interdit.
 
 ---
 
@@ -325,8 +397,8 @@ Dès qu'une autorisation arrive, transmettez-la : elle est enregistrée dans
 | **B3** | Textes juridiques | conseil juridique | **risque de mise en demeure** |
 | **B1** | Livraison du formulaire | intégrateur, après B5 | **aucune demande n'arrive** |
 | **B5** | Publier le SPF de `ivanarsenov.de` — adresses arbitrées | Ivan, dans hPanel | **demandes perdues en silence** |
-| **B2** | Photos produit — 14 générées | Ivan / titulaires | site sans photos |
-| **B11** | Droits sur les logos — 14 | Ivan / titulaires | site sans logos |
+| **B2** | Photos produit — 14 **générées**, publiées | Ivan | à remplacer par les packshots presse |
+| **B11** | Droits sur les logos — 14, publiés | Ivan | **documents d'autorisation à archiver** |
 
 `TR027_FINDING_001` — collision d'un libellé allemand en Featured entre 320 et
 768 px. Cosmétique, documenté, non corrigé sous gel de version. Ne bloque pas

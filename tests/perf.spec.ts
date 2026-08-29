@@ -31,6 +31,39 @@ const BUDGET = {
   pageTotal: 400_000,
 };
 
+/**
+ * Plafond de poids TOTAL, par route.
+ *
+ * ⚠️ RELEVÉ LE 2026-08-29, après la publication des visuels de marque.
+ *
+ * Le plafond unique de 400 Ko décrivait un site dont toutes les pages
+ * rendaient des replis typographiques. Depuis que les 28 visuels autorisés
+ * sont publiés, deux pages portent de vraies images et ce chiffre ne décrit
+ * plus rien : le tenir aurait obligé à retirer les photos que le client vient
+ * de décider de publier.
+ *
+ * Les valeurs ci-dessous sont donc MESURÉES puis arrondies vers le haut avec
+ * une marge de non-régression — pas choisies pour faire passer le test.
+ *
+ *   /                 782 Ko mesurés  →  850 000   (6 packshots hero + piste)
+ *   /drinks/          424 Ko mesurés  →  480 000   (14 logos, chargés paresseux)
+ *   toutes les autres         < 400 Ko →  400 000   (inchangé)
+ *
+ * Sur l'accueil, 479 Ko sont des images réparties sur une vingtaine de
+ * fichiers de 20 à 62 Ko : aucun fichier aberrant, c'est le nombre qui pèse.
+ * Les six packshots de la scène sont chargés en avidité — ils sont au-dessus
+ * de la ligne de flottaison — pendant que la piste Featured reste paresseuse.
+ *
+ * PISTE D'OPTIMISATION, si le poids devient un sujet : ce sont ces six-là
+ * qu'il faut viser, pas la piste.
+ */
+const PAGE_TOTAL: Record<string, number> = {
+  '/': 850_000,
+  '/de/': 850_000,
+  '/drinks/': 480_000,
+  '/de/getraenke/': 480_000,
+};
+
 /** Chunks d'animation, reconnus par nom de module et non par taille. */
 const MOTION_CHUNK = /\/(gsap|ScrollTrigger)\./i;
 
@@ -110,7 +143,9 @@ for (const route of ROUTES) {
       BUDGET.jsMotionTotal,
     );
     expect(bytes.font ?? 0, `fonts ${kb(bytes.font ?? 0)}`).toBeLessThanOrEqual(BUDGET.fontsTotal);
-    expect(bytes.total, `total ${kb(bytes.total)}`).toBeLessThanOrEqual(BUDGET.pageTotal);
+    expect(bytes.total, `total ${kb(bytes.total)}`).toBeLessThanOrEqual(
+      PAGE_TOTAL[route] ?? BUDGET.pageTotal,
+    );
   });
 }
 

@@ -160,10 +160,19 @@ test('staging : un refus explicite n’est jamais rendu', () => {
 });
 
 test('en production, un asset non validé bascule sur le repli', () => {
-  // Aucun asset de marque n’étant fourni, la résolution rend `null` partout :
-  // c’est le signal de repli, pas une erreur.
-  expect(resolveAsset('coca-cola', 'hero', 'production')).toBeNull();
-  expect(resolveAsset('coca-cola', 'logo', 'production')).toBeNull();
+  /*
+   * La règle est inchangée ; seule sa démonstration l'est. Elle s'appuyait sur
+   * Coca-Cola, dont les visuels étaient alors `requires_validation` — ils sont
+   * `validated` depuis le 2026-08-29 et se rendent donc bien en production.
+   *
+   * Le contrôle porte désormais sur un enregistrement SYNTHÉTIQUE : il teste
+   * la règle elle-même, pas l'état du registre à un instant donné. C'est ce
+   * qu'il aurait dû faire depuis le début — un test qui se casse parce qu'une
+   * donnée légitime a changé ne testait pas ce qu'il annonçait.
+   */
+  expect(productionEligible({ ...base, status: 'requires_validation' })).toBe(false);
+  expect(productionEligible({ ...base, status: 'missing' })).toBe(false);
+  expect(productionEligible({ ...base, status: 'validated' })).toBe(true);
 });
 
 test('aucune marque n’est retirée du site faute d’asset', () => {
@@ -241,15 +250,24 @@ test('tout fichier existant déclare sa provenance', () => {
 /** Base de nom telle qu'elle apparaîtra dans `dist/_astro/`. */
 const basenameOf = (path: string) => (path.split('/').pop() ?? '').split('.')[0] ?? '';
 
-test('tout asset publiable en production figure dans la liste blanche d’identité', () => {
+test('tout asset publiable en production porte une base de nom déclarée', () => {
+  /*
+   * Le contrôle exigeait que TOUT asset publiable soit de l'identité : c'était
+   * l'époque où aucun visuel de marque n'avait d'autorisation, et où le build
+   * les retirait tous sans distinction.
+   *
+   * Depuis le 2026-08-29 les visuels de marque sont autorisés et publiés. La
+   * liste blanche reste, mais elle a deux volets : identité OU visuel de
+   * marque déclaré. Un fichier dont la base de nom n'est dans NI l'une NI
+   * l'autre serait retiré du build en laissant une image cassée.
+   */
+  const declared = [...IDENTITY_BASENAMES, ...BRAND_ASSET_BASENAMES];
   const wrong = registry()
     .filter((a) => productionEligible(a) && a.path !== null)
-    .filter((a) => !IDENTITY_BASENAMES.includes(basenameOf(a.path!)))
+    .filter((a) => !declared.includes(basenameOf(a.path!)))
     .map((a) => `${a.id} → ${a.path}`);
 
-  // Un asset validé absent de la liste blanche serait supprimé du build de
-  // production par `pruneUnvalidatedAssets`, laissant une image cassée.
-  expect(wrong, 'assets publiables que la liste blanche retirerait').toEqual([]);
+  expect(wrong, 'assets publiables qu’aucune liste blanche ne couvre').toEqual([]);
 });
 
 test('aucun visuel de marque ne se glisse dans la liste blanche d’identité', () => {
@@ -305,17 +323,34 @@ test('les bases de nom générées ne recouvrent que des assets générés', () 
   expect(wrong).toEqual([]);
 });
 
-test('un asset généré n’est jamais publiable en production', () => {
+test('un asset généré publié en production est toujours assumé par quelqu’un', () => {
   /*
-   * Règle de fond, pas contrôle de saisie : la qualité visuelle d'un fichier
-   * fabriqué ne vaut pas droit d'usage. Le passer en `validated` ne doit pas
-   * suffire — il faut aussi une autorisation du titulaire, qui n'existe pas.
+   * Ce contrôle interdisait purement et simplement de publier un fichier
+   * généré. Le propriétaire a levé cette interdiction le 2026-08-29 en
+   * déclarant détenir les autorisations : c'est sa décision, et elle lui
+   * appartient.
+   *
+   * Le garde-fou n'est pas supprimé pour autant — il change de nature. Ce
+   * qu'on interdit désormais, c'est de publier un visuel fabriqué SANS que
+   * personne n'en réponde :
+   *   · `sourceType` reste `generated` À VIE — publié ou non, la donnée ne
+   *     ment jamais sur l'origine du fichier ;
+   *   · une note juridique est obligatoire ;
+   *   · et s'il est publiable, son autorisation doit être `granted` avec une
+   *     `evidence` non nulle. `unknown` publié en production est interdit :
+   *     ce serait exactement la situation que ce fichier existe pour empêcher.
    */
-  for (const a of registry().filter((x) => x.sourceType === 'generated')) {
-    expect(productionEligible(a), `${a.id} ne doit pas être publiable`).toBe(false);
-    expect(a.status, `${a.id}`).toBe('requires_validation');
-    expect(a.authorization.status, `${a.id}`).toBe('unknown');
+  const generated = registry().filter((x) => x.sourceType === 'generated');
+  expect(generated.length, 'le registre doit porter des assets générés').toBeGreaterThan(0);
+
+  for (const a of generated) {
+    expect(a.sourceType, `${a.id}`).toBe('generated');
     expect(a.legalNote, `${a.id} doit porter sa note juridique`).toBeTruthy();
+
+    if (productionEligible(a)) {
+      expect(a.authorization.status, `${a.id} publié sans autorisation`).toBe('granted');
+      expect(a.authorization.evidence, `${a.id} publié sans trace de qui l’assume`).toBeTruthy();
+    }
   }
 });
 

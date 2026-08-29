@@ -172,11 +172,20 @@ test('le filigrane du monogramme reste extrêmement discret', async ({ page }) =
   expect(state.alt).toBe('');
 });
 
-test('aucun packshot fictif : les emplacements rendent le repli typographique', async ({ page }) => {
+test('la scène rend ses six packshots, sans aucun repli', async ({ page }) => {
   await page.goto('/');
-  // Aucun asset validé n'existe : aucune <img> ne doit apparaître dans la scène.
-  await expect(page.locator('[data-stage] img')).toHaveCount(0);
-  await expect(page.locator('[data-stage] .product-object__fallback')).not.toHaveCount(0);
+  /*
+   * ⚠️ INVERSÉ LE 2026-08-29. Le contrôle exigeait ZÉRO image dans la scène :
+   * aucun asset n'était alors autorisé, et une <img> y aurait signifié qu'un
+   * visuel non validé avait fui en production.
+   *
+   * Les six packshots sont autorisés et publiés depuis. Ce qu'on vérifie
+   * maintenant, c'est que la scène est COMPLÈTE — six objets, aucun repli.
+   * Un emplacement qui retomberait sur le repli serait une régression
+   * silencieuse, exactement le genre que ce fichier existe pour attraper.
+   */
+  await expect(page.locator('[data-stage] img')).toHaveCount(6);
+  await expect(page.locator('[data-stage] .product-object__fallback')).toHaveCount(0);
 });
 
 /* ================================================================== *

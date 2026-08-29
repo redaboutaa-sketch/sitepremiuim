@@ -586,65 +586,67 @@ if (TARGET === 'staging') {
   check('WARN', `préproduction : ${brandImages.length} visuels de marque déposés`, true);
 } else {
   /*
-   * PRODUCTION — séparation stricte (TR-024B §3). Les quatre conditions sont
-   * contrôlées séparément parce qu'elles échouent séparément : un fichier peut
-   * être déposé sans être rendu, et rendu sans être déposé (référence morte).
+   * PRODUCTION — RÉGIME INVERSÉ LE 2026-08-29, décision du propriétaire.
+   *
+   * Ces sept contrôles exigeaient l'inverse exact : zéro visuel de marque,
+   * zéro packshot, zéro `data-generated`, et sept replis typographiques dans
+   * la scène. C'était juste tant qu'aucun asset n'avait d'autorisation.
+   *
+   * Ivan Arsenov déclare détenir les autorisations auprès des fournisseurs et
+   * des marques ; les 28 visuels sont passés `validated` / `granted` au
+   * registre. La production rend donc désormais la même chose que la
+   * préproduction — ce qui est attendu, puisqu'il ne reste plus rien en
+   * `requires_validation`.
+   *
+   * Les contrôles ne sont pas supprimés, ils sont retournés. Ce qu'ils
+   * surveillent maintenant, c'est qu'aucun emplacement ne se VIDE : une
+   * régression qui ferait retomber la production sur des replis
+   * typographiques passerait autrement inaperçue jusqu'à ce qu'un visiteur la
+   * voie.
    */
   check(
     'BLOCK',
-    'production : aucun visuel de marque publié (aucun n’est validé)',
-    brandImages.length === 0,
-    brandImages.slice(0, 6).join(', ') +
-      (brandImages.length > 6 ? ` … +${brandImages.length - 6}` : ''),
+    'production : les visuels de marque autorisés sont publiés',
+    brandImages.length > 0,
+    `${brandImages.length} dérivés déposés`,
   );
 
+  // Scopé sur `home` : `heroRendered` couvre les DEUX langues, et la page
+  // allemande rend la même scène — compter les deux donnerait quatorze.
+  const heroHome = heroRendered.filter((o) => o.page === 'home');
   check(
     'BLOCK',
-    'production : aucun packshot GÉNÉRÉ déposé dans l’artefact',
-    generatedFiles.length === 0,
-    generatedFiles.join(', '),
+    'production : la scène rend ses six packshots, plus le CTA final',
+    heroHome.length === 7,
+    `${heroHome.length} emplacements — ${heroHome.map((o) => o.brand).join(', ')}`,
   );
 
-  check(
-    'BLOCK',
-    'production : aucun packshot GÉNÉRÉ rendu dans une page',
-    heroRendered.length === 0,
-    heroRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
-  );
-
-  /*
-   * TR-025 — même exigence pour les dix packshots Featured. Contrôlée à part
-   * de l'exigence hero : un usage peut fuir sans l'autre.
-   */
   const packshotRendered = objects.filter(
-    (o) => o.usage === 'packshot' && (o.asset === 'packshot' || o.asset === 'hero'),
+    (o) => o.page === 'home' && o.usage === 'packshot' && (o.asset === 'packshot' || o.asset === 'hero'),
   );
   check(
     'BLOCK',
-    'production : aucun packshot Featured ni S4 rendu dans une page',
-    packshotRendered.length === 0,
-    packshotRendered.map((o) => `${o.page}:${o.brand}`).join(', '),
+    'production : la piste Featured rend ses quatorze visuels produit',
+    packshotRendered.length === 14,
+    `${packshotRendered.length} visuels — ${packshotRendered.map((o) => o.brand).join(', ')}`,
   );
 
   /*
-   * Contrôle par SLUG, en plus du contrôle par usage : un jour où un
-   * emplacement oublierait ses attributs d'audit, le compte par usage
-   * tomberait à zéro et passerait — celui-ci, non.
+   * Les visuels GÉNÉRÉS restent identifiables dans l'artefact publié. C'est le
+   * garde-fou qui survit à l'inversion : le jour où il faudra les remplacer
+   * par de vrais fichiers presse, on doit pouvoir les retrouver sans deviner.
    */
-  const leaked = [...DISCOVERY_SLUGS, ...HERO_SLUGS].filter((slug) =>
-    [...html.values()].some((doc) => doc.includes(`data-object="${slug}" data-usage="packshot"`)),
-  );
   check(
     'BLOCK',
-    'production : aucune marque S4 ou hero ne rend de packshot',
-    leaked.length === 0,
-    leaked.join(', '),
+    'production : les visuels générés restent marqués data-generated',
+    [...html.values()].some((doc) => doc.includes('data-generated')),
   );
 
   check(
-    'BLOCK',
-    'production : aucun attribut data-generated dans le HTML',
-    ![...html.values()].some((doc) => doc.includes('data-generated')),
+    'WARN',
+    `production : ${generatedFiles.length} dérivés de packshots GÉNÉRÉS publiés`,
+    true,
+    'fichiers fabriqués, publiés sur décision du propriétaire — à remplacer par les packshots presse',
   );
 
   /*
@@ -666,19 +668,12 @@ if (TARGET === 'staging') {
     [...missing].join(', '),
   );
 
-  /*
-   * Les six emplacements de la scène doivent conserver leur repli
-   * typographique : la production ne montre pas moins que prévu, elle montre
-   * autre chose. Un emplacement vide serait une régression silencieuse.
-   */
-  const fallbacks = objects.filter(
-    (o) => o.page === 'home' && o.usage === 'hero' && o.asset === 'fallback',
-  );
+  const fallbacks = objects.filter((o) => o.asset === 'fallback');
   check(
     'BLOCK',
-    'production : les emplacements hero gardent leur repli typographique',
-    fallbacks.length === 7,
-    `${fallbacks.length} replis (6 scène + 1 CTA final attendus)`,
+    'production : plus aucun emplacement en repli typographique',
+    fallbacks.length === 0,
+    fallbacks.map((o) => `${o.page}:${o.brand}`).join(', ') || 'aucun',
   );
 }
 

@@ -10,7 +10,20 @@
  *   · aucun asset du benchmark n'est exploitable en production ;
  *   · `requires_validation` est rendu en staging, JAMAIS en production ;
  *   · en production, un asset non validé bascule sur le repli typographique ;
- *   · aucune image générée ou substituée n'est présentée comme un vrai produit.
+ *   · un visuel GÉNÉRÉ reste marqué `sourceType: 'generated'` à vie — publié
+ *     ou non, la donnée ne ment jamais sur l'origine du fichier.
+ *
+ * ⚠️ DÉCISION DU PROPRIÉTAIRE — 2026-08-29.
+ * Ivan Arsenov déclare détenir les autorisations auprès des fournisseurs et
+ * des marques. Les 28 visuels de marque passent donc `validated` /
+ * `granted` et sont publiés en production. Les documents n'ont PAS été
+ * transmis au dépôt : `evidence` porte la déclaration, sa date et son auteur,
+ * pas une preuve. À archiver dès réception.
+ *
+ * La nuance qui subsiste, et qui est inscrite sur chacun des quatorze visuels
+ * produits : l'autorisation porte sur l'USAGE DES MARQUES. Elle ne transforme
+ * pas un fichier généré par un modèle en photographie officielle du produit.
+ * Ces quatorze fichiers restent à remplacer par les packshots presse.
  *
  * Le squelette est dérivé du catalogue (voir src/lib/assets.ts) : ajouter une
  * marque crée automatiquement ses entrées attendues. Ce fichier ne porte que
@@ -161,30 +174,22 @@ export const DISCOVERY_BRANDS = [] as const satisfies readonly string[];
  */
 export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   /*
-   * ── HERO « THE STAGE » — six packshots GÉNÉRÉS, préproduction seulement ──
+   * ── HERO « THE STAGE » — six packshots GÉNÉRÉS ────────────────────────
    *
    * Extraits en TR-024A d'une planche composite produite par un modèle. Ils
-   * existent pour une raison précise : la composition du hero n'avait jamais
-   * été jugée qu'avec des replis typographiques, donc jamais avec de vrais
-   * volumes. Ils répondent à cette question, et à aucune autre.
+   * ont d'abord servi à juger la composition du hero avec de vrais volumes
+   * plutôt qu'avec des replis typographiques.
+   *
+   * Publiés en production depuis le 2026-08-29, sur décision du propriétaire
+   * (voir l'en-tête de ce fichier). Ils restent `sourceType: 'generated'` :
+   * ce sont des images fabriquées, pas des photographies du produit.
    */
   'coca-cola:hero': {
     path: 'src/assets/brands/coca-cola/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 443,
     height: 1517,
     format: 'png',
@@ -198,21 +203,10 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'fanta:hero': {
     path: 'src/assets/brands/fanta/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 272,
     height: 900,
     format: 'png',
@@ -226,21 +220,10 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'red-bull:hero': {
     path: 'src/assets/brands/red-bull/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 214,
     height: 594,
     format: 'png',
@@ -254,21 +237,10 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'monster-energy:hero': {
     path: 'src/assets/brands/monster-energy/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 227,
     height: 595,
     format: 'png',
@@ -282,12 +254,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'pepsi:hero': {
     path: 'src/assets/brands/pepsi/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     /*
      * TR-024D — REMPLACEMENT. L'asset précédent portait la livrée Pepsi
      * 2008-2023, alors que le logo fourni par le client porte l'identité
@@ -310,13 +277,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
         'STRICT sur la boîte alpha (1536×1024 → 480×961), sans redimensionnement ' +
         'ni retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
         'digitalSourceType = trainedAlgorithmicMedia.',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 480,
     height: 961,
     format: 'png',
@@ -332,21 +293,10 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'sprite:hero': {
     path: 'src/assets/brands/sprite/hero.png',
-    /*
-     * `requires_validation` : rendu en préproduction, JAMAIS en production.
-     * C'est le mécanisme existant, et il suffit — inutile d'inventer un
-     * statut parallèle.
-     */
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source: 'Extraction TR-024A depuis une planche composite GÉNÉRÉE (archive « ChatGPT Image 17 août 2026 »)',
-    /*
-     * `unknown`, et cela ne bougera pas sans document. Ces visuels
-     * représentent des produits de marques tierces sans provenance établie
-     * auprès des titulaires. Leur qualité technique est bonne ; elle ne vaut
-     * pas autorisation.
-     */
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 229,
     height: 505,
     format: 'png',
@@ -385,14 +335,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
 
   'orangina:packshot': {
     path: 'src/assets/brands/orangina/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 219,
     height: 455,
     format: 'png',
@@ -406,14 +356,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'capri-sun:packshot': {
     path: 'src/assets/brands/capri-sun/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 272,
     height: 437,
     format: 'png',
@@ -427,14 +377,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'dr-pepper:packshot': {
     path: 'src/assets/brands/dr-pepper/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 219,
     height: 406,
     format: 'png',
@@ -448,14 +398,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'mountain-dew:packshot': {
     path: 'src/assets/brands/mountain-dew/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 198,
     height: 401,
     format: 'png',
@@ -469,14 +419,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'schweppes:packshot': {
     path: 'src/assets/brands/schweppes/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 191,
     height: 431,
     format: 'png',
@@ -490,14 +440,14 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   '7up:packshot': {
     path: 'src/assets/brands/7up/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 17 août 2026, 20_25_16 » (TR-025). ' +
       'Recadrage strict sur la boîte alpha, sans redimensionnement ni retouche. ' +
       'Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 209,
     height: 409,
     format: 'png',
@@ -545,7 +495,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    */
   'mirinda:packshot': {
     path: 'src/assets/brands/mirinda/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 25 août 2026, 10_34_39 » (TR-029). ' +
@@ -553,7 +503,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'portée, recadrage strict sur la boîte alpha. Aucun redimensionnement, ' +
       'aucune retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 359,
     height: 717,
     format: 'png',
@@ -568,7 +518,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'lipton-ice-tea:packshot': {
     path: 'src/assets/brands/lipton-ice-tea/packshot.png',
-    status: 'requires_validation',
+    status: 'validated',
     sourceType: 'generated',
     source:
       'Planche composite GÉNÉRÉE « ChatGPT Image 25 août 2026, 10_34_39 » (TR-029). ' +
@@ -576,7 +526,7 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
       'portée, recadrage strict sur la boîte alpha. Aucun redimensionnement, ' +
       'aucune retouche. Manifeste C2PA du fichier : c2pa.created · gpt-image 2.0 · ' +
       'digitalSourceType = trainedAlgorithmicMedia.',
-    authorization: { status: 'unknown', evidence: null },
+    authorization: { status: 'granted', evidence: 'Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. ⚠ Cette autorisation porte sur l’USAGE DES MARQUES ; elle ne transforme pas un fichier GÉNÉRÉ en photographie officielle du produit. Documents non transmis au dépôt : à archiver.' },
     width: 303,
     height: 969,
     format: 'png',
@@ -635,9 +585,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    */
   '7up:logo': {
     path: 'src/assets/brands/7up/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (7-up.png, 345×415 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 345,
     height: 415,
     format: 'webp',
@@ -649,9 +599,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'capri-sun:logo': {
     path: 'src/assets/brands/capri-sun/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Capri-Sun.png, 716×236 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 211,
     format: 'webp',
@@ -663,9 +613,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'coca-cola:logo': {
     path: 'src/assets/brands/coca-cola/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Coca-Cola.png, 620×203 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 620,
     height: 203,
     format: 'webp',
@@ -677,9 +627,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'dr-pepper:logo': {
     path: 'src/assets/brands/dr-pepper/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Dr.Pepper.png, 642×377 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 376,
     format: 'webp',
@@ -691,9 +641,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'fanta:logo': {
     path: 'src/assets/brands/fanta/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Fanta.png, 864×663 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 491,
     format: 'webp',
@@ -737,11 +687,11 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
    */
   'lipton-ice-tea:logo': {
     path: 'src/assets/brands/lipton-ice-tea/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source:
       'Client — archive « logo.zip », 2026-08-25 (logo.svg, vectoriel pur, 84×85, ' +
       '9 tracés, SHA-256 bb8033a6…b136fff5). Rastérisé à 640 px, sans retouche.',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 648,
     format: 'webp',
@@ -753,9 +703,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'mirinda:logo': {
     path: 'src/assets/brands/mirinda/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Mirinda.png, 473×494 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 473,
     height: 494,
     format: 'webp',
@@ -767,9 +717,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'monster-energy:logo': {
     path: 'src/assets/brands/monster-energy/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Monster.png, 858×308 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 230,
     format: 'webp',
@@ -781,9 +731,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'mountain-dew:logo': {
     path: 'src/assets/brands/mountain-dew/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Mountain-Dew.png, 863×597 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 443,
     format: 'webp',
@@ -795,9 +745,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'orangina:logo': {
     path: 'src/assets/brands/orangina/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Orangina.png, 864×374 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 277,
     format: 'webp',
@@ -809,9 +759,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'pepsi:logo': {
     path: 'src/assets/brands/pepsi/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Pepsi.png, 797×798 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 641,
     format: 'webp',
@@ -823,9 +773,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'red-bull:logo': {
     path: 'src/assets/brands/red-bull/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Red-Bull.png, 864×490 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 363,
     format: 'webp',
@@ -837,9 +787,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'schweppes:logo': {
     path: 'src/assets/brands/schweppes/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Schweppes.png, 864×751 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 556,
     format: 'webp',
@@ -851,9 +801,9 @@ export const ASSET_OVERRIDES: Record<string, Partial<AssetRecord>> = {
   },
   'sprite:logo': {
     path: 'src/assets/brands/sprite/logo.webp',
-    status: 'requires_validation',
+    status: 'validated',
     source: 'Client — archive « photos ivan.zip », 2026-08-16 (Sprite.png, 862×621 sur fond blanc)',
-    authorization: { status: 'referential-use', evidence: 'Fourni par le client · usage référentiel de distributeur (D2) · droits de production NON confirmés' },
+    authorization: { status: 'granted', evidence: 'Fourni par le client · usage référentiel de distributeur (D2). Autorisations déclarées par le propriétaire du site le 2026-08-29 — accords d’Ivan Arsenov avec les fournisseurs et les marques. Documents non transmis au dépôt : à archiver.' },
     width: 640,
     height: 461,
     format: 'webp',
