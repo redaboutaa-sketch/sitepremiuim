@@ -30,10 +30,21 @@ d'offre par e-mail.
 > **n'a jamais été confirmée** et n'apparaît nulle part dans le code — un test
 > de l'audit d'artefact échoue si elle y entre.
 >
-> Statut : `EMAIL_DOMAIN_REQUIRES_CONFIRMATION`. Avant la mise en production,
-> demander à Ivan laquelle des deux boîtes existe réellement. Une adresse de
-> contact fausse dans un pied de page B2B, c'est une demande d'offre qui
-> n'arrive jamais.
+> ✅ **Statut au 2026-08-25 : CONFIRMÉ par le propriétaire.**
+> `info@ivan-arsenov.de` (avec tiret) est bien la boîte destinataire. Le
+> domaine de messagerie est délibérément distinct du domaine web.
+>
+> ⚠️ **Ce qui reste ouvert : l'EXPÉDITEUR.** La confirmation portait sur le
+> destinataire. Les deux domaines sont hébergés séparément — relevé le
+> 2026-08-25 : `ivan-arsenov.de` → 91.184.0.200, `www.ivanarsenov.de` →
+> 2.57.91.91. Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les
+> messages du formulaire seront classés indésirables ou rejetés — et le
+> formulaire annoncera quand même un envoi réussi, puisque la remise au
+> serveur aura fonctionné. Des demandes d'offre perdues en silence.
+>
+> Deux issues, à trancher avec l'hébergeur de messagerie : ajouter le serveur
+> web au SPF de `ivan-arsenov.de`, ou faire porter l'expéditeur par le domaine
+> du site (`no-reply@ivanarsenov.de`). `recipient` ne bouge pas.
 >
 > Point pratique : si la boîte vit sur `ivan-arsenov.de` alors que le site est
 > sur `ivanarsenov.de`, l'expéditeur technique `no-reply@ivan-arsenov.de` reste

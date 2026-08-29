@@ -6,15 +6,28 @@
  * réelles. Le fichier est ignoré par git (.gitignore).
  */
 /*
- * ⚠️ EMAIL_DOMAIN_REQUIRES_CONFIRMATION
+ * ✅ DESTINATAIRE CONFIRMÉ — 2026-08-25, par le propriétaire.
+ * `info@ivan-arsenov.de` (AVEC tiret) est bien la boîte qui reçoit, alors que
+ * le site vit sur `ivanarsenov.de` (sans tiret). Ne pas « harmoniser » : site
+ * et messagerie vivent délibérément sur deux domaines.
  *
- * Le domaine WEB est `ivanarsenov.de` (sans tiret). Les adresses ci-dessous
- * sont sur `ivan-arsenov.de` (AVEC tiret) parce que c'est ce que le client a
- * fourni. Ne pas « harmoniser » : site et messagerie peuvent parfaitement
- * vivre sur deux domaines. À confirmer auprès d'Ivan avant la production.
+ * ⚠️ L'EXPÉDITEUR, LUI, N'EST PAS CONFIRMÉ.
  *
- * `sender` doit appartenir au domaine dont le SPF autorise ce serveur — donc
- * au domaine de MESSAGERIE, pas à celui du site.
+ * `sender` est ce que ce serveur présentera en `From:`. Les deux domaines sont
+ * hébergés séparément — relevé le 2026-08-25 :
+ *     ivan-arsenov.de     → 91.184.0.200   (messagerie)
+ *     www.ivanarsenov.de  →   2.57.91.91   (ce serveur)
+ *
+ * Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les messages
+ * seront classés indésirables ou rejetés — et le formulaire annoncera quand
+ * même un envoi réussi, puisque la remise au serveur aura fonctionné. C'est
+ * le scénario le plus coûteux : des demandes d'offre perdues en silence.
+ *
+ * Deux issues acceptables, à trancher avec l'hébergeur de messagerie :
+ *   a) ajouter le serveur web au SPF de `ivan-arsenov.de` ;
+ *   b) faire porter `sender` par le domaine du SITE — `no-reply@ivanarsenov.de` —
+ *      dont le SPF dépend du même hébergeur que ce formulaire.
+ * Dans les deux cas, `recipient` ne bouge pas.
  */
 return [
     // Boîte qui reçoit les demandes.

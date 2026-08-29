@@ -45,7 +45,7 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 | # | Étape | Qui | Bloque la mise en ligne ? |
 | --- | --- | --- | --- |
 | 1 | Textes juridiques (B3) | conseil juridique d'Ivan | **oui — risque légal** |
-| 2 | Domaine e-mail (B5) | Ivan | oui — bloque l'étape 3 |
+| 2 | Domaine e-mail (B5) | Ivan | **destinataire ✅ confirmé** · expéditeur ouvert |
 | 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
 | 4 | Visuels : droits ou décision (B2 · B11) | Ivan | non — mais change tout |
 | 5 | Publication et contrôles | intégrateur | — |
@@ -97,16 +97,49 @@ formulaire de demande d'offre.
 
 ## Étape 2 · Domaine e-mail — B5
 
-**Question à Ivan, en une phrase :** l'adresse `info@ivan-arsenov.de` (**avec
-tiret**) est-elle bien la boîte à laquelle les demandes doivent arriver, alors
-que le site est sur `ivanarsenov.de` (**sans tiret**) ?
+### ✅ Destinataire confirmé — 2026-08-25
 
-Les deux peuvent parfaitement coexister — beaucoup d'entreprises ont un domaine
-de messagerie distinct. **Rien n'a été « harmonisé » automatiquement**, et rien
-ne le sera sans réponse écrite : corriger une adresse de contact par déduction,
-c'est risquer d'envoyer les demandes commerciales dans le vide.
+`info@ivan-arsenov.de` (**avec tiret**) est bien la boîte qui reçoit les
+demandes, alors que le site vit sur `ivanarsenov.de` (**sans tiret**). Les deux
+domaines sont délibérément distincts. Enregistré dans `site.config.mjs`,
+`src/data/company.ts` et le gabarit de configuration du formulaire.
 
-Il faut aussi confirmer que la boîte **existe et est relevée**.
+### ⚠️ L'expéditeur, lui, reste à trancher
+
+La confirmation portait sur le **destinataire**. Elle ne dit rien de l'adresse
+que le serveur web présentera en `From:`, et c'est de celle-là que dépend
+l'arrivée réelle des messages.
+
+Les deux domaines sont hébergés **séparément** — relevé le 2026-08-25 :
+
+| Hôte | Adresse IP | Rôle |
+| --- | --- | --- |
+| `ivan-arsenov.de` | `91.184.0.200` | messagerie |
+| `www.ivanarsenov.de` | `2.57.91.91` | serveur web — c'est lui qui enverra |
+| `staging.ivanarsenov.de` | `77.37.76.100` | préproduction |
+
+Si le SPF de `ivan-arsenov.de` **n'autorise pas** `2.57.91.91`, les messages
+partiront avec un `From:` que le domaine ne cautionne pas : classés
+indésirables, ou rejetés.
+
+> **C'est le scénario le plus coûteux du projet.** Le formulaire annoncera un
+> envoi réussi — parce que la remise au serveur, elle, aura fonctionné — et les
+> demandes d'offre se perdront en silence. Un formulaire cassé se voit ; un
+> formulaire dont les messages tombent en indésirable, non.
+
+**Question à poser à l'hébergeur de messagerie**, et deux issues acceptables :
+
+1. **Ajouter le serveur web au SPF** de `ivan-arsenov.de`.
+2. **Faire porter l'expéditeur par le domaine du site** —
+   `no-reply@ivanarsenov.de` — dont le SPF dépend du même hébergeur que le
+   formulaire, donc directement modifiable.
+
+Dans les deux cas, le **destinataire ne bouge pas**.
+
+*Note : je n'ai pas pu lire les enregistrements SPF depuis cet environnement —
+aucun outil DNS n'y est installé. Les adresses IP ci-dessus, elles, sont bien
+mesurées. Ne pas conclure de mon silence qu'il n'y a pas de SPF : c'est à
+vérifier, pas à supposer.*
 
 ---
 
@@ -126,9 +159,14 @@ public_html/api/config.local.php   ← deploy/config.local.php.example   (644)
 public_html/api/                                                       (755)
 ```
 
-`config.local.php` porte deux valeurs : `recipient` (la boîte qui reçoit) et
-`sender` (expéditeur technique). **`sender` doit appartenir au domaine dont le
-SPF autorise le serveur** — donc au domaine de messagerie, pas à celui du site.
+`config.local.php` porte deux valeurs : `recipient` (la boîte qui reçoit,
+**confirmée**) et `sender` (expéditeur technique, **à trancher — voir étape 2**).
+
+La règle sur `sender` : il doit appartenir à un domaine dont le SPF autorise
+**ce serveur web**. Selon l'issue retenue à l'étape 2, ce sera soit
+`ivan-arsenov.de` une fois son SPF élargi, soit `ivanarsenov.de` directement.
+Ne pas renseigner cette valeur au hasard — c'est elle qui décide si les
+messages arrivent ou tombent en indésirable.
 
 ### Vérification
 
@@ -182,10 +220,12 @@ que découverte après la mise en ligne.
 
 ### 5.0 Pré-vol
 
-- **`www` ou apex ?** La configuration livrée canonicalise vers
-  `www.ivanarsenov.de`. Si hPanel indique que l'apex est primaire, il faut
-  changer `SITE_HOST` dans `site.config.mjs` et rebâtir — une seule valeur,
-  tout suit. Un désaccord crée des doublons d'indexation.
+- **`www` ou apex ?** Les deux résolvent, et **sur le même hôte** —
+  `ivanarsenov.de` et `www.ivanarsenov.de` pointent tous deux sur
+  `2.57.91.91` (relevé le 2026-08-25). La canonicalisation est donc un libre
+  choix, pas une contrainte : la configuration livrée canonicalise vers
+  `www.ivanarsenov.de` et fonctionnera. Pour préférer l'apex, changer
+  `SITE_HOST` dans `site.config.mjs` et rebâtir — une seule valeur, tout suit.
 - **`public_html` est-il vide ?** Quelque chose répondait déjà sur l'ancien
   domaine. Ne remplacer aucun site existant sans confirmation d'Ivan.
 
@@ -268,7 +308,7 @@ Dès qu'une autorisation arrive, transmettez-la : elle est enregistrée dans
 | --- | --- | --- | --- |
 | **B3** | Textes juridiques | conseil juridique | **risque de mise en demeure** |
 | **B1** | Livraison du formulaire | intégrateur, après B5 | **aucune demande n'arrive** |
-| **B5** | Domaine e-mail | Ivan | bloque B1 |
+| **B5** | Expéditeur / SPF — destinataire confirmé | Ivan + hébergeur messagerie | **demandes perdues en silence** |
 | **B2** | Photos produit — 14 générées | Ivan / titulaires | site sans photos |
 | **B11** | Droits sur les logos — 14 | Ivan / titulaires | site sans logos |
 

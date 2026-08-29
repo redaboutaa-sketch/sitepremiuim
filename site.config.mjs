@@ -39,17 +39,35 @@ export const SITE_ORIGIN = `https://${SITE_HOST}`;
 export const STAGING_HOST = `staging.${SITE_APEX}`;
 
 /**
- * ⚠️ EMAIL_DOMAIN_REQUIRES_CONFIRMATION
+ * ✅ DOMAINE DE MESSAGERIE CONFIRMÉ — 2026-08-25, par le propriétaire.
  *
- * Adresse telle que fournie par le client, sur `ivan-arsenov.de` (avec
- * tiret) — soit un domaine DIFFÉRENT de celui du site. Volontairement non
- * dérivée de `SITE_APEX`.
+ * `info@ivan-arsenov.de` (AVEC tiret) est bien la boîte destinataire, alors
+ * que le site vit sur `ivanarsenov.de` (sans tiret). Les deux domaines sont
+ * DIFFÉRENTS, et c'est voulu.
  *
- * Ne pas modifier sans confirmation explicite d'Ivan. Une adresse de contact
- * fausse dans un pied de page B2B, c'est une demande d'offre qui n'arrive
- * jamais — le coût d'une supposition ici est direct.
+ * L'adresse reste volontairement non dérivée de `SITE_APEX`. Ne pas
+ * l'« harmoniser » : une adresse de contact fausse dans un pied de page B2B,
+ * c'est une demande d'offre qui n'arrive jamais.
  */
 export const CONTACT_EMAIL = 'info@ivan-arsenov.de';
 
-/** Expéditeur technique du formulaire — même réserve que ci-dessus. */
+/**
+ * ⚠️ SENDER_SPF_REQUIRES_CONFIRMATION — la confirmation du 2026-08-25 portait
+ * sur le DESTINATAIRE, pas sur l'expéditeur.
+ *
+ * Cette adresse est celle que le serveur web présentera en `From:`. Or les
+ * deux domaines sont hébergés SÉPARÉMENT — relevé le 2026-08-25 :
+ *   ivan-arsenov.de     → 91.184.0.200   (messagerie)
+ *   www.ivanarsenov.de  →   2.57.91.91   (serveur web qui enverra)
+ *
+ * Si le SPF de `ivan-arsenov.de` n'autorise pas 2.57.91.91, les messages du
+ * formulaire partiront avec un `From:` que le domaine ne cautionne pas : ils
+ * seront classés indésirables ou rejetés. Le formulaire annoncera pourtant un
+ * envoi réussi, puisque la remise au serveur, elle, aura fonctionné.
+ *
+ * À vérifier auprès de l'hébergeur de messagerie AVANT la mise en production.
+ * Deux issues acceptables : ajouter le serveur web au SPF, ou faire porter le
+ * `sender` par le domaine du SITE (`no-reply@ivanarsenov.de`), dont le SPF est
+ * sous le contrôle du même hébergeur que le formulaire.
+ */
 export const SENDER_EMAIL = 'no-reply@ivan-arsenov.de';

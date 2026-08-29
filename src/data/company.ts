@@ -26,7 +26,7 @@ export const COMPANY = {
   },
 
   /**
-   * ⚠️ EMAIL_DOMAIN_REQUIRES_CONFIRMATION — voir `site.config.mjs`.
+   * ✅ Confirmé par le propriétaire le 2026-08-25 — voir `site.config.mjs`.
    * Domaine de messagerie (`ivan-arsenov.de`, avec tiret) DIFFÉRENT du
    * domaine du site (`ivanarsenov.de`). Donnée client, non dérivée.
    */
