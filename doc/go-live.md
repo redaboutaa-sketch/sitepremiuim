@@ -17,9 +17,10 @@ développement.
 | Tests | **1 124** passés |
 | Préproduction | en ligne sur `staging.ivanarsenov.de` |
 
-Ce qui reste à obtenir n'est **pas du code**. Au 2026-08-29, **une seule étape
-bloque encore la mise en ligne** : brancher la livraison du formulaire
-(étape 3). Tout le reste est fait, sous réserve des relectures signalées.
+**Le site est EN LIGNE depuis le 2026-08-29** sur `www.ivanarsenov.de`, et le
+formulaire est branché. Il reste une vérification qui ne peut se faire qu'en
+conditions réelles : constater qu'une demande d'offre **arrive** et que son
+en-tête porte `spf=pass`.
 
 > ### ✅ RÉSOLU LE 2026-08-29 — les visuels sont publiés
 >
@@ -45,9 +46,9 @@ Dans cet ordre. Chaque étape est indépendante des suivantes sauf mention.
 | --- | --- | --- | --- |
 | 1 | Textes juridiques (B3) | ✅ **rédigés** — relecture recommandée | non, mais à faire relire |
 | 2 | Adresses e-mail (B5) | ✅ **SPF publié et vérifié** | reste à constater `spf=pass` à l'envoi |
-| 3 | Livraison du formulaire (B1) | intégrateur | **oui — sinon le site est inerte** |
+| 3 | Livraison du formulaire (B1) | ✅ **branché** — sonde `ready` | reste l'envoi réel |
 | 4 | Visuels : droits (B2 · B11) | ✅ **autorisations déclarées** — publiés | non |
-| 5 | Publication et contrôles | intégrateur | — |
+| 5 | Publication et contrôles | ✅ **EN LIGNE** le 2026-08-29 | — |
 
 ---
 
@@ -372,20 +373,48 @@ Certificat sur l'apex **et** le `www`. **Ne pas** activer la redirection HTTPS
 de hPanel : `.htaccess` la fait déjà, et les deux ensemble produisent un double
 saut.
 
-### 5.3 Contrôles
+### 5.3 Contrôles — ✅ PASSÉS le 2026-08-29
 
-Le tableau complet est en `doc/deploy-hostinger.md` §6. Les deux qui doivent
-**échouer** :
+Relevés sur le site en ligne :
 
-| `/styleguide/` | doit renvoyer **404** |
-| `/api/config.local.php` | doit renvoyer **403** |
+| Contrôle | Résultat |
+| --- | --- |
+| accueil · catalogue · allemand · sitemap | `200` |
+| sonde du formulaire | `{"delivery":"ready"}` |
+| `/api/config.local.php` | **`403`** — doit échouer |
+| `/styleguide/` | **`404`** — doit échouer |
+| `/nexistepas/` | `404` |
+| slash final `/drinks` | `301` → `https://www.ivanarsenov.de/drinks/` |
+| compression | `content-encoding: gzip` |
+| CSP | présente |
 
-Puis, depuis un poste ayant un accès direct :
+**Le site est en ligne et le formulaire est branché.**
 
-```bash
-npm run qa:remote -- https://www.ivanarsenov.de
-BASE_URL=https://www.ivanarsenov.de npm run qa:remote:e2e
+#### Une seule réserve : un saut de redirection en trop
+
 ```
+http://ivanarsenov.de/drinks/
+  → 301  https://ivanarsenov.de/drinks/       Hostinger « Force HTTPS »
+  → 301  https://www.ivanarsenov.de/drinks/   .htaccess
+  → 200
+```
+
+La règle du `.htaccess` est écrite pour faire les deux d'un coup — sa condition
+combine `%{HTTPS} !=on [OR]` et `%{HTTP_HOST} !=www…`. Mais la redirection
+HTTPS de hPanel s'exécute AVANT `mod_rewrite` et traite le premier saut sur le
+même hôte ; le `.htaccess` fait alors le second.
+
+Le `.htaccess` est bien lu — vérifié séparément : `https://ivanarsenov.de/…`
+redirige seul vers `www`.
+
+**Rien n'est cassé.** Le coût est d'un aller-retour supplémentaire, et
+seulement pour les visiteurs qui tapent le domaine sans `https` ni `www`.
+
+**Correctif possible** : désactiver « Force HTTPS » dans hPanel — le
+`.htaccess` fait alors tout en un saut. À mettre en balance avec le fait
+qu'**aucun HSTS n'est posé** : ce fichier deviendrait la seule garantie que le
+`http` bascule en `https`. Il fonctionne, c'est mesuré. Mais tant que le
+double saut ne gêne personne, ne rien toucher est un choix défendable.
 
 ### 5.4 Référencement
 
