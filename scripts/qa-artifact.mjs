@@ -19,7 +19,13 @@ import {
   isGeneratedPackshot,
   isImageFile,
 } from '../asset-governance.mjs';
-import { CONTACT_EMAIL, SITE_HOST, SITE_ORIGIN, STAGING_HOST } from '../site.config.mjs';
+import {
+  CONTACT_EMAIL,
+  FOREIGN_APEX,
+  SITE_HOST,
+  SITE_ORIGIN,
+  STAGING_HOST,
+} from '../site.config.mjs';
 
 /**
  * Les six marques de la scène d'accueil, dans l'ordre du catalogue.
@@ -61,15 +67,21 @@ const DIST = resolve(process.cwd(), 'dist');
 const SITE = SITE_ORIGIN;
 
 /**
- * Ancien domaine, conservé comme motif de recherche.
+ * L'AUTRE domaine du client — celui depuis lequel ce build n'est pas servi.
  *
- * Il ne doit plus apparaître nulle part dans l'artefact SAUF dans les
- * adresses e-mail : le domaine de messagerie du client est bien
- * `ivan-arsenov.de`, avec tiret, et diffère volontairement de celui du site.
- * Un contrôle qui interdirait le motif partout effacerait l'adresse de
- * contact — c'est-à-dire les demandes d'offre.
+ * DÉRIVÉ de `SITE_APEX`, jamais saisi. Il valait `ivan-arsenov.de` en dur
+ * tant que le site ne vivait que sur `ivanarsenov.de` ; le jour où l'on bâtit
+ * pour l'autre domaine, cette constante aurait désigné le domaine COURANT et
+ * le contrôle se serait inversé en silence — il aurait interdit précisément
+ * les URL qu'il doit protéger.
+ *
+ * Il ne doit apparaître nulle part dans l'artefact SAUF dans les adresses
+ * e-mail : le client a volontairement deux domaines, et son adresse de
+ * contact reste `info@ivan-arsenov.de` quel que soit l'hôte du site. Un
+ * contrôle qui interdirait le motif partout effacerait l'adresse de contact —
+ * c'est-à-dire les demandes d'offre.
  */
-const LEGACY_HOST = 'ivan-arsenov.de';
+const LEGACY_HOST = FOREIGN_APEX;
 
 /** Cible auditée. `staging` inverse les attentes d'indexabilité. */
 const TARGET = process.env.DEPLOY_TARGET === 'staging' ? 'staging' : 'production';
@@ -270,7 +282,9 @@ section('3bis · Migration de domaine');
  */
 const TEXTUAL = /\.(html|xml|txt|json|js|css|svg)$/i;
 
-for (const file of [...files, '.htaccess'].filter((f) => TEXTUAL.test(f) || f === '.htaccess')) {
+for (const file of LEGACY_HOST === null
+  ? []
+  : [...files, '.htaccess'].filter((f) => TEXTUAL.test(f) || f === '.htaccess')) {
   let content;
   try {
     content = await readFile(join(DIST, file), 'utf8');
@@ -284,7 +298,7 @@ for (const file of [...files, '.htaccess'].filter((f) => TEXTUAL.test(f) || f ==
    * Une occurrence légitime est immédiatement précédée d'un « @ » (adresse
    * e-mail) ; tout le reste est une URL restée sur l'ancien domaine.
    */
-  const bad = [...content.matchAll(new RegExp(`.{0,24}${LEGACY_HOST.replace('.', '\\.')}`, 'g'))]
+  const bad = [...content.matchAll(new RegExp(`.{0,24}${LEGACY_HOST.replaceAll('.', '\\.')}`, 'g'))]
     .map((m) => m[0])
     .filter((occurrence) => !/@[\w.-]*$/.test(occurrence.slice(0, -LEGACY_HOST.length)));
 
@@ -301,12 +315,22 @@ const home = html.get('index.html') ?? '';
 check('BLOCK', 'le nouvel hôte est bien présent dans le HTML', home.includes(SITE_HOST), SITE_HOST);
 
 /**
- * DOMAINE WEB ≠ DOMAINE E-MAIL — vérifié dans les deux sens.
- * L'adresse de contact doit être PRÉSENTE et INCHANGÉE ; l'adresse dérivée
- * du nouveau domaine ne doit exister nulle part, car personne ne l'a
- * confirmée.
+ * L'ADRESSE DE CONTACT EST CELLE DU CLIENT — vérifié dans les deux sens.
+ * Elle doit être PRÉSENTE et INCHANGÉE, et aucune adresse DÉDUITE du domaine
+ * du site ne doit exister : personne n'a confirmé qu'elle recevait du courrier.
+ *
+ * ⚠️ 2026-10-10 — la comparaison se fait désormais à `CONTACT_EMAIL`, et non
+ * plus à un motif construit. Tant que le site vivait sur `ivanarsenov.de`,
+ * « adresse déduite » et « adresse du client » ne pouvaient pas coïncider.
+ * Bâti pour `ivan-arsenov.de`, le motif construit DEVIENT l'adresse réelle du
+ * client, et le contrôle interdisait exactement ce qu'il devait protéger — il
+ * a signalé seize fois la bonne adresse.
+ *
+ * Ce qui est interdit, ce n'est pas une forme : c'est toute adresse `info@`
+ * sur le domaine du site QUI NE SERAIT PAS celle que le client a donnée.
  */
 const derivedEmail = `info@${SITE_HOST.replace(/^www\./, '')}`;
+const derivationIsLegitimate = derivedEmail === CONTACT_EMAIL;
 for (const [name, file] of ROUTES) {
   const doc = html.get(file);
   if (!doc) continue;
@@ -316,6 +340,7 @@ for (const [name, file] of ROUTES) {
     doc.includes(CONTACT_EMAIL),
     CONTACT_EMAIL,
   );
+  if (derivationIsLegitimate) continue;
   check(
     'BLOCK',
     `aucune adresse e-mail déduite du domaine web · ${name}`,

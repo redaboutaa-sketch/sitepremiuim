@@ -18,7 +18,7 @@
  * Sortie : rapport PASS/FAIL, code 1 si un contrôle BLOQUANT échoue.
  */
 
-import { SITE_ORIGIN } from '../site.config.mjs';
+import { CONTACT_EMAIL, FOREIGN_APEX, SITE_APEX, SITE_ORIGIN } from '../site.config.mjs';
 
 const [, , rawBase, ...flags] = process.argv;
 
@@ -315,15 +315,21 @@ for (const [name, path] of ROUTES) {
 
 /** Domaine web ≠ domaine e-mail — vérifié sur ce qui est réellement servi. */
 const home = pages.get('/')?.body ?? '';
-check('BLOCK', 'adresse de contact préservée', home.includes('info@ivan-arsenov.de'));
-check('BLOCK', 'aucune adresse déduite du domaine web', !home.includes('info@ivanarsenov.de'));
+check('BLOCK', 'adresse de contact préservée', home.includes(CONTACT_EMAIL));
+check(
+  'BLOCK',
+  'aucune adresse déduite du domaine web',
+  !home.includes(`info@${SITE_APEX}`),
+);
 
 for (const [name, path] of ROUTES) {
   const page = pages.get(path);
   if (!page) continue;
-  const stale = [...page.body.matchAll(/.{0,20}ivan-arsenov\.de/g)]
+  const stale = [
+    ...page.body.matchAll(new RegExp(`.{0,20}${FOREIGN_APEX.replaceAll('.', '\\.')}`, 'g')),
+  ]
     .map((m) => m[0])
-    .filter((o) => !/@[\w.-]*$/.test(o.slice(0, -'ivan-arsenov.de'.length)));
+    .filter((o) => !/@[\w.-]*$/.test(o.slice(0, -FOREIGN_APEX.length)));
   check('BLOCK', `aucune URL sur l’ancien domaine · ${name}`, stale.length === 0, stale.join(' · '));
 }
 
