@@ -1,7 +1,22 @@
-# CHEMIN VERS LA MISE EN LIGNE — ivanarsenov.de
+# CHEMIN VERS LA MISE EN LIGNE — ivan-arsenov.de
 
-**Établi le 2026-08-25**, mis à jour le 2026-08-29 · commit `89c2216`
+**Établi le 2026-08-25**, mis à jour le 2026-10-10.
 Destinataires : Ivan Arsenov, son conseil juridique, l'intégrateur.
+
+> ### ⚠️ LE DOMAINE PRINCIPAL A CHANGÉ — 2026-10-10
+>
+> Le site est désormais canonique sur **`www.ivan-arsenov.de`** (avec tiret).
+> `ivanarsenov.de` ne sert plus de contenu : il **redirige intégralement**.
+>
+> Ce document a été rédigé quand le site vivait sur `ivanarsenov.de`.
+> **Partout où il nomme ce domaine comme adresse du site, lire
+> `ivan-arsenov.de`** — sauf aux endroits qui parlent explicitement de la
+> redirection ou de l'historique.
+>
+> La bascule, le site de redirection, les contrôles relancés et **un point
+> SPF redevenu bloquant** sont décrits dans **`doc/tr-031-domaine-principal.md`**.
+> Le lire avant d'agir sur l'étape 2 (adresses e-mail) ou l'étape 5
+> (publication) ci-dessous.
 
 ---
 
@@ -126,6 +141,18 @@ domaines sont délibérément distincts. Enregistré dans `site.config.mjs`,
 `src/data/company.ts` et le gabarit de configuration du formulaire.
 
 ### ✅ Expéditeur arbitré — `no-reply@ivanarsenov.de`
+
+> **⛔ CETTE SECTION EST PÉRIMÉE DEPUIS LE 2026-10-10, ET DANGEREUSEMENT.**
+>
+> L'expéditeur suit le domaine du site : il est devenu
+> `no-reply@ivan-arsenov.de`. Le SPF validé ci-dessous est celui de l'ANCIEN
+> domaine et **ne couvre plus l'envoi**.
+>
+> Le nouveau domaine publie une politique en `-all` — un **rejet dur**. Tant
+> que la vérification décrite dans **`doc/tr-031-domaine-principal.md` § 3**
+> n'est pas faite, une demande d'offre peut être **refusée** pendant que le
+> formulaire annonce un envoi réussi. Ne pas lire les ✅ qui suivent comme
+> encore acquis.
 
 Sur le domaine du **site**, pas sur celui de la messagerie. Les deux valeurs
 vivent donc délibérément sur deux domaines, chacun dans son rôle :

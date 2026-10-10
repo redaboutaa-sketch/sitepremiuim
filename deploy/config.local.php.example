@@ -6,33 +6,55 @@
  * réelles. Le fichier est ignoré par git (.gitignore).
  */
 /*
- * ✅ LES DEUX VALEURS SONT ARBITRÉES — 2026-08-25, par le propriétaire.
+ * ─────────────────────────────────────────────────────────────────────────
+ * MISE À JOUR DU 2026-10-10 — CHANGEMENT DE DOMAINE PRINCIPAL
  *
- * Elles vivent délibérément sur DEUX DOMAINES DIFFÉRENTS, chacun dans son
- * rôle. Ne pas les « harmoniser » :
+ * Le site est désormais servi depuis `www.ivan-arsenov.de`. `ivanarsenov.de`
+ * ne sert plus rien : il redirige intégralement.
  *
- *   recipient  info@ivan-arsenov.de      domaine de MESSAGERIE (avec tiret)
- *   sender     no-reply@ivanarsenov.de   domaine du SITE       (sans tiret)
+ * Conséquence directe ici : les deux adresses ci-dessous vivent maintenant
+ * sur LE MÊME domaine. Ce n'est pas une « harmonisation » que l'on aurait
+ * fini par faire, c'est le domaine du site qui a rejoint celui de la
+ * messagerie. La règle de fond n'a pas bougé :
  *
- * Pourquoi l'expéditeur est sur le domaine du site : c'est ce serveur qui
- * envoie, et son SPF est le seul des deux à dépendre du même hébergeur que ce
- * formulaire — donc le seul directement modifiable.
- *     ivan-arsenov.de     → 91.184.0.200   (messagerie — reçoit)
- *     www.ivanarsenov.de  →   2.57.91.91   (ce serveur — envoie)
+ *   recipient  reste l'adresse donnée par le client, jamais recalculée
+ *   sender     reste sur le domaine du SITE, parce que c'est ce serveur
+ *              qui envoie et que SPF juge l'IP qui envoie
+ * ─────────────────────────────────────────────────────────────────────────
  *
- * ⚠️ IL RESTE UNE ACTION : publier sur `ivanarsenov.de` un enregistrement SPF
- * autorisant le serveur d'envoi Hostinger. Le choix ci-dessus rend le SPF
- * modifiable, il ne le configure pas. Sans cet enregistrement, SPF renvoie
- * « none » — neutre, pas conforme — et une partie des destinataires classera
- * les messages en indésirable. Le formulaire, lui, annoncera un envoi réussi :
- * des demandes d'offre perdues en silence.
+ * ⛔ UNE VÉRIFICATION RESTE DUE, ET ELLE EST BLOQUANTE.
+ *
+ * `ivan-arsenov.de` publiait au 2026-08-29 :
+ *     v=spf1 a mx include:_spf.hostnet.nl -all
+ *
+ * Le `-all` final est un REJET DUR. Tant que l'IP du serveur Hostinger qui
+ * envoie n'est couverte par aucun mécanisme, les demandes d'offre ne seront
+ * pas classées en indésirable : elles seront REFUSÉES. Le formulaire, lui,
+ * annoncera un envoi réussi. Des demandes perdues en silence — exactement ce
+ * que ce commentaire existe pour empêcher.
+ *
+ * Ce qui décide : le mécanisme `a` résout l'enregistrement A d'
+ * `ivan-arsenov.de` NU, sans `www`.
+ *     dig +short A   ivan-arsenov.de
+ *     dig +short TXT ivan-arsenov.de
+ *   • l'IP est celle du serveur web Hostinger  → couvert, rien à faire ;
+ *   • l'IP est encore celle de Hostnet (91.184.0.200), seul `www` ayant
+ *     basculé                                  → NON couvert, formulaire muet.
+ *
+ * Correctif le cas échéant : ajouter `ip4:<IP Hostinger>` au SPF du domaine.
+ * NE PAS remplacer `-all` par `~all` pour contourner : ce serait affaiblir la
+ * protection d'un domaine de messagerie réel pour masquer une IP manquante.
+ *
+ * Relevé du 2026-08-25, à reconfirmer depuis la bascule :
+ *     ivan-arsenov.de     → 91.184.0.200   (messagerie Hostnet — reçoit)
+ *     www.ivanarsenov.de  →   2.57.91.91   (serveur web Hostinger — envoyait)
  *
  * `enquiry.php` met l'adresse du prospect en `Reply-To`, jamais en `From` :
  * cette boîte « no-reply » n'a donc pas besoin d'exister ni d'être relevée.
  */
 return [
-    // Boîte qui reçoit les demandes.
+    // Boîte qui reçoit les demandes. Donnée par le client, jamais dérivée.
     'recipient' => 'info@ivan-arsenov.de',
     // Expéditeur technique — sur le domaine du SITE, voir ci-dessus.
-    'sender'    => 'no-reply@ivanarsenov.de',
+    'sender'    => 'no-reply@ivan-arsenov.de',
 ];

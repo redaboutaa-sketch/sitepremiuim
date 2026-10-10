@@ -33,18 +33,27 @@ export const KNOWN_APEXES = ['ivanarsenov.de', 'ivan-arsenov.de'];
 /**
  * Hôte canonique servi en production.
  *
- * Surchargeable par la variable d'environnement `SITE_HOST` : le client
- * possède deux domaines et peut vouloir servir le site depuis l'un ou
- * l'autre. Tout en découle — canonicals, hreflang, sitemap, robots,
- * `.htaccess`, préproduction — donc une seule valeur à changer, jamais huit.
+ * ✅ ARBITRÉ LE 2026-10-10 PAR LE PROPRIÉTAIRE : le domaine principal est
+ * `www.ivan-arsenov.de` (AVEC tiret). `ivanarsenov.de` devient secondaire et
+ * ne sert plus de contenu — il redirige intégralement vers celui-ci
+ * (`scripts/build-redirect.mjs`).
  *
- *     SITE_HOST=www.ivan-arsenov.de npm run build
+ * Effet de bord utile de cet arbitrage : le domaine du site et celui de la
+ * messagerie coïncident enfin. `CONTACT_EMAIL` reste malgré tout écrit en
+ * dur, et le contrôle « adresse déduite du domaine web » reste en place —
+ * la coïncidence est constatée, pas exploitée.
+ *
+ * Surchargeable par la variable d'environnement `SITE_HOST` : tout en découle
+ * — canonicals, hreflang, sitemap, robots, `.htaccess`, préproduction — donc
+ * une seule valeur à changer, jamais huit.
+ *
+ *     SITE_HOST=www.ivanarsenov.de npm run build
  *
  * ⚠️ Changer d'hôte n'est PAS une opération anodine : les deux sites
  * serviraient le même contenu et se concurrenceraient à l'indexation. Décider
  * lequel est canonique AVANT d'en publier un second.
  */
-export const SITE_HOST = process.env.SITE_HOST?.trim() || 'www.ivanarsenov.de';
+export const SITE_HOST = process.env.SITE_HOST?.trim() || 'www.ivan-arsenov.de';
 
 /** Domaine nu, sans sous-domaine. Sert aux redirections et à la doc. */
 export const SITE_APEX = SITE_HOST.replace(/^www\./, '');
@@ -90,18 +99,39 @@ export const CONTACT_EMAIL = 'info@ivan-arsenov.de';
  * tel que le client l'a donné.
  *
  * Relevé du 2026-08-25 :
- *   ivan-arsenov.de     → 91.184.0.200   (messagerie — reçoit)
- *   www.ivanarsenov.de  →   2.57.91.91   (serveur web — envoie)
+ *   ivan-arsenov.de     → 91.184.0.200   (messagerie Hostnet — reçoit)
+ *   www.ivanarsenov.de  →   2.57.91.91   (serveur web Hostinger — envoie)
  *
- * ✅ SPF PUBLIÉ ET VÉRIFIÉ le 2026-08-29, lu directement dans le DNS :
- *   TXT ivanarsenov.de → "v=spf1 a ~all"   (1 enregistrement, 1 segment,
- *   13 octets — pas de guillemet littéral, pas de doublon)
- * Le mécanisme `a` désigne 2.57.91.91, soit exactement le serveur qui envoie.
+ * SPF lu directement dans le DNS le 2026-08-29 :
+ *   TXT ivanarsenov.de    → "v=spf1 a ~all"
+ *   TXT ivan-arsenov.de   → "v=spf1 a mx include:_spf.hostnet.nl -all"
  *
- * Ce que la vérification a confirmé au passage : `ivan-arsenov.de` publie
- * `v=spf1 a mx include:_spf.hostnet.nl -all`. Sa messagerie est chez Hostnet
- * et sa politique est un REJET DUR. Le serveur web Hostinger n'y figure pas —
- * un expéditeur sur ce domaine aurait donc été rejeté, pas seulement filtré.
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * ⛔ POINT BLOQUANT OUVERT DEPUIS LE CHANGEMENT DE DOMAINE PRINCIPAL
+ *   (2026-10-10 — à vérifier AVANT de compter sur le formulaire)
+ *
+ * L'expéditeur suit désormais le nouvel hôte : `no-reply@ivan-arsenov.de`.
+ * Or la politique SPF de CE domaine se termine par `-all`, c'est-à-dire un
+ * REJET DUR et non un simple filtrage. Si l'IP du serveur Hostinger qui
+ * envoie n'est couverte par aucun de ses mécanismes, les demandes d'offre
+ * ne partiront pas en indésirable : elles seront REFUSÉES, sans trace pour
+ * le prospect ni pour Ivan.
+ *
+ * Ce qui décide : le mécanisme `a` résout l'enregistrement A de
+ * `ivan-arsenov.de` NU (sans `www`).
+ *   • s'il pointe sur le serveur web Hostinger → couvert, rien à faire ;
+ *   • s'il pointe encore sur Hostnet (91.184.0.200) alors que seul `www`
+ *     a été basculé → NON couvert, et le formulaire est muet.
+ *
+ * Ce point n'est PAS vérifiable depuis cette session : la sortie DNS y est
+ * fermée (même `example.com` échoue). À contrôler sur une machine ouverte :
+ *   dig +short A ivan-arsenov.de        # doit nommer l'IP qui envoie
+ *   dig +short TXT ivan-arsenov.de
+ * Correctif, le cas échéant : ajouter `ip4:<IP Hostinger>` au SPF
+ * d'`ivan-arsenov.de`. Ne PAS remplacer `-all` par `~all` pour contourner :
+ * ce serait affaiblir la protection du domaine de messagerie pour masquer
+ * une IP manquante.
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  *
  * ⚠️ Reste à constater `spf=pass` sur un ENVOI RÉEL. Sur un mutualisé,
  * `mail()` peut sortir par un relais d'IP différente ; le cas échéant,
