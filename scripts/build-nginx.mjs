@@ -51,6 +51,54 @@ const FPM_SOCKET = process.env.PHP_FPM_SOCKET?.trim() || '/run/php/php8.3-fpm.so
 /** Racine dédiée aux défis ACME, servie en clair sur le port 80. */
 const ACME_ROOT = '/var/www/acme';
 
+/**
+ * Version de nginx de la machine cible. Elle décide de la SYNTAXE de HTTP/2.
+ *
+ * `http2 on;` n'existe qu'à partir de 1.25.1. En dessous, nginx ne se
+ * contente pas de l'ignorer : il REFUSE DE DÉMARRER sur une directive
+ * inconnue. Avant 1.25.1, HTTP/2 s'active en paramètre de `listen`.
+ *
+ *     NGINX_VERSION=1.24.0 node scripts/build-nginx.mjs
+ *
+ * Se relève sur le serveur avec `nginx -v`, ne se devine pas.
+ */
+const NGINX_VERSION = process.env.NGINX_VERSION?.trim() || '1.25.1';
+
+const atLeast = (version, target) => {
+  const a = version.split('.').map(Number);
+  const b = target.split('.').map(Number);
+  for (let i = 0; i < 3; i += 1) {
+    if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) > (b[i] ?? 0);
+  }
+  return true;
+};
+
+const MODERN_HTTP2 = atLeast(NGINX_VERSION, '1.25.1');
+
+/** Les deux lignes `listen` d'un bloc TLS, selon la version. */
+const listenTls = MODERN_HTTP2
+  ? '    listen      443 ssl;\n    listen      [::]:443 ssl;\n    http2       on;'
+  : '    listen      443 ssl http2;\n    listen      [::]:443 ssl http2;';
+
+/**
+ * Réglages TLS, écrits ici plutôt qu'inclus depuis certbot.
+ *
+ * `options-ssl-nginx.conf` et `ssl-dhparams.pem` ne sont déposés dans
+ * /etc/letsencrypt/ que lorsque le GREFFON nginx de certbot s'exécute. Avec
+ * `certonly --webroot`, ils peuvent parfaitement ne jamais exister — et
+ * `nginx -t` échouerait alors sur un `include` introuvable, après que le
+ * certificat a été émis. Une dépendance invisible à un fichier qu'on ne
+ * contrôle pas.
+ *
+ * Pas de `ssl_dhparam` : les suites retenues sont toutes ECDHE, qui n'en
+ * utilisent pas.
+ */
+const tlsSettings = `    ssl_protocols             TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache         shared:SSL:10m;
+    ssl_session_timeout       1d;
+    ssl_session_tickets       off;`;
+
 /** Tous les noms qui doivent atterrir sur ce VPS. */
 const CANONICAL = SITE_HOST;
 const SECONDARY = [SITE_APEX, `www.${FOREIGN_APEX}`, FOREIGN_APEX].filter(
@@ -105,10 +153,9 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
  * ──────────────────────────────────────────────────────────────────────── */
 const site = `${banner(`${CANONICAL} — SITE PRINCIPAL`)}
 
-# ⚠️ \`http2 on;\` exige nginx 1.25.1 ou plus récent. Sur une version
-#    antérieure, nginx REFUSE DE DÉMARRER : retirer les trois lignes
-#    \`http2 on;\` et écrire \`listen 443 ssl http2;\` à la place.
-#    Vérifier avec : nginx -v
+# Généré pour nginx ${NGINX_VERSION}${MODERN_HTTP2 ? '' : ' (syntaxe HTTP/2 héritée)'}.
+# Si la machine cible porte une autre version, REGÉNÉRER plutôt qu'éditer :
+#    NGINX_VERSION=<version> node scripts/build-nginx.mjs
 
 # ── Barre finale obligatoire ─────────────────────────────────────────────
 # ÉCART ASSUMÉ nº 3 : rien de tel dans le \`.htaccess\`, parce qu'Apache le
@@ -161,30 +208,24 @@ server {
 # sans certificat ne verrait pas la redirection mais une erreur de sécurité,
 # c'est-à-dire pire que l'ancien site.
 server {
-    listen      443 ssl;
-    listen      [::]:443 ssl;
-    http2       on;
+${listenTls}
     server_name ${SECONDARY.join(' ')};
 
     ssl_certificate     /etc/letsencrypt/live/${SITE_APEX}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${SITE_APEX}/privkey.pem;
-    include             /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+${tlsSettings}
 
     return 301 https://${CANONICAL}$request_uri;
 }
 
 # ── Port 443, le site ────────────────────────────────────────────────────
 server {
-    listen      443 ssl;
-    listen      [::]:443 ssl;
-    http2       on;
+${listenTls}
     server_name ${CANONICAL};
 
     ssl_certificate     /etc/letsencrypt/live/${SITE_APEX}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${SITE_APEX}/privkey.pem;
-    include             /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+${tlsSettings}
 
     root  ${ROOT};
     index index.html;
