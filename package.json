@@ -17,6 +17,8 @@
     "qa:contrast": "node scripts/qa-contrast.mjs",
     "fonts": "node scripts/vendor-fonts.mjs",
     "qa:artifact": "node scripts/qa-artifact.mjs",
+    "build:redirect": "node scripts/build-redirect.mjs",
+    "build:nginx": "node scripts/build-nginx.mjs",
     "qa": "npm run check && npm run qa:contrast && npm run build && npm run qa:artifact && npm run qa:routes && npm run test && npm run qa:shots",
     "qa:catalog": "NO_SERVER=1 playwright test tests/catalog.spec.ts tests/assets.spec.ts --project=desktop",
     "assets:report": "NO_SERVER=1 playwright test tests/assets.spec.ts --project=desktop",
