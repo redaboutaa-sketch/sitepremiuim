@@ -89,6 +89,25 @@ jobs:
           mkdir -p /tmp/pub/public_html
           cp -a dist/. /tmp/pub/public_html/
 
+          # L'endpoint du formulaire ne sort PAS de `astro build` : c'est du
+          # PHP, qu'Astro ne connaît pas et ne copie pas. Sans cette ligne, la
+          # branche publierait un site complet dont le formulaire rendrait 404
+          # — et la sonde, elle, répondrait sagement "not-ready" : le
+          # formulaire se désactiverait tout seul, sans erreur visible.
+          #
+          # `config.local.php` n'est volontairement PAS copié : il porte des
+          # adresses réelles, il est dans .gitignore, et sur le serveur il vit
+          # hors de la racine web (/etc/ivan-arsenov/).
+          mkdir -p /tmp/pub/public_html/api
+          cp deploy/enquiry.php.example /tmp/pub/public_html/api/enquiry.php
+
+          # Garde-fou : si le fichier de configuration se retrouvait un jour
+          # dans ce qu'on publie, il partirait sur un dépôt PUBLIC.
+          if [ -e /tmp/pub/public_html/api/config.local.php ]; then
+            echo '::error::config.local.php présent dans la publication — arrêt.'
+            exit 1
+          fi
+
           cd /tmp/pub
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
