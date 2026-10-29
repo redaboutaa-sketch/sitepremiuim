@@ -1,0 +1,113 @@
+# ==========================================================================
+# CONSTRUCTION DU SITE ET PUBLICATION SUR LA BRANCHE DE DÉPLOIEMENT
+#
+# Le dépôt contient la SOURCE ; `dist/` est dans .gitignore. Un `git clone`
+# sur le serveur ne ramènerait donc aucune page servable — seulement du code
+# Astro à construire.
+#
+# Ce flux comble l'écart : il construit le site ici, le passe par la porte
+# d'audit de l'artefact, puis publie le résultat sur une branche dédiée,
+# `deploy/production`, qui ne contient QUE `public_html/`.
+#
+# Le serveur n'a alors plus qu'à tirer cette branche. Il n'a besoin ni de
+# Node, ni des 322 Mo de `node_modules`, ni d'assez de mémoire pour traiter
+# les images. Et si la construction échoue, elle échoue ICI — pas sur la
+# machine qui sert le site.
+#
+# La porte `qa-artifact` est exécutée AVANT publication, délibérément : une
+# construction qui passe mais dont l'artefact est fautif ne doit pas
+# atteindre la branche que le serveur suit.
+# ==========================================================================
+
+name: Construire et publier le site
+
+on:
+  # Déclenchement manuel, depuis l'onglet Actions, sur n'importe quelle branche.
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/premium-website-factory-iqri35
+    paths-ignore:
+      - 'doc/**'
+      - '**/*.md'
+
+# Nécessaire pour pousser la branche de déploiement. Rien de plus.
+permissions:
+  contents: write
+
+# Deux constructions simultanées se pousseraient dessus. La seconde attend.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer la source
+        uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      # `astro build` suffit à faire respecter les contrôles bloquants du
+      # catalogue : `src/lib/catalog.ts` valide à l'import et lève. Passer par
+      # `npm run build` ajouterait Playwright, inutile ici.
+      - name: Construire
+        run: npx astro build
+
+      - name: Auditer l'artefact
+        run: node scripts/qa-artifact.mjs
+
+      - name: Publier sur deploy/production
+        env:
+          REMOTE: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        run: |
+          set -eu   # surtout pas -x : la télécommande porte le jeton
+
+          rm -rf /tmp/pub
+          if git ls-remote --exit-code --heads "$REMOTE" deploy/production >/dev/null 2>&1; then
+            # La branche existe : on garde son historique, ce qui permet de
+            # revenir à une version précédente par simple `git checkout`.
+            git clone --depth 1 --branch deploy/production "$REMOTE" /tmp/pub
+          else
+            mkdir /tmp/pub
+            git -C /tmp/pub init -q -b deploy/production
+            git -C /tmp/pub remote add origin "$REMOTE"
+          fi
+
+          # Remplacement intégral : un fichier retiré de la construction doit
+          # disparaître du serveur, sinon il reste servi et contredit le reste.
+          rm -rf /tmp/pub/public_html
+          mkdir -p /tmp/pub/public_html
+          cp -a dist/. /tmp/pub/public_html/
+
+          cd /tmp/pub
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo 'Artefact identique au précédent — rien à publier.'
+            exit 0
+          fi
+
+          git commit -q -m "site construit depuis ${GITHUB_SHA}"
+          git push origin HEAD:deploy/production
+
+      - name: Résumé
+        run: |
+          echo "### Site construit" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- source : \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- fichiers : $(find dist -type f | wc -l)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- poids : $(du -sh dist | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Sur le serveur : \`/usr/local/bin/ivan-deploy\`" >> "$GITHUB_STEP_SUMMARY"

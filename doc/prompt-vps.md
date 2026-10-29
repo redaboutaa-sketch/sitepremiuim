@@ -10,8 +10,13 @@ l'agent inventer les parties qu'il ne connaît pas — et ici, les parties qu'il
 ne connaît pas sont justement celles qui font perdre des demandes d'offre.
 
 > **Ce qu'il faut transférer sur le VPS avant de lancer le prompt :**
-> le `.zip` du site, `release/nginx/ivan-arsenov.de.conf` et
-> `release/nginx/snippets/ivan-arsenov.de-headers.conf`.
+> `release/nginx/ivan-arsenov.de.conf`,
+> `release/nginx/snippets/ivan-arsenov.de-headers.conf`, et le contenu de
+> `config.local.php` (modèle : `deploy/config.local.php.example`).
+>
+> **Le site lui-même n'a pas à être transféré** : il est tiré depuis GitHub.
+> La branche `deploy/production` doit exister — c'est-à-dire que le flux
+> *Construire et publier le site* doit avoir tourné au moins une fois.
 
 ---
 
@@ -30,12 +35,29 @@ CE QUE TU DOIS OBTENIR
 Les quatre répondent en HTTPS avec un certificat valide : un domaine sans
 certificat ne peut pas même rediriger, le navigateur bloque avant.
 
+D'OÙ VIENT LE SITE
+
+  Il n'est PAS copié à la main. Il est tiré depuis GitHub, sur une branche
+  qui contient le site DÉJÀ CONSTRUIT :
+
+    dépôt   https://github.com/redaboutaa-sketch/sitepremiuim.git  (public)
+    branche deploy/production
+    contenu public_html/ et rien d'autre
+
+  Ne clone PAS la branche par défaut pour la construire sur cette machine.
+  Elle contient la source Astro ; `dist/` y est ignoré par git. La
+  construire ici demanderait Node et 322 Mo de dépendances sur un serveur de
+  production, et une construction en échec bloquerait la machine qui sert le
+  site. La branche deploy/production existe exactement pour éviter cela.
+
+  Le script de déploiement fait tout le travail :
+    deploy/vps-pull.sh  →  à poser en /usr/local/bin/ivan-deploy (chmod 755)
+
 FICHIERS FOURNIS (déjà présents sur la machine, demande-moi les chemins)
 
-  - une archive .zip contenant un dossier public_html/ : le site construit,
-    avec public_html/api/enquiry.php et public_html/api/config.local.php
   - ivan-arsenov.de.conf          : configuration nginx, GÉNÉRÉE
   - ivan-arsenov.de-headers.conf  : fragment d'en-têtes, GÉNÉRÉ
+  - le contenu de config.local.php (destinataire et expéditeur du formulaire)
 
 INTERDITS — ils ne sont pas négociables
 
@@ -79,9 +101,27 @@ INTERDITS — ils ne sont pas négociables
      (enquiry.php utilise mb_substr — sans elle, erreur 500 à chaque envoi),
      certbot et son greffon nginx, rsync.
 
-  4. Déposer le site dans /var/www/ivan-arsenov.de/public_html, puis :
-       propriétaire www-data, répertoires 755, fichiers 644,
-       api/config.local.php en 640.
+  4. Déposer le site, par git et non à la main.
+
+     D'abord la configuration du formulaire, HORS de la racine web :
+       /etc/ivan-arsenov/config.local.php, root:www-data, 640.
+     Ce n'est pas du rangement : le déploiement exécute `git clean -fd`, qui
+     efface tout fichier non suivi de l'arborescence. Placée dans
+     public_html/api/, cette configuration disparaîtrait à la PREMIÈRE mise
+     à jour et le formulaire refuserait les demandes en silence.
+
+     Puis installer deploy/vps-pull.sh en /usr/local/bin/ivan-deploy
+     (chmod 755) et le lancer. Il clone deploy/production dans
+     /var/www/ivan-arsenov.de — donc public_html/ s'y trouve là où nginx
+     l'attend, et .git reste HORS de ce qui est servi.
+
+     Vérifie ensuite que /.git n'est pas servi :
+       curl -s -o /dev/null -w '%{http_code}\n' \
+            https://www.ivan-arsenov.de/.git/config      # 403 ou 404
+
+     Si tu dois t'y reprendre avant que le certificat existe, teste en
+     local : curl -s -o /dev/null -w '%{http_code}\n' \
+                  --resolve www.ivan-arsenov.de:443:127.0.0.1 …
 
   5. Installer la configuration fournie :
        le .conf dans /etc/nginx/sites-available/ + lien dans sites-enabled
@@ -128,14 +168,20 @@ INTERDITS — ils ne sont pas négociables
        curl -sI https://www.ivan-arsenov.de/nexistepas/ | head -1
        curl -s -o /dev/null -w '%{http_code}\n' https://www.ivan-arsenov.de/api/config.local.php
        curl -s -o /dev/null -w '%{http_code}\n' https://www.ivan-arsenov.de/_astro/
+       curl -s -o /dev/null -w '%{http_code}\n' https://www.ivan-arsenov.de/.git/config
        curl -s 'https://www.ivan-arsenov.de/api/enquiry.php?probe=1'
 
      Attendus : 200 ; trois fois la même cible avec /drinks/ préservé ; une
      redirection http→https DIRECTE vers le nom canonique (un seul saut) ;
      la barre finale ajoutée ; les en-têtes de sécurité présents sur la page
      ET sur l'asset, avec UN SEUL Cache-Control ; 404 sur la page
-     inexistante ; 404 sur config.local.php ; pas de listage ;
-     {"delivery":"ready"}.
+     inexistante ; 404 sur config.local.php ; pas de listage ; l'historique
+     git inaccessible ; {"delivery":"ready"}.
+
+ 10. Expliquer à l'exploitant comment mettre à jour le site ensuite :
+     une seule commande, `ivan-deploy`, après que GitHub Actions a publié
+     une nouvelle version sur deploy/production. Rien à reconstruire sur
+     cette machine.
 
 COMPTE RENDU
 

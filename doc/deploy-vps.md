@@ -155,38 +155,114 @@ ufw allow 'Nginx Full' && ufw allow OpenSSH && ufw enable
 
 ---
 
-## 4 · Déposer le site
+## 4 · Déposer le site — par git, sans `.zip`
 
-Depuis votre poste, avec le `.zip` livré :
+### Pourquoi un `git clone` du dépôt ne suffit pas
 
-```sh
-unzip ivan-arsenov-de-public_html-<sha>.zip -d /tmp/ia
-rsync -av --delete /tmp/ia/public_html/ \
-      root@76.13.44.177:/var/www/ivan-arsenov.de/public_html/
+Le dépôt contient la **source** Astro. `dist/` est dans `.gitignore` : il n'y
+a **aucune page servable dedans**. Cloné tel quel sur le serveur, il faudrait
+y installer Node, 322 Mo de dépendances et assez de mémoire pour traiter 92
+images — et une construction qui échoue bloquerait alors la machine qui sert
+le site.
+
+La chaîne retenue sépare les deux :
+
+```
+  dépôt (source)  ──GitHub Actions──▶  branche deploy/production  ──git pull──▶  VPS
+                      construit                 public_html/                    sert
+                      + audite                  uniquement
 ```
 
-`--delete` retire du serveur ce qui n'est plus dans la livraison. C'est
-voulu — un fichier orphelin d'une version précédente reste servi et peut
-contredire le reste du site. **Mais `--delete` supprime aussi
-`api/config.local.php`**, qui ne vit que sur le serveur. Le redéposer après
-chaque synchronisation, ou l'exclure :
+GitHub Actions construit, **passe la porte d'audit de l'artefact**, puis
+publie le résultat sur `deploy/production`. Si la construction est fautive,
+elle échoue chez GitHub et la branche que le serveur suit ne bouge pas.
+
+Le serveur n'a plus besoin que de `git`.
+
+### 4.1 Déclencher la première construction
+
+Le flux est dans `.github/workflows/deploy-build.yml`. Il part à chaque
+poussée sur la branche par défaut, et à la demande depuis l'onglet
+**Actions → Construire et publier le site → Run workflow**.
+
+**La branche `deploy/production` est créée à la première exécution.** Tant
+qu'elle n'existe pas, l'étape 4.3 n'a rien à cloner.
+
+> Le dépôt est **public**. Aucune clé, aucun jeton n'est nécessaire sur le
+> serveur pour lire. En contrepartie : rien de confidentiel ne doit jamais y
+> être commité. `config.local.php` est dans `.gitignore`, et c'est une ligne
+> à ne pas retirer.
+
+### 4.2 La configuration du formulaire va hors de la racine web
 
 ```sh
-rsync -av --delete --exclude 'api/config.local.php' …
+mkdir -p /etc/ivan-arsenov
+# y déposer config.local.php (modèle : deploy/config.local.php.example)
+chown root:www-data /etc/ivan-arsenov/config.local.php
+chmod 640 /etc/ivan-arsenov/config.local.php
 ```
 
-Droits :
+**Ce déplacement est obligatoire avec un déploiement par git**, pas une
+préférence de rangement. Le script de mise à jour exécute `git clean -fd`,
+qui efface tout fichier non suivi de l'arborescence. Laissée dans
+`public_html/api/`, la configuration disparaîtrait **à la première mise à
+jour** — et le formulaire se mettrait à refuser les demandes sans que rien ne
+l'annonce.
+
+`enquiry.php` cherche donc `/etc/ivan-arsenov/config.local.php` **en
+premier**, et retombe sur `__DIR__` pour l'hébergement mutualisé. Les deux
+fonctionnent.
+
+### 4.3 Installer le script de déploiement
 
 ```sh
+curl -fsSL https://raw.githubusercontent.com/redaboutaa-sketch/sitepremiuim/\
+claude/premium-website-factory-iqri35/deploy/vps-pull.sh \
+  -o /usr/local/bin/ivan-deploy
+chmod 755 /usr/local/bin/ivan-deploy
+```
+
+Puis, à chaque mise en ligne :
+
+```sh
+ivan-deploy
+```
+
+Il tire la branche, remet les droits, recharge PHP-FPM et affiche la sonde du
+formulaire. Le dépôt est cloné dans `/var/www/ivan-arsenov.de/`, de sorte que
+`public_html/` s'y trouve exactement là où nginx l'attend — **et que `.git`
+reste hors de ce qui est servi**. Cloner directement dans la racine web
+exposerait l'historique complet à qui demanderait `/.git/config`.
+
+### Revenir en arrière
+
+L'historique de `deploy/production` est conservé : chaque mise en ligne y est
+un commit.
+
+```sh
+cd /var/www/ivan-arsenov.de
+git fetch --unshallow origin deploy/production   # une seule fois
+git log --oneline -10
+git checkout <sha-précédent> -- public_html
+chown -R www-data:www-data public_html
+```
+
+### La voie manuelle reste valable
+
+Si vous préférez ne pas utiliser GitHub Actions, construisez sur votre poste
+et synchronisez :
+
+```sh
+npm ci && npm run build && npm run qa:artifact
+rsync -av --delete dist/ root@76.13.44.177:/var/www/ivan-arsenov.de/public_html/
 chown -R www-data:www-data /var/www/ivan-arsenov.de/public_html
-find /var/www/ivan-arsenov.de/public_html -type d -exec chmod 755 {} \;
-find /var/www/ivan-arsenov.de/public_html -type f -exec chmod 644 {} \;
-chmod 640 /var/www/ivan-arsenov.de/public_html/api/config.local.php
 ```
 
-Le `.htaccess` présent dans le `.zip` est inerte sous nginx. La
-configuration le rend inaccessible (`location ~ /\.`) ; le supprimer est
-aussi acceptable.
+La configuration vivant désormais hors de la racine, `--delete` ne risque
+plus de l'emporter.
+
+> Le `.htaccess` livré avec le site est inerte sous nginx. La configuration
+> le rend inaccessible (`location ~ /\.`) ; le supprimer est aussi acceptable.
 
 ---
 

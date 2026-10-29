@@ -20,8 +20,27 @@
 
 declare(strict_types=1);
 
-$configPath = __DIR__ . '/config.local.php';
-$config = is_readable($configPath) ? require $configPath : null;
+/*
+ * Où est lue la configuration — par ordre de préférence.
+ *
+ * HORS RACINE WEB D'ABORD, et ce n'est pas un détail de rangement. Depuis
+ * que le site se déploie par `git`, le répertoire servi est RÉGÉNÉRÉ à
+ * chaque mise à jour : un fichier non suivi par git qui s'y trouve est
+ * effacé par le `git clean` du déploiement. Posée dans la racine web, la
+ * configuration disparaîtrait donc à la première mise à jour — et le
+ * formulaire se mettrait à refuser les demandes sans que rien ne l'annonce.
+ *
+ * Le second chemin reste pour l'hébergement mutualisé, où le fichier vit à
+ * côté de ce script et où il n'y a pas de racine hors web. Les deux
+ * fonctionnent ; le premier qui répond gagne.
+ */
+$config = null;
+foreach (['/etc/ivan-arsenov/config.local.php', __DIR__ . '/config.local.php'] as $candidate) {
+    if (is_readable($candidate)) {
+        $config = require $candidate;
+        break;
+    }
+}
 
 $ready = is_array($config)
     && !empty($config['recipient'])
