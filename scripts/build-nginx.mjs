@@ -33,8 +33,20 @@ const OUT = resolve(process.cwd(), 'release', 'nginx');
 /** Racine servie. Modifiable ici seulement — le document de procédure la cite. */
 const ROOT = `/var/www/${SITE_APEX}/public_html`;
 
-/** Socket PHP-FPM. La version est vérifiée par la procédure, pas devinée. */
-const FPM_SOCKET = '/run/php/php8.3-fpm.sock';
+/**
+ * Socket PHP-FPM.
+ *
+ * La version PHP est dans le NOM du socket : elle varie d'une machine à
+ * l'autre et se constate (`ls /run/php/`), elle ne se devine pas. Un socket
+ * inexistant donne une erreur 502 sur le formulaire — le site s'affiche, et
+ * seule la demande d'offre tombe.
+ *
+ *     PHP_FPM_SOCKET=/run/php/php8.2-fpm.sock node scripts/build-nginx.mjs
+ *
+ * Surchargeable plutôt qu'à corriger après coup : ce fichier est généré, et
+ * une correction faite dans sa sortie serait perdue à la régénération.
+ */
+const FPM_SOCKET = process.env.PHP_FPM_SOCKET?.trim() || '/run/php/php8.3-fpm.sock';
 
 /** Racine dédiée aux défis ACME, servie en clair sur le port 80. */
 const ACME_ROOT = '/var/www/acme';
