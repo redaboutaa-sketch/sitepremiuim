@@ -1,0 +1,37 @@
+# ==========================================================================
+# RELAIS SMTP — à copier en /etc/ivan-arsenov/msmtprc, puis à renseigner.
+#
+# ⚠️ CE FICHIER CONTIENT UN MOT DE PASSE. Il ne doit jamais entrer dans le
+#    dépôt ni dans une image Docker. Il est monté depuis l'hôte et recopié
+#    au démarrage avec des droits restreints.
+#
+# Pourquoi relayer plutôt qu'envoyer depuis la machine : le message part
+# alors de la boîte réelle, authentifié. SPF et DKIM sont déjà alignés pour
+# elle — rien à changer dans le DNS, et aucune question de réputation d'IP.
+#
+# Le domaine `ivan-arsenov.de` publie une politique SPF en `-all`, soit un
+# REJET DUR. Un envoi direct depuis le VPS, non couvert, serait REFUSÉ et
+# non filtré : des demandes d'offre perdues en silence.
+# ==========================================================================
+
+defaults
+auth           on
+tls            on
+tls_starttls   on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        /dev/stderr
+
+account        ivan
+host           <serveur SMTP du fournisseur de la boîte>
+port           587
+from           no-reply@ivan-arsenov.de
+user           <identifiant — souvent l'adresse complète>
+password       <mot de passe>
+
+account default : ivan
+
+# ⚠️ Beaucoup de fournisseurs exigent que `from` soit EXACTEMENT une boîte
+#    existante. Si `no-reply@ivan-arsenov.de` n'existe pas, soit on la crée,
+#    soit on bascule `sender` sur `info@ivan-arsenov.de` dans
+#    /etc/ivan-arsenov/config.local.php. Le prospect reste joignable dans les
+#    deux cas : `enquiry.php` le met en `Reply-To`, jamais en `From`.

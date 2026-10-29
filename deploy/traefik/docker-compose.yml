@@ -45,6 +45,21 @@ services:
       - traefik.http.routers.ivanarsenov.tls.certresolver=${TRAEFIK_CERTRESOLVER}
       - traefik.http.services.ivanarsenov.loadbalancer.server.port=8080
 
+      # Entrée en clair → https, en une seule redirection. Si ce Traefik
+      # porte déjà une redirection globale sur ce point d'entrée, elle
+      # s'applique avant ce routeur, qui ne sert alors jamais : inoffensif.
+      # S'il n'en porte pas, sans ces lignes http ne serait pas routé DU
+      # TOUT — pas redirigé : non servi.
+      - >-
+        traefik.http.routers.ivanarsenov-http.rule=Host(`www.ivan-arsenov.de`)
+        || Host(`ivan-arsenov.de`)
+        || Host(`www.ivanarsenov.de`)
+        || Host(`ivanarsenov.de`)
+      - traefik.http.routers.ivanarsenov-http.entrypoints=${TRAEFIK_ENTRYPOINT_HTTP}
+      - traefik.http.routers.ivanarsenov-http.middlewares=ivanarsenov-tohttps
+      - traefik.http.middlewares.ivanarsenov-tohttps.redirectscheme.scheme=https
+      - traefik.http.middlewares.ivanarsenov-tohttps.redirectscheme.permanent=true
+
   # ── L'endpoint du formulaire ──────────────────────────────────────────
   # Le nom de ce service EST le nom d'hôte que nginx appelle en FastCGI
   # (`fastcgi_pass ivan-arsenov-php:9000`). Le renommer casse le formulaire,
@@ -56,11 +71,12 @@ services:
     restart: unless-stopped
     volumes:
       - /var/www/ivan-arsenov.de/public_html:/var/www/ivan-arsenov.de/public_html:ro
-      # `enquiry.php` cherche sa configuration ICI en premier — hors de la
-      # racine web, donc hors de ce que `ivan-deploy` régénère.
-      - /etc/ivan-arsenov/config.local.php:/etc/ivan-arsenov/config.local.php:ro
-      # Relais SMTP. Sans lui, `mail()` échoue et l'endpoint rend 502.
-      - /etc/ivan-arsenov/msmtprc:/etc/msmtprc:ro
+      # Le RÉPERTOIRE, pas les fichiers un par un : monter un fichier dont la
+      # source n'existe pas encore fait créer par Docker un répertoire vide à
+      # sa place, et le conteneur démarre avec une configuration qui n'en est
+      # pas une. L'entrypoint recopie ensuite ces fichiers avec le
+      # propriétaire et les droits attendus dans le conteneur.
+      - /etc/ivan-arsenov:/host-config:ro
     networks:
       - interne
     # Pas exposé à Traefik : ce conteneur ne doit être joignable que par
