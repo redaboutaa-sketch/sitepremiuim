@@ -404,7 +404,14 @@ map "$http_x_forwarded_proto:$host" $ia_off_canonical {
 }
 
 server {
+    # Les DEUX familles, et l'IPv6 n'est pas un luxe ici : l'image officielle
+    # nginx tente d'ajouter cette écoute au démarrage par un script, qui
+    # échoue dès que la configuration est montée en lecture seule — ce qui
+    # est le cas, et doit le rester. Sans cette ligne, « localhost » depuis
+    # le conteneur résout d'abord en ::1 et la connexion est REFUSÉE, alors
+    # que nginx tourne parfaitement.
     listen ${PROXY_PORT};
+    listen [::]:${PROXY_PORT};
     server_name _;
 
 ${serverBody(canonicalRedirect, PROXY_FPM_PASS)}}
