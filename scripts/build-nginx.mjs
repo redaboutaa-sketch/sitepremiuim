@@ -151,6 +151,100 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 /* ────────────────────────────────────────────────────────────────────────
  * Site principal.
  * ──────────────────────────────────────────────────────────────────────── */
+const serverBody = (preamble, fpmPass) => `    root  ${ROOT};
+    index index.html;
+
+    # Équivalent de \`Options -Indexes\` : aucun listage de répertoire.
+    autoindex off;
+
+    # Astro sort la 404 en /404.html À LA RACINE, et non en /404/index.html,
+    # malgré \`format: 'directory'\`. Pointer sur le second rendait une erreur
+    # serveur à la place de la page d'erreur — défaut relevé par l'audit de
+    # l'artefact, invisible à la lecture des sources.
+    error_page 404 /404.html;
+
+    client_max_body_size 1m;
+
+    include snippets/${SITE_APEX}-headers.conf;
+
+    # ── Compression ──────────────────────────────────────────────────────
+    gzip            on;
+    gzip_vary       on;
+    gzip_proxied    any;
+    gzip_min_length 1024;
+    gzip_types      text/plain text/css text/javascript application/javascript
+                    application/json image/svg+xml application/xml
+                    application/rss+xml;
+
+${preamble}    if ($ia_wants_slash) {
+        return 301 https://${CANONICAL}$uri/$is_args$args;
+    }
+
+    # ── Formulaire de demande d'offre ────────────────────────────────────
+    # ÉCART ASSUMÉ nº 1 : le \`.htaccess\` interdisait de SERVIR
+    # config.local.php ; ici on va plus loin — un seul fichier PHP est
+    # exécutable, nommément. Tout autre .php rend 404, qu'il existe ou non.
+    # Une liste blanche vaut mieux qu'une liste noire : elle couvre aussi les
+    # fichiers qu'on n'a pas prévus.
+    location = /api/enquiry.php {
+        include snippets/${SITE_APEX}-headers.conf;
+        add_header X-Robots-Tag "noindex" always;
+
+        include      snippets/${SITE_APEX}-fastcgi.conf;
+        fastcgi_pass ${fpmPass};
+    }
+
+    location ~ \\.php$ {
+        return 404;
+    }
+
+    # ── Cache ────────────────────────────────────────────────────────────
+    # ÉCART ASSUMÉ nº 2 : le \`.htaccess\` ne donnait le cache long qu'aux
+    # polices et aux images. Les .css et .js de /_astro/ portent pourtant la
+    # même empreinte dans leur nom et sont tout aussi immuables — ils en
+    # étaient privés. Ici, tout /_astro/ est couvert, ce qui est la raison
+    # d'être de ce dossier.
+    #
+    # Pas de directive \`expires\` dans ces blocs, et c'est volontaire :
+    # \`expires\` émet SON PROPRE \`Cache-Control\`. Combinée à l'\`add_header\`
+    # ci-dessous, elle produirait DEUX en-têtes \`Cache-Control\` sur la même
+    # réponse — un cas que la norme ne tranche pas et que les caches
+    # intermédiaires résolvent chacun à leur façon. Un seul en-tête, écrit
+    # une fois, et \`immutable\` conservé.
+    location ^~ /_astro/ {
+        include    snippets/${SITE_APEX}-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        access_log off;
+        try_files  $uri =404;
+    }
+
+    # Polices et images hors /_astro/ : même raisonnement, nom stable.
+    location ~* \\.(?:woff2|avif|webp|png|jpe?g|svg|ico)$ {
+        include    snippets/${SITE_APEX}-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        access_log off;
+        try_files  $uri =404;
+    }
+
+    # Le HTML n'est jamais mis en cache durablement : une correction de
+    # contenu doit être visible immédiatement.
+    location ~* \\.html$ {
+        include    snippets/${SITE_APEX}-headers.conf;
+        add_header Cache-Control "public, max-age=0, must-revalidate" always;
+    }
+
+    # ── Fichiers cachés ──────────────────────────────────────────────────
+    # Équivalent du \`<Files ~ "^\\.">\` Apache. Le .htaccess téléversé avec
+    # l'artefact tombe aussi ici : inutile sur nginx, et inutile à exposer.
+    location ~ /\\. {
+        deny all;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+`;
+
 const site = `${banner(`${CANONICAL} — SITE PRINCIPAL`)}
 
 # Généré pour nginx ${NGINX_VERSION}${MODERN_HTTP2 ? '' : ' (syntaxe HTTP/2 héritée)'}.
@@ -227,107 +321,91 @@ ${listenTls}
     ssl_certificate_key /etc/letsencrypt/live/${SITE_APEX}/privkey.pem;
 ${tlsSettings}
 
-    root  ${ROOT};
-    index index.html;
+${serverBody('', `unix:${FPM_SOCKET}`)}}
+`;
 
-    # Équivalent de \`Options -Indexes\` : aucun listage de répertoire.
-    autoindex off;
 
-    # Astro sort la 404 en /404.html À LA RACINE, et non en /404/index.html,
-    # malgré \`format: 'directory'\`. Pointer sur le second rendait une erreur
-    # serveur à la place de la page d'erreur — défaut relevé par l'audit de
-    # l'artefact, invisible à la lecture des sources.
-    error_page 404 /404.html;
+/* ────────────────────────────────────────────────────────────────────────
+ * Fragment FastCGI — écrit ici plutôt qu'emprunté à la distribution.
+ *
+ * `snippets/fastcgi-php.conf` est un fichier Debian/Ubuntu. L'image
+ * `nginx:alpine` ne le porte pas : une configuration qui l'inclut est
+ * parfaitement valide sur l'hôte et refuse de charger dans un conteneur.
+ * Seul `fastcgi_params` est commun aux deux, et c'est le seul emprunt ici.
+ * ──────────────────────────────────────────────────────────────────────── */
+const fastcgi = `${banner('PARAMÈTRES FASTCGI')}
 
-    client_max_body_size 1m;
+fastcgi_split_path_info ^(.+\\.php)(/.+)$;
+fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+fastcgi_index index.php;
+include fastcgi_params;
+`;
 
-    include snippets/${SITE_APEX}-headers.conf;
+/* ────────────────────────────────────────────────────────────────────────
+ * VARIANTE « DERRIÈRE UN PROXY ».
+ *
+ * Sur une machine dont les ports 80 et 443 sont déjà tenus par un proxy
+ * (Traefik, et une dizaine d'applications derrière lui), ce site ne peut pas
+ * les réclamer. Il écoute donc en clair sur un port interne, et le proxy
+ * termine TLS devant lui.
+ *
+ * Ce qui disparaît ici : les certificats, les blocs 80/443, la redirection
+ * http→https par le schéma local. Ce qui reste : TOUT le reste, strictement
+ * le même corps de configuration que la variante autonome — en-têtes, cache,
+ * liste blanche PHP, barre finale, 404. Deux fichiers, un seul corps.
+ *
+ * La canonicalisation reste ICI plutôt que dans le proxy, délibérément :
+ * elle découle de `site.config.mjs` comme les canonicals des pages. Confiée
+ * au proxy, elle vivrait dans un fichier que ce dépôt ne génère pas, et les
+ * deux pourraient diverger sans que rien ne proteste.
+ * ──────────────────────────────────────────────────────────────────────── */
+const PROXY_PORT = process.env.PROXY_PORT?.trim() || '8080';
+const PROXY_FPM_PASS = process.env.PROXY_FPM_PASS?.trim() || `${SITE_APEX.split('.')[0]}-php:9000`;
 
-    # ── Compression ──────────────────────────────────────────────────────
-    gzip            on;
-    gzip_vary       on;
-    gzip_proxied    any;
-    gzip_min_length 1024;
-    gzip_types      text/plain text/css text/javascript application/javascript
-                    application/json image/svg+xml application/xml
-                    application/rss+xml;
-
-    if ($ia_wants_slash) {
-        return 301 https://${CANONICAL}$uri/$is_args$args;
+const canonicalRedirect = `    # Le schéma d'origine n'est connu que par l'en-tête que pose le proxy :
+    # ici, nginx ne voit que du clair. \`$http_x_forwarded_proto\` vide est
+    # traité comme correct, sinon une installation sans cet en-tête
+    # bouclerait indéfiniment sur sa propre redirection.
+    if ($ia_off_canonical) {
+        return 301 https://${CANONICAL}$request_uri;
     }
 
-    # ── Formulaire de demande d'offre ────────────────────────────────────
-    # ÉCART ASSUMÉ nº 1 : le \`.htaccess\` interdisait de SERVIR
-    # config.local.php ; ici on va plus loin — un seul fichier PHP est
-    # exécutable, nommément. Tout autre .php rend 404, qu'il existe ou non.
-    # Une liste blanche vaut mieux qu'une liste noire : elle couvre aussi les
-    # fichiers qu'on n'a pas prévus.
-    location = /api/enquiry.php {
-        include snippets/${SITE_APEX}-headers.conf;
-        add_header X-Robots-Tag "noindex" always;
+`;
 
-        include      snippets/fastcgi-php.conf;
-        fastcgi_pass unix:${FPM_SOCKET};
-    }
+const proxyConf = `${banner(`${CANONICAL} — DERRIÈRE UN PROXY TLS`)}
 
-    location ~ \\.php$ {
-        return 404;
-    }
+# Les ports 80/443 appartiennent au proxy. Ce serveur écoute en clair sur un
+# port interne ; c'est le proxy qui présente le certificat et qui doit
+# router les QUATRE noms vers lui — les trois non canoniques y compris,
+# puisque c'est ce fichier qui les redirige.
 
-    # ── Cache ────────────────────────────────────────────────────────────
-    # ÉCART ASSUMÉ nº 2 : le \`.htaccess\` ne donnait le cache long qu'aux
-    # polices et aux images. Les .css et .js de /_astro/ portent pourtant la
-    # même empreinte dans leur nom et sont tout aussi immuables — ils en
-    # étaient privés. Ici, tout /_astro/ est couvert, ce qui est la raison
-    # d'être de ce dossier.
-    #
-    # Pas de directive \`expires\` dans ces blocs, et c'est volontaire :
-    # \`expires\` émet SON PROPRE \`Cache-Control\`. Combinée à l'\`add_header\`
-    # ci-dessous, elle produirait DEUX en-têtes \`Cache-Control\` sur la même
-    # réponse — un cas que la norme ne tranche pas et que les caches
-    # intermédiaires résolvent chacun à leur façon. Un seul en-tête, écrit
-    # une fois, et \`immutable\` conservé.
-    location ^~ /_astro/ {
-        include    snippets/${SITE_APEX}-headers.conf;
-        add_header Cache-Control "public, max-age=31536000, immutable" always;
-        access_log off;
-        try_files  $uri =404;
-    }
-
-    # Polices et images hors /_astro/ : même raisonnement, nom stable.
-    location ~* \\.(?:woff2|avif|webp|png|jpe?g|svg|ico)$ {
-        include    snippets/${SITE_APEX}-headers.conf;
-        add_header Cache-Control "public, max-age=31536000, immutable" always;
-        access_log off;
-        try_files  $uri =404;
-    }
-
-    # Le HTML n'est jamais mis en cache durablement : une correction de
-    # contenu doit être visible immédiatement.
-    location ~* \\.html$ {
-        include    snippets/${SITE_APEX}-headers.conf;
-        add_header Cache-Control "public, max-age=0, must-revalidate" always;
-    }
-
-    # ── Fichiers cachés ──────────────────────────────────────────────────
-    # Équivalent du \`<Files ~ "^\\.">\` Apache. Le .htaccess téléversé avec
-    # l'artefact tombe aussi ici : inutile sur nginx, et inutile à exposer.
-    location ~ /\\. {
-        deny all;
-    }
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
+map $uri $ia_wants_slash {
+    default        0;
+    ~^/[^.]*[^/]$  1;
 }
+
+map "$http_x_forwarded_proto:$host" $ia_off_canonical {
+    default                 1;
+    "https:${CANONICAL}"    0;
+    ":${CANONICAL}"         0;
+}
+
+server {
+    listen ${PROXY_PORT};
+    server_name _;
+
+${serverBody(canonicalRedirect, PROXY_FPM_PASS)}}
 `;
 
 await rm(OUT, { recursive: true, force: true });
 await mkdir(join(OUT, 'snippets'), { recursive: true });
 await writeFile(join(OUT, `${SITE_APEX}.conf`), site);
 await writeFile(join(OUT, 'snippets', `${SITE_APEX}-headers.conf`), headers);
+await writeFile(join(OUT, 'snippets', `${SITE_APEX}-fastcgi.conf`), fastcgi);
+await writeFile(join(OUT, `${SITE_APEX}.proxy.conf`), proxyConf);
 
 console.log(`  canonique : ${CANONICAL}`);
 console.log(`  redirigés : ${SECONDARY.join(', ')}`);
 console.log(`  racine    : ${ROOT}`);
+console.log(`  variantes : autonome (TLS) + derrière proxy (port ${PROXY_PORT})`);
 console.log(`  écrit dans ${OUT}`);

@@ -1,0 +1,76 @@
+# ==========================================================================
+# IVAN ARSENOV — pile derrière le Traefik existant
+#
+# Les ports 80 et 443 du VPS appartiennent à Traefik, qui sert déjà une
+# dizaine d'applications. Ce site ne les réclame donc pas : il écoute en
+# clair sur un port interne et Traefik termine TLS devant lui.
+#
+# Rien ici ne touche à Traefik ni aux autres piles. Les trois valeurs qui
+# dépendent de SON installation — réseau, point d'entrée, résolveur de
+# certificats — sont dans `.env`, pas écrites en dur : elles se relèvent sur
+# une pile existante, elles ne se devinent pas.
+#
+#     docker compose up -d
+# ==========================================================================
+
+services:
+  # ── Le serveur du site ────────────────────────────────────────────────
+  ivan-arsenov-web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      # Le site, déployé par `ivan-deploy` sur l'hôte. En lecture seule : ce
+      # conteneur n'a aucune raison d'écrire dans ce qu'il sert.
+      - /var/www/ivan-arsenov.de/public_html:/var/www/ivan-arsenov.de/public_html:ro
+      # ⚠️ Fichiers GÉNÉRÉS (scripts/build-nginx.mjs). Ne pas les éditer ici.
+      - ./nginx/ivan-arsenov.de.proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+    networks:
+      - traefik
+      - interne
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK}
+
+      # Les QUATRE noms arrivent ici. Les trois non canoniques ne sont pas
+      # redirigés par Traefik mais par la configuration nginx, qui tient
+      # cette règle depuis `site.config.mjs` — une seule source de vérité.
+      - >-
+        traefik.http.routers.ivanarsenov.rule=Host(`www.ivan-arsenov.de`)
+        || Host(`ivan-arsenov.de`)
+        || Host(`www.ivanarsenov.de`)
+        || Host(`ivanarsenov.de`)
+      - traefik.http.routers.ivanarsenov.entrypoints=${TRAEFIK_ENTRYPOINT_HTTPS}
+      - traefik.http.routers.ivanarsenov.tls=true
+      - traefik.http.routers.ivanarsenov.tls.certresolver=${TRAEFIK_CERTRESOLVER}
+      - traefik.http.services.ivanarsenov.loadbalancer.server.port=8080
+
+  # ── L'endpoint du formulaire ──────────────────────────────────────────
+  # Le nom de ce service EST le nom d'hôte que nginx appelle en FastCGI
+  # (`fastcgi_pass ivan-arsenov-php:9000`). Le renommer casse le formulaire,
+  # et rien d'autre : le site continuerait de s'afficher.
+  ivan-arsenov-php:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    restart: unless-stopped
+    volumes:
+      - /var/www/ivan-arsenov.de/public_html:/var/www/ivan-arsenov.de/public_html:ro
+      # `enquiry.php` cherche sa configuration ICI en premier — hors de la
+      # racine web, donc hors de ce que `ivan-deploy` régénère.
+      - /etc/ivan-arsenov/config.local.php:/etc/ivan-arsenov/config.local.php:ro
+      # Relais SMTP. Sans lui, `mail()` échoue et l'endpoint rend 502.
+      - /etc/ivan-arsenov/msmtprc:/etc/msmtprc:ro
+    networks:
+      - interne
+    # Pas exposé à Traefik : ce conteneur ne doit être joignable que par
+    # nginx. Aucun label, aucun port publié.
+
+networks:
+  # Le réseau de Traefik, créé par SA pile. `external: true` dit bien :
+  # « il existe déjà, ne le crée pas ».
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK}
+  interne:
+    driver: bridge
