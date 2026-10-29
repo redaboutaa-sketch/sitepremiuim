@@ -66,6 +66,24 @@ jobs:
       - name: Auditer l'artefact
         run: node scripts/qa-artifact.mjs
 
+      # Les configurations nginx de `deploy/traefik/nginx/` sont GÉNÉRÉES et
+      # pourtant versionnées : le serveur les reçoit par `git clone`, et un
+      # fichier ignoré par git n'arrive jamais dans un clone.
+      #
+      # Ce qu'on perd normalement à commiter du généré, c'est la garantie
+      # qu'il corresponde encore à sa source. Ce contrôle la rend : il
+      # régénère et refuse la construction au moindre écart. Éditer le
+      # fichier déployé sans toucher au générateur fait donc échouer ici,
+      # pas en production trois semaines plus tard.
+      - name: Vérifier que les configurations nginx sont à jour
+        run: |
+          NGINX_OUT=deploy/traefik/nginx node scripts/build-nginx.mjs
+          if ! git diff --exit-code -- deploy/traefik/nginx; then
+            echo '::error::deploy/traefik/nginx/ ne correspond plus à scripts/build-nginx.mjs.'
+            echo '::error::Régénérer : NGINX_OUT=deploy/traefik/nginx node scripts/build-nginx.mjs'
+            exit 1
+          fi
+
       - name: Publier sur deploy/production
         env:
           REMOTE: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

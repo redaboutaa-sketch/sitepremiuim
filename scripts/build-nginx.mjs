@@ -28,7 +28,20 @@ import { join, resolve } from 'node:path';
 
 import { FOREIGN_APEX, SITE_APEX, SITE_HOST } from '../site.config.mjs';
 
-const OUT = resolve(process.cwd(), 'release', 'nginx');
+/**
+ * Destination. `release/` par défaut — non versionné, donc pratique pour
+ * regarder la sortie sans polluer le dépôt.
+ *
+ * Mais les fichiers à DÉPLOYER, eux, sont versionnés sous
+ * `deploy/traefik/nginx/` : le serveur les obtient par `git clone`, et un
+ * fichier ignoré par git n'arrive jamais dans un clone. L'objection
+ * habituelle — « un fichier généré commité finit par diverger de sa
+ * source » — est levée par le contrôle `nginx-à-jour` du flux GitHub, qui
+ * régénère et refuse la construction en cas d'écart.
+ *
+ *     NGINX_OUT=deploy/traefik/nginx node scripts/build-nginx.mjs
+ */
+const OUT = resolve(process.cwd(), process.env.NGINX_OUT?.trim() || 'release/nginx');
 
 /** Racine servie. Modifiable ici seulement — le document de procédure la cite. */
 const ROOT = `/var/www/${SITE_APEX}/public_html`;
