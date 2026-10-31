@@ -57,6 +57,13 @@ services:
         || Host(`ivanarsenov.de`)
       - traefik.http.routers.ivanarsenov-http.entrypoints=${TRAEFIK_ENTRYPOINT_HTTP}
       - traefik.http.routers.ivanarsenov-http.middlewares=ivanarsenov-tohttps
+      # Priorité minimale, par précaution. À défaut de priorité explicite,
+      # Traefik classe les routeurs par LONGUEUR DE RÈGLE — et la nôtre, qui
+      # énumère quatre hôtes, est inhabituellement longue. Le routeur interne
+      # qui répond au défi ACME ne doit jamais passer après : il servirait
+      # une redirection vers https à Let's Encrypt, qui interroge en clair,
+      # et le certificat ne serait jamais émis.
+      - traefik.http.routers.ivanarsenov-http.priority=1
       - traefik.http.middlewares.ivanarsenov-tohttps.redirectscheme.scheme=https
       - traefik.http.middlewares.ivanarsenov-tohttps.redirectscheme.permanent=true
 
