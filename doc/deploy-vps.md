@@ -3,7 +3,49 @@
 **VPS `76.13.44.177`**, servant `www.ivan-arsenov.de` (canonique) et
 `www.ivanarsenov.de` (redirigé), plus les deux formes nues.
 
-Établi le **2026-10-29**. Destinataires : Ivan Arsenov, l'intégrateur.
+Établi le **2026-10-29**, mis à jour le **2026-10-31** après installation réelle.
+Destinataires : Ivan Arsenov, l'intégrateur.
+
+---
+
+> ## ✅ ARCHITECTURE RETENUE — constatée sur la machine, pas supposée
+>
+> Le VPS ne sert pas ce site avec un nginx à lui. Ses ports 80 et 443
+> appartiennent à **Traefik**, qui fronte déjà une dizaine d'applications
+> (`tfn`, `heliostores`, `elios-solar`, `chainpilot`, `platform`, `seolead`,
+> `zenfixo`, `tfn-academy`). Le site passe donc **derrière Traefik**, dans
+> deux conteneurs à lui.
+>
+> ```
+>   Traefik (:80, :443, TLS)
+>        └── ivan-arsenov-web   nginx:alpine, écoute 8080, sert public_html
+>              └── ivan-arsenov-php   php-fpm + msmtp, le seul endpoint
+> ```
+>
+> | | |
+> | --- | --- |
+> | Pile | `deploy/traefik/` — `docker compose up -d` |
+> | Réseau Traefik | `traefik-public` |
+> | Point d'entrée | `websecure` · résolveur `letsencrypt` |
+> | Défi ACME | **TLS-ALPN-01** — le port 80 n'y participe pas |
+> | Site sur disque | `/var/www/ivan-arsenov.de/public_html`, par `ivan-deploy` |
+> | Configuration hors dépôt | `/etc/ivan-arsenov/` |
+>
+> **Certificat obtenu le 2026-10-31** pour les quatre noms en une demande
+> groupée, émetteur Let's Encrypt.
+>
+> ### Conséquence sur ce document
+>
+> Les **§ 3 et § 5 ne s'appliquent pas à cette machine**. Ils décrivent une
+> installation nginx autonome avec certbot, conservée parce qu'elle reste
+> juste pour un serveur sans proxy — et parce que le générateur produit
+> toujours les deux variantes. Sur ce VPS, ni nginx ni PHP ne sont installés
+> sur l'hôte, et certbot ne sert à rien.
+>
+> Le **§ 4** (déploiement par git) et le **§ 6** (courrier) restent valables
+> tels quels. Le **§ 7** aussi, à ceci près qu'un saut de redirection
+> supplémentaire est normal sur les noms non canoniques : Traefik renvoie
+> d'abord `http → https` en conservant l'hôte, puis nginx canonicalise.
 
 ---
 
