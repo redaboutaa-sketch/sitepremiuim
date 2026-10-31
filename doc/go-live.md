@@ -18,6 +18,20 @@ Destinataires : Ivan Arsenov, son conseil juridique, l'intégrateur.
 > Le lire avant d'agir sur l'étape 2 (adresses e-mail) ou l'étape 5
 > (publication) ci-dessous.
 
+> ### ⚠️ L'HÉBERGEMENT A CHANGÉ — 2026-10-31
+>
+> Le site ne vit plus chez Hostinger. Il est servi par le **VPS
+> `76.13.44.177`**, derrière le Traefik qui y fronte déjà une dizaine
+> d'applications, dans deux conteneurs à lui. Les quatre noms y arrivent, le
+> certificat Let's Encrypt couvre les quatre, et le déploiement se fait par
+> `git` depuis la branche `deploy/production`.
+>
+> **L'étape 5 de ce document (publication chez Hostinger) est caduque.**
+> La procédure en vigueur est **`doc/deploy-vps.md`**, qui ouvre sur
+> l'architecture réellement installée. Le site de redirection livré pour
+> Hostinger ne sert plus non plus : les quatre noms arrivent désormais sur
+> la même pile, et c'est nginx qui redirige.
+
 ---
 
 ## Où on en est
